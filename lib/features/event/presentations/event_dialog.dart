@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:el_shaddai/core/utility/date_time_range.dart';
 import 'package:el_shaddai/core/widgets/snack_bar.dart';
@@ -6,10 +8,15 @@ import 'package:el_shaddai/features/event/controller/event_controller.dart';
 import 'package:el_shaddai/features/event/repository/event_repository.dart';
 import 'package:el_shaddai/models/event_model/event_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 import 'package:intl/intl.dart';
+
+import 'event_venues_component/event_location_component.dart';
 
 class EventsDialog extends ConsumerStatefulWidget {
   const EventsDialog({
@@ -26,10 +33,13 @@ class EventsDialog extends ConsumerStatefulWidget {
 }
 
 class _EventsDialogState extends ConsumerState<EventsDialog> {
+  static final formKey = GlobalKey<FormState>();
   void show(data) {
     showFailureSnackBar(context, data);
   }
 
+  final TextEditingController _controller = TextEditingController();
+  final List<bool> _selectedLocation = <bool>[true, false, false];
   @override
   Widget build(BuildContext context) {
     ref.watch(eventControllerProvider);
@@ -46,7 +56,7 @@ class _EventsDialogState extends ConsumerState<EventsDialog> {
       content: Container(
         padding: EdgeInsets.zero,
         width: widget.width * 0.8,
-        height: widget.height * 0.8,
+        height: widget.height * 0.85,
         child: ListView(
           children: [
             const Text(
@@ -98,6 +108,9 @@ class _EventsDialogState extends ConsumerState<EventsDialog> {
             ),
             GestureDetector(
               onTap: () {
+                SystemChannels.textInput.invokeMethod('TextInput.hide');
+                sleep(const Duration(milliseconds: 100));
+                _controller.clear();
                 showTimeRangePicker(
                   start: eventReader.timeRange?.start != null
                       ? TimeOfDay.fromDateTime(
@@ -191,9 +204,58 @@ class _EventsDialogState extends ConsumerState<EventsDialog> {
                 ],
               ),
             ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  children: [
+                    ToggleButtons(
+                      isSelected: _selectedLocation,
+                      onPressed: (int index) {
+                        setState(() {
+                          // The button that is tapped is set to true, and the others to false.
+                          for (int i = 0; i < _selectedLocation.length; i++) {
+                            _selectedLocation[i] = i == index;
+                          }
+                        });
+                      },
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
+                      constraints: const BoxConstraints(
+                        minHeight: 25,
+                        maxHeight: 35,
+                        minWidth: 100,
+                      ),
+                      children: [
+                        const Text('Zoom'),
+                        const Text('Location'),
+                        const Text('Hybrid')
+                      ],
+                    ),
+                    ConstrainedBox(
+                      constraints:
+                          const BoxConstraints(maxHeight: 600, minHeight: 300),
+                      child: _selectedLocation[0]
+                          ? const Text('Zoom')
+                          : _selectedLocation[1]
+                              ? EventLocationComponent(controller: _controller)
+                              : const Text('Hybrid'),
+                    )
+                  ],
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  final raw = value ?? '';
+                  if (raw.isEmpty) {
+                    return 'Field cannot be empty';
+                  }
+                  return null;
+                },
+                onChanged: eventFunction.setTitle,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -202,6 +264,15 @@ class _EventsDialogState extends ConsumerState<EventsDialog> {
               ),
             ),
             TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) {
+                final raw = value ?? '';
+                if (raw.isEmpty) {
+                  return 'Field cannot be empty';
+                }
+                return null;
+              },
+              onChanged: eventFunction.setDescription,
               maxLines: 4,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -210,24 +281,14 @@ class _EventsDialogState extends ConsumerState<EventsDialog> {
                 hintText: 'Description',
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: TextFormField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    hintText: 'Title'),
-              ),
-            ),
             ElevatedButton(
                 onPressed: () {
                   ref.read(eventRepositoryProvider).createEvent(
                       EventModel(
                           title: eventReader.title!,
-                          hostId: ref.read(userProvider)!.uid!,
+                          hostId: ref.read(userProvider)!.uid,
                           timeRange: eventReader.timeRange!,
-                          userId: ref.read(userProvider)!.uid!,
+                          userId: ref.read(userProvider)!.uid,
                           id: FirebaseFirestore.instance
                               .collection('dog')
                               .doc()

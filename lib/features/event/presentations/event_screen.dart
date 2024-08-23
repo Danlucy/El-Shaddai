@@ -1,3 +1,4 @@
+import 'package:el_shaddai/features/event/controller/event_controller.dart';
 import 'package:el_shaddai/features/event/presentations/event_dialog.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          ref.read(eventControllerProvider.notifier).clearState();
           showDialog(
               context: context,
               builder: (context) => EventsDialog(width: width, height: height));
