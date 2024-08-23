@@ -10,7 +10,11 @@ part 'event_controller.g.dart';
 class EventController extends _$EventController {
   @override
   EventState build() {
-    return EventState();
+    return const EventState();
+  }
+
+  clearState() {
+    state = const EventState();
   }
 
   void setTitle(String title) => state = state.copyWith(title: title);
