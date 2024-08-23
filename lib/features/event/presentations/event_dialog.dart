@@ -5,6 +5,8 @@ import 'package:el_shaddai/core/utility/date_time_range.dart';
 import 'package:el_shaddai/core/widgets/snack_bar.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/event/controller/event_controller.dart';
+import 'package:el_shaddai/features/event/presentations/event_venues_component/event_hybrid_component.dart';
+import 'package:el_shaddai/features/event/presentations/event_venues_component/event_zoom_component.dart';
 import 'package:el_shaddai/features/event/repository/event_repository.dart';
 import 'package:el_shaddai/models/event_model/event_model.dart';
 import 'package:flutter/material.dart';
@@ -235,10 +237,10 @@ class _EventsDialogState extends ConsumerState<EventsDialog> {
                       constraints:
                           const BoxConstraints(maxHeight: 600, minHeight: 300),
                       child: _selectedLocation[0]
-                          ? const Text('Zoom')
+                          ? EventZoomComponent()
                           : _selectedLocation[1]
                               ? EventLocationComponent(controller: _controller)
-                              : const Text('Hybrid'),
+                              : EventHybridComponent(),
                     )
                   ],
                 ),
