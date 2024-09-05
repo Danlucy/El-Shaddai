@@ -1,6 +1,7 @@
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/auth/presentations/login_screen.dart';
-import 'package:el_shaddai/features/event/presentations/event_screen.dart';
+import 'package:el_shaddai/features/auth/presentations/zoom_screen.dart';
+import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:el_shaddai/features/home/presentations/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +35,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     TypedGoRoute<EventsRoute>(
       path: 'events',
     ),
+    TypedGoRoute<ZoomRoute>(
+      path: 'zoom',
+    ),
   ],
 )
 class HomeRoute extends GoRouteData {
@@ -48,7 +52,14 @@ class EventsRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) =>
-      const EventsScreen();
+      const BookingScreen();
+}
+
+class ZoomRoute extends GoRouteData {
+  const ZoomRoute(this.url);
+  final String? url;
+  @override
+  Widget build(BuildContext context, GoRouterState state) => ZoomScreen(url);
 }
 
 @TypedGoRoute<LoginRoute>(path: '/login')

@@ -19,6 +19,10 @@ RouteBase get $homeRoute => GoRouteData.$route(
           path: 'events',
           factory: $EventsRouteExtension._fromState,
         ),
+        GoRouteData.$route(
+          path: 'zoom',
+          factory: $ZoomRouteExtension._fromState,
+        ),
       ],
     );
 
@@ -44,6 +48,28 @@ extension $EventsRouteExtension on EventsRoute {
 
   String get location => GoRouteData.$location(
         '/events',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $ZoomRouteExtension on ZoomRoute {
+  static ZoomRoute _fromState(GoRouterState state) => ZoomRoute(
+        state.uri.queryParameters['url'],
+      );
+
+  String get location => GoRouteData.$location(
+        '/zoom',
+        queryParams: {
+          if (url != null) 'url': url,
+        },
       );
 
   void go(BuildContext context) => context.go(location);

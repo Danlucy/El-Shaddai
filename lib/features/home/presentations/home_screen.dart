@@ -38,14 +38,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               height: 20,
             ),
             Text(
-              'El Shaddai 24/7 KINGDOM OF GOD PRAYER ALTAR',
+              'EL Shaddai  Prayer Altar 24/7 for the Kingdom Of God',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 30,
                 color: Theme.of(context).colorScheme.secondary,
                 fontWeight: FontWeight.bold,
               ),
-            )
+            ),
           ],
         ),
       ),
