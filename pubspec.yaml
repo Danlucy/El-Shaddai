@@ -47,7 +47,7 @@ dependencies:
 
   go_router: ^14.2.3
   go_router_builder: ^2.7.1
-  shared_preferences: ^2.3.1
+  shared_preferences: ^2.3.2
   freezed: ^2.5.2
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
@@ -61,6 +61,13 @@ dependencies:
   syncfusion_flutter_datepicker: ^26.2.9
   riverpod_annotation: ^2.3.5
   riverpod_generator: ^2.4.0
+  google_maps_flutter: ^2.9.0
+  gap: ^3.0.1
+  dart_jsonwebtoken: ^2.14.0
+  http: ^1.2.2
+  cloud_functions: ^5.1.0
+  webview_flutter: ^4.8.0
+  dio: ^5.6.0
 
 
 dev_dependencies:

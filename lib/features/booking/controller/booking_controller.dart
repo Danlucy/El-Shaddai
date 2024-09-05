@@ -1,20 +1,21 @@
-import 'package:el_shaddai/features/event/state/event_state.dart';
+import 'package:el_shaddai/features/booking/state/booking_state.dart';
 import 'package:el_shaddai/models/location_data.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:time_range_picker/time_range_picker.dart';
-
-part 'event_controller.g.dart';
+import 'package:http/http.dart' as http;
+part 'booking_controller.g.dart';
 
 @riverpod
-class EventController extends _$EventController {
+class BookingController extends _$BookingController {
   @override
-  EventState build() {
-    return const EventState();
+  BookingState build() {
+    return const BookingState();
   }
 
   clearState() {
-    state = const EventState();
+    state = const BookingState();
   }
 
   void setTitle(String title) => state = state.copyWith(title: title);
@@ -22,7 +23,38 @@ class EventController extends _$EventController {
       state = state.copyWith(description: description);
   void setLocation(LocationData location) =>
       state = state.copyWith(location: location);
-  void setEventId(String eventId) => state = state.copyWith(eventId: eventId);
+  void setAddress(String address) {
+    state = state.copyWith(
+      location: state.location?.copyWith(
+            address: address,
+          ) ??
+          LocationData(address: address),
+    );
+  }
+
+  void setWeb(String? web) {
+    state = state.copyWith(
+      location: state.location?.copyWith(
+            web: web,
+          ) ??
+          LocationData(
+              address: state.location?.address ?? 'default address', web: web),
+    );
+  }
+
+  void setChords(LatLng chords) {
+    state = state.copyWith(
+      location: state.location?.copyWith(
+            chords: chords,
+          ) ??
+          LocationData(
+              address: state.location?.address ?? 'default address',
+              chords: chords),
+    );
+  }
+
+  void setEventId(String bookingId) =>
+      state = state.copyWith(bookingId: bookingId);
   void setHostId(String hostId) => state = state.copyWith(hostId: hostId);
   void setRecurrenceState(RecurrenceState recurrenceState) =>
       state = state.copyWith(recurrenceState: recurrenceState);
@@ -35,7 +67,7 @@ class EventController extends _$EventController {
           timeRange.start.year,
           timeRange.start.month,
           timeRange.start.day,
-          start?.hour ?? 12,
+          start?.hour ?? 11,
         ),
         end: DateTime(
           timeRange.start.year,
@@ -66,5 +98,21 @@ class EventController extends _$EventController {
         ),
       ),
     );
+  }
+
+  void getAccessToken() {
+    const url = 'https://zoom.us/oauth/';
+    final uri = Uri.parse(url);
+    final header = {
+      "Authorization":
+          "Basic 8RVTda4nTpaR6h5XVpzL0A:NyPF1sBkWfJKX2kW59waqqlmel4c6Xeu"
+    };
+    final respsme = http.post(uri, headers: header);
+  }
+
+  void createMeeting() {
+    const url = 'https://api.zoom.us/v2/users/me/meetings';
+    final uri = Uri.parse(url);
+    // http.post(uri,)
   }
 }

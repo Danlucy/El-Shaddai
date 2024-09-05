@@ -1,18 +1,18 @@
-import 'package:el_shaddai/features/event/controller/event_controller.dart';
-import 'package:el_shaddai/features/event/presentations/event_dialog.dart';
+import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
+import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-class EventsScreen extends ConsumerStatefulWidget {
-  const EventsScreen({super.key});
+class BookingScreen extends ConsumerStatefulWidget {
+  const BookingScreen({super.key});
 
   @override
   ConsumerState createState() => _EventsScreenState();
 }
 
-class _EventsScreenState extends ConsumerState<EventsScreen> {
+class _EventsScreenState extends ConsumerState<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -20,10 +20,11 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ref.read(eventControllerProvider.notifier).clearState();
+          ref.read(bookingControllerProvider.notifier).clearState();
           showDialog(
               context: context,
-              builder: (context) => EventsDialog(width: width, height: height));
+              builder: (context) =>
+                  BookingDialog(width: width, height: height));
         },
         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
         child: Icon(

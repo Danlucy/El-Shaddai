@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
@@ -18,6 +19,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   Future<bool> hasNetwork() async {
     try {
       final result = await InternetAddress.lookup('example.com');
@@ -30,7 +32,7 @@ void main() async {
   bool isOnline = await hasNetwork();
   runApp(
     isOnline
-        ? ProviderScope(
+        ? const ProviderScope(
             child: MyApp(),
           )
         : const MaterialApp(

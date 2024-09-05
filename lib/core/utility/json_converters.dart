@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:el_shaddai/models/location_data.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:latlong2/latlong.dart';
 
 class LatLngConverter extends JsonConverter<LatLng?, Object?> {
   const LatLngConverter();
@@ -56,7 +56,12 @@ class LocationDataConverter
   Map<String, dynamic> toJson(LocationData object) {
     return {
       'address': object.address,
-      'chords': object.chords,
+      'chords': object.chords != null
+          ? {
+              'latitude': object.chords!.latitude,
+              'longitude': object.chords!.longitude,
+            }
+          : null,
       'web': object.web,
     };
   }
