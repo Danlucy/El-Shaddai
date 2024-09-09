@@ -1,10 +1,17 @@
 import 'dart:convert';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:dio/dio.dart';
 import 'package:el_shaddai/api/api_repository.dart';
+import 'package:el_shaddai/api/models/access_token_model.dart';
+import 'package:el_shaddai/api/models/recurrence_configuration_model.dart';
 import 'package:el_shaddai/core/constants/constants.dart';
 import 'package:el_shaddai/core/router/router.dart';
+import 'package:el_shaddai/core/utility/date_time_range.dart';
+import 'package:el_shaddai/core/utility/failure.dart';
+import 'package:el_shaddai/core/widgets/snack_bar.dart';
 import 'package:el_shaddai/features/auth/presentations/zoom_screen.dart';
+import 'package:el_shaddai/features/auth/widgets/loader.dart';
+import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
+import 'package:el_shaddai/features/booking/state/booking_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,7 +43,7 @@ class _BookingZoomComponentState extends ConsumerState<BookingZoomComponent> {
     // Periodically check for changes in the token
     while (true) {
       await Future.delayed(
-          Duration(seconds: 5)); // Adjust the interval as needed
+          const Duration(seconds: 5)); // Adjust the interval as needed
       String? newToken = prefs.getString('userAuthenticationCode');
       if (newToken != userAuthenticationToken.value) {
         userAuthenticationToken.value = newToken; // Update the notifier
@@ -46,6 +53,7 @@ class _BookingZoomComponentState extends ConsumerState<BookingZoomComponent> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(accessTokenNotifierProvider);
     final ApiRepository apiRepository = ApiRepository();
     return Column(
       children: [
@@ -58,9 +66,8 @@ class _BookingZoomComponentState extends ConsumerState<BookingZoomComponent> {
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        ZoomRoute(zoomLoginRoute).push(context);
+                        const ZoomRoute(zoomLoginRoute).push(context);
                       } catch (e, s) {
-                        print(s);
                         print('Error getting authorization code: $e $s');
                       }
                     },
@@ -73,68 +80,92 @@ class _BookingZoomComponentState extends ConsumerState<BookingZoomComponent> {
                       ),
                     ),
                   ),
-                IconButton(
-                  onPressed: () async {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    String? decodedMap = prefs.getString('accessToken');
-                    Map<String, dynamic> accesTokenData =
-                        json.decode(decodedMap!);
-
-                    String token = accesTokenData['token'];
-                    print(token);
-                    final dad = apiRepository.getUser(token, context);
-                    dad.then(
-                      (value) => print(value),
-                    );
-                  },
-                  icon: Icon(Icons.access_alarm),
-                ),
-                TextButton(
-                    onPressed: () async {
-                      // SharedPreferences prefs =
-                      //     await SharedPreferences.getInstance();
-                      // String? decodedMap = prefs.getString('accessToken');
-                      //
-                      // Map<String, dynamic> accesTokenData =
-                      //     json.decode(decodedMap!);
-                      // String refreshToken = accesTokenData['refresh_token'];
-                      // print(refreshToken);
-                      // final Future<Response> d =
-                      //     apiRepository.refreshToken(refreshToken);
-                      // d.then(
-                      //   (value) {
-                      //     print(value);
-                      //   },
-                      // );
-                    },
-                    child: Text('accestoken')),
-                TextButton(
-                    onPressed: () async {
-                      // SharedPreferences prefs =
-                      //     await SharedPreferences.getInstance();
-                      // String? decodedMap = prefs.getString('accessToken');
-                      // Map<String, dynamic> accesTokenData =
-                      //     json.decode(decodedMap!);
-                      //
-                      // String token = accesTokenData['duration'];
-                      // print(token);
-                      //
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      String? newToken =
-                          prefs.getString('userAuthenticationCode');
-                      print(newToken);
-                      // Set<String> keys = prefs.getKeys();
-                      //
-                      // for (String key in keys) {
-                      //   dynamic value = prefs.get(key);
-                      //   print('Key: $key, Value: $value');
-                      // }
-                    },
-                    child: Text('dadadad')),
-                if (token == null) // Optionally show the token
-                  Text('Token: $token'),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: SizedBox(
+                    height: 100,
+                    child: Row(
+                      children: [
+                        ToggleButtons(
+                          direction: Axis.vertical,
+                          isSelected: RecurrenceState.values
+                              .map((e) =>
+                                  e ==
+                                  ref
+                                      .read(bookingControllerProvider)
+                                      .recurrenceState)
+                              .toList(),
+                          onPressed: (int index) {
+                            setState(() {
+                              ref
+                                  .read(bookingControllerProvider.notifier)
+                                  .setRecurrenceState(
+                                      RecurrenceState.values[index]);
+                            });
+                          },
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8)),
+                          constraints: const BoxConstraints(
+                              minHeight: 25,
+                              maxHeight: 35,
+                              minWidth: 80,
+                              maxWidth: 120),
+                          children: RecurrenceState.values
+                              .map((key) => Text(
+                                    key.name.capitalize(),
+                                  ))
+                              .toList(),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            margin:
+                                EdgeInsets.only(left: 5, bottom: 10, top: 10),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Color(0xFF1f9cd49f))),
+                            child: Row(
+                              children: [
+                                // Wrap(
+                                //   children: Weekday.values.map((day) {
+                                //     return Padding(
+                                //       padding: const EdgeInsets.symmetric(
+                                //           horizontal: 5),
+                                //       child: FilterChip(
+                                //         label: Text(day.name.capitalize()),
+                                //         selected: ref
+                                //             .read(bookingControllerProvider)
+                                //             .weeklyDays
+                                //             .contains(day),
+                                //         onSelected: (bool selected) {
+                                //           setState(() {
+                                //             ref
+                                //                 .read(bookingControllerProvider
+                                //                     .notifier)
+                                //                 .toggleWeeklyDay(day);
+                                //           });
+                                //         },
+                                //       ),
+                                //     );
+                                //   }).toList(),
+                                // ),
+                                VerticalDivider(),
+                                SizedBox(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                        hintText: 'How Many Times?'),
+                                  ),
+                                  height: 20,
+                                  width: 80,
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
               ],
             );
           },

@@ -7,6 +7,19 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'booking_state.freezed.dart';
 part 'booking_state.g.dart';
 
+enum RecurrenceState {
+  none,
+  daily,
+  weekly;
+
+  static RecurrenceState? fromName(String name) {
+    for (RecurrenceState enumVariant in RecurrenceState.values) {
+      if (enumVariant.name == name) return enumVariant;
+    }
+    return null;
+  }
+}
+
 @freezed
 class BookingState with _$BookingState {
   const BookingState._();
@@ -23,17 +36,4 @@ class BookingState with _$BookingState {
   }) = _BookingState;
   factory BookingState.fromJson(Map<String, dynamic> json) =>
       _$BookingStateFromJson(json);
-}
-
-enum RecurrenceState {
-  none,
-  daily,
-  weekly;
-
-  static RecurrenceState? fromName(String name) {
-    for (RecurrenceState enumVariant in RecurrenceState.values) {
-      if (enumVariant.name == name) return enumVariant;
-    }
-    return null;
-  }
 }

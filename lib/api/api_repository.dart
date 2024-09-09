@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:el_shaddai/api/api_interceptor.dart';
+import 'package:el_shaddai/api/models/zoom_meeting_model.dart';
 import 'package:el_shaddai/core/constants/constants.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 class ApiRepository {
   String getEncodedString() {
@@ -13,12 +13,12 @@ class ApiRepository {
     return encodedString;
   }
 
-  final _dio = Dio();
+  final _authDio = Dio();
+  final _functionDio = Dio()..interceptors.add(CustomInterceptor());
 
   Future<Response> getAccessToken(BuildContext context, String code) {
-    _dio.interceptors.add(CustomInterceptor(context: context));
     final String encodedString = getEncodedString();
-    return _dio.post(
+    return _authDio.post(
       'https://zoom.us/oauth/token',
       data: {
         'grant_type': 'authorization_code',
@@ -34,43 +34,25 @@ class ApiRepository {
     );
   }
 
-  Future<Response> refreshToken(String refreshToken) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String encodedString = getEncodedString();
-    return _dio
-        .post(
-      'https://zoom.us/oauth/token',
-      data: {
-        'grant_type': 'refresh_token',
-        'refresh_token': refreshToken,
-      },
-      options: Options(
-        headers: {
-          'Authorization': 'Basic $encodedString',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      ),
-    )
-        .then((response) async {
-      Map<String, dynamic> accessTokenData = {
-        "token": response.data['access_token'],
-        'refresh_token': response.data['refresh_token'],
-        "duration": DateTime.now()
-            .add(Duration(seconds: response.data['expires_in']))
-            .toIso8601String(),
-      };
-      String encodedMap = json.encode(accessTokenData);
-      await prefs.setString('accessToken', encodedMap);
-      print('REFRESGHING');
-      return response;
-    });
-  }
-
   Future<Response> getUser(String accessToken, BuildContext context) {
-    _dio.interceptors.add(CustomInterceptor(context: context));
-    return _dio.get('https://api.zoom.us/v2/users/me',
+    print('dad');
+    return _functionDio.get('https://api.zoom.us/v2/users/me',
         options: Options(headers: {
           'Authorization': 'Bearer $accessToken',
         }));
+  }
+
+  Future<Response> createMeeting(
+      ZoomMeetingModel meetingData, String accessToken, BuildContext context) {
+    print('CREATING');
+
+    return _functionDio.post('https://api.zoom.us/v2/users/me/meetings',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+        data: meetingData.toJson());
   }
 }

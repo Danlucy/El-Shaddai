@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:el_shaddai/api/models/recurrence_configuration_model.dart';
 import 'package:el_shaddai/models/location_data.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -32,6 +33,41 @@ class LatLngConverter extends JsonConverter<LatLng?, Object?> {
 
   GeoPoint toFirestore(LatLng object) {
     return GeoPoint(object.latitude, object.longitude);
+  }
+}
+
+//
+// class RecurrenceConfigurationModelConverter extends JsonConverter<RecurrenceConfigurationModel, Map<String, dynamic>> {
+//   const RecurrenceConfigurationModelConverter();
+//   @override
+//   RecurrenceConfigurationModel fromJson(Map<String, dynamic> json) {
+//     return RecurrenceConfiguration(
+//       recurrenceState: RecurrenceState.values[json['recurrenceState'] as int],
+//       recurrenceFrequency: json['recurrenceFrequency'] as int,
+//     );
+//   }
+//
+//   @override
+//   Map<String, dynamic> toJson(RecurrenceConfigurationModel object) {
+//     return {
+//       'recurrenceState': object.,
+//       'recurrenceFrequency': object.recurrenceFrequency,
+//     };
+//   }
+// }
+class RecurrenceConfigurationConverter
+    implements
+        JsonConverter<RecurrenceConfigurationModel, Map<String, dynamic>> {
+  const RecurrenceConfigurationConverter();
+
+  @override
+  RecurrenceConfigurationModel fromJson(Map<String, dynamic> json) {
+    return RecurrenceConfigurationModel.fromJson(json);
+  }
+
+  @override
+  Map<String, dynamic> toJson(RecurrenceConfigurationModel data) {
+    return data.toJson();
   }
 }
 

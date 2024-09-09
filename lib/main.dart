@@ -35,7 +35,8 @@ void main() async {
         ? const ProviderScope(
             child: MyApp(),
           )
-        : const MaterialApp(
+        : MaterialApp(
+            navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
             home: Scaffold(
               body: Center(

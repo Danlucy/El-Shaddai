@@ -9,8 +9,10 @@ import 'package:go_router/go_router.dart';
 
 part 'router.g.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: navigatorKey,
     redirect: (BuildContext context, GoRouterState state) {
       final userData = ref.watch(authStateChangeProvider).value;
       final loggedIn = userData != null;

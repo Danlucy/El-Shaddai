@@ -1,7 +1,7 @@
 import 'dart:convert';
-
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:el_shaddai/api/api_repository.dart';
+import 'package:el_shaddai/api/models/access_token_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,51 +28,50 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
       ..loadRequest(Uri.parse(
           widget.url ?? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'));
 
-    // Listen to changes in the WebView's URL
+    // Setting up the navigation delegate to listen for URL changes
+    controller.setNavigationDelegate(
+      NavigationDelegate(
+        onPageStarted: (url) async {
+          currentUrl.value = url; // Update the current URL
+
+          // Check if the URL contains the specific query parameter
+          if (url.contains('catboy123example.com/?code=')) {
+            final Uri uri = Uri.parse(url);
+            final String? code = uri.queryParameters['code'];
+
+            if (code != null) {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setString('userAuthenticationCode', code);
+
+              if (!mounted) return;
+              final response =
+                  await apiRepository.getAccessToken(context, code);
+              ref.read(accessTokenNotifierProvider.notifier).saveAccessToken(
+                    AccessToken(
+                      token: response.data['access_token'],
+                      refreshToken: response.data['refresh_token'],
+                      duration: DateTime.now()
+                          .add(Duration(seconds: response.data['expires_in'])),
+                    ),
+                  );
+              if (!mounted) return;
+              Navigator.of(context).pop(); // Close the WebView
+
+              // Close the WebView
+
+              // Request the access token using the code
+            }
+          }
+        },
+      ),
+    );
+
+    // Handle the current URL
     controller.currentUrl().then((url) {
       if (url != null) {
         currentUrl.value = url; // Set the initial URL
       }
     });
-    // Adding a listener to update URL whenever it changes
-    controller.setNavigationDelegate(
-      NavigationDelegate(
-        onPageStarted: (url) async {
-          currentUrl.value =
-              url; // Update the URL when a new page starts loading
-          final String? code = (Uri.parse(url).queryParameters['code']);
-
-          if (url.contains('catboy123example.com/?code=')) {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            Navigator.of(context).pop();
-
-            while (code == null) {
-              await Future.delayed(const Duration(
-                  seconds: 1)); // Add a delay to avoid excessive checking
-            }
-            prefs.setString('userAuthenticationCode', code);
-            apiRepository.getAccessToken(context, code).then(
-              (response) {
-                Map<String, dynamic> accessTokenData = {
-                  "token": response.data['access_token'],
-                  'refresh_token': response.data['refresh_token'],
-                  "duration": DateTime.now()
-                      .add(Duration(seconds: response.data['expires_in']))
-                      .toIso8601String(),
-                };
-                String encodedMap = json.encode(accessTokenData);
-                prefs.setString('accessToken', encodedMap);
-                // Handle the response from the Firebase function
-              },
-            );
-            // final HttpsCallable callable =
-            //     FirebaseFunctions.instance.httpsCallable('get_access_token');
-            // final response = await callable.call(code);
-            // print(response.data);
-          }
-        },
-      ),
-    );
   }
 
   @override
