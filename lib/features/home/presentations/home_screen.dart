@@ -1,3 +1,4 @@
+import 'package:el_shaddai/api/models/zoom_meeting_model.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
@@ -26,6 +27,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       });
     }
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          ZoomMeetingModel model = ZoomMeetingModel(
+              topic: 'dad',
+              description: 'dwad',
+              startTime: DateTime.now(),
+              type: 2);
+          print(ZoomMeetingModel.fromJson(model.toJson()));
+          // print(ZoomMeetingModel.fromJson(model.toJson()));
+        },
+        child: Icon(Icons.add),
+      ),
       appBar: AppBar(
         title: Text('Welcome ${userData?.displayName ?? 'User'}'),
       ),

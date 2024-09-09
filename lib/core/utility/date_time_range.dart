@@ -22,6 +22,12 @@ class DateTimeRangeConverter
   }
 }
 
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+  }
+}
+
 extension DateTimeExtension on DateTime {
   DateTime get dateOnly => DateTime(year, month, day, hour);
   bool isAfterOrEqualTo(DateTime dateTime) {
