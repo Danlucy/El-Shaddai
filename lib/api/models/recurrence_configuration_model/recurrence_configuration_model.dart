@@ -22,9 +22,7 @@ class RecurrenceConfigurationModel with _$RecurrenceConfigurationModel {
 }
 
 enum Weekday {
-  sun(
-    1,
-  ),
+  sun(1),
   mon(2),
   tue(3),
   wed(4),

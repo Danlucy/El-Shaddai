@@ -1,3 +1,4 @@
+import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
@@ -23,8 +24,9 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
           ref.read(bookingControllerProvider.notifier).clearState();
           showDialog(
               context: context,
-              builder: (context) =>
-                  BookingDialog(width: width, height: height));
+              builder: (context) {
+                return BookingDialog(width: width, height: height);
+              });
         },
         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
         child: Icon(

@@ -4,8 +4,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-part 'access_token_model.freezed.dart';
 part 'access_token_model.g.dart';
+
+part 'access_token_model.freezed.dart';
 
 @freezed
 class AccessToken with _$AccessToken {

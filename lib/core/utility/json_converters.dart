@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:el_shaddai/api/models/recurrence_configuration_model.dart';
+import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
 import 'package:el_shaddai/models/location_data.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';

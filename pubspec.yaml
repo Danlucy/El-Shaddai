@@ -67,6 +67,7 @@ dependencies:
   cloud_functions: ^5.1.0
   webview_flutter: ^4.8.0
   dio: ^5.6.0
+  numberpicker: ^2.1.2
 
 
 dev_dependencies:

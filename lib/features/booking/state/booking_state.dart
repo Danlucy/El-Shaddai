@@ -33,6 +33,7 @@ class BookingState with _$BookingState {
     String? description,
     LocationData? location,
     @Default(RecurrenceState.none) RecurrenceState recurrenceState,
+    @Default(2) int recurrenceFrequency,
   }) = _BookingState;
   factory BookingState.fromJson(Map<String, dynamic> json) =>
       _$BookingStateFromJson(json);

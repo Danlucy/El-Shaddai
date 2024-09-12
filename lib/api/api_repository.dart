@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:el_shaddai/api/api_interceptor.dart';
-import 'package:el_shaddai/api/models/zoom_meeting_model.dart';
+import 'package:el_shaddai/api/models/zoom_meeting_model/zoom_meeting_model.dart';
 import 'package:el_shaddai/core/constants/constants.dart';
 import 'package:flutter/material.dart';
 

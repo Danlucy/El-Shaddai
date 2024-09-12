@@ -26,10 +26,10 @@ class _LoginScreenState extends State<LoginScreen> {
               'assets/logo/wings_of_freedom.png',
               height: 200,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            SignInButton()
+            const SignInButton()
           ],
         ),
       ),

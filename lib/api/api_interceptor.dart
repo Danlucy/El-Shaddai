@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:el_shaddai/core/constants/constants.dart';
 import 'package:el_shaddai/core/router/router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomInterceptor extends Interceptor {
