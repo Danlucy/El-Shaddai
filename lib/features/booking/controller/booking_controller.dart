@@ -23,6 +23,8 @@ class BookingController extends _$BookingController {
       state = state.copyWith(description: description);
   void setLocation(LocationData location) =>
       state = state.copyWith(location: location);
+  void setRecurrenceFrequency(int frequency) =>
+      state = state.copyWith(recurrenceFrequency: frequency);
   void setAddress(String address) {
     state = state.copyWith(
       location: state.location?.copyWith(
@@ -42,15 +44,30 @@ class BookingController extends _$BookingController {
     );
   }
 
-  void setChords(LatLng chords) {
-    state = state.copyWith(
-      location: state.location?.copyWith(
-            chords: chords,
-          ) ??
-          LocationData(
+  void setChords(LatLng? chords) {
+    if (chords == null) {
+      state = BookingState(
+          description: state.description,
+          title: state.title,
+          location: LocationData(
               address: state.location?.address ?? 'default address',
-              chords: chords),
-    );
+              web: state.location?.web,
+              chords: null),
+          bookingId: state.bookingId,
+          hostId: state.hostId,
+          recurrenceFrequency: state.recurrenceFrequency,
+          recurrenceState: state.recurrenceState,
+          timeRange: state.timeRange);
+    } else {
+      state = state.copyWith(
+        location: state.location?.copyWith(
+              chords: chords,
+            ) ??
+            LocationData(
+                address: state.location?.address ?? 'default address',
+                chords: chords),
+      );
+    }
   }
 
   void setEventId(String bookingId) =>
@@ -100,19 +117,19 @@ class BookingController extends _$BookingController {
     );
   }
 
-  void getAccessToken() {
-    const url = 'https://zoom.us/oauth/';
-    final uri = Uri.parse(url);
-    final header = {
-      "Authorization":
-          "Basic 8RVTda4nTpaR6h5XVpzL0A:NyPF1sBkWfJKX2kW59waqqlmel4c6Xeu"
-    };
-    final respsme = http.post(uri, headers: header);
-  }
-
-  void createMeeting() {
-    const url = 'https://api.zoom.us/v2/users/me/meetings';
-    final uri = Uri.parse(url);
-    // http.post(uri,)
-  }
+  // void getAccessToken() {
+  //   const url = 'https://zoom.us/oauth/';
+  //   final uri = Uri.parse(url);
+  //   final header = {
+  //     "Authorization":
+  //         "Basic 8RVTda4nTpaR6h5XVpzL0A:NyPF1sBkWfJKX2kW59waqqlmel4c6Xeu"
+  //   };
+  //   final respsme = http.post(uri, headers: header);
+  // }
+  //
+  // void createMeeting() {
+  //   const url = 'https://api.zoom.us/v2/users/me/meetings';
+  //   final uri = Uri.parse(url);
+  //   // http.post(uri,)
+  // }
 }

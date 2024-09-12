@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:el_shaddai/api/models/recurrence_configuration_model.dart';
+import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
 import 'package:el_shaddai/core/utility/json_converters.dart';
 import 'package:el_shaddai/features/booking/state/booking_state.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'zoom_meeting_model.freezed.dart';
 part 'zoom_meeting_model.g.dart';
+part 'zoom_meeting_model.freezed.dart';
 
 @freezed
 class ZoomMeetingModel with _$ZoomMeetingModel {
@@ -14,11 +14,11 @@ class ZoomMeetingModel with _$ZoomMeetingModel {
   const ZoomMeetingModel._();
 
   factory ZoomMeetingModel({
-    required String topic,
+    String? topic,
     @JsonKey(
       name: 'agenda',
     )
-    required String description,
+    String? description,
     @RecurrenceConfigurationConverter()
     @JsonKey(name: 'recurrence')
     RecurrenceConfigurationModel? recurrenceConfiguration,

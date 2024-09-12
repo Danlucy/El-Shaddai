@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:el_shaddai/api/api_repository.dart';
-import 'package:el_shaddai/api/models/access_token_model.dart';
+import 'package:el_shaddai/api/models/access_token_model/access_token_model.dart';
+import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,7 +23,6 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
 
   @override
   void initState() {
-    super.initState();
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(
@@ -60,6 +60,8 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
               // Close the WebView
 
               // Request the access token using the code
+            } else {
+              print('Error: No code found in the URL');
             }
           }
         },
@@ -78,6 +80,7 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [],
         title: ValueListenableBuilder<String>(
           valueListenable: currentUrl,
           builder: (context, url, child) {

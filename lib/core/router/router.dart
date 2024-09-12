@@ -27,7 +27,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: $appRoutes,
-    initialLocation: '/',
+    initialLocation: '/events',
   );
 });
 
