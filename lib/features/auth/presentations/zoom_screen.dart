@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:el_shaddai/api/api_repository.dart';
 import 'package:el_shaddai/api/models/access_token_model/access_token_model.dart';
+import 'package:el_shaddai/features/auth/controller/zoom_auth_controller.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +12,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 class ZoomScreen extends ConsumerStatefulWidget {
   const ZoomScreen(this.url, {super.key});
   final String? url;
-
   @override
   ConsumerState createState() => _ZoomScreenState();
 }
@@ -23,6 +23,7 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
 
   @override
   void initState() {
+    super.initState();
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(
@@ -36,9 +37,9 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
 
           // Check if the URL contains the specific query parameter
           if (url.contains('catboy123example.com/?code=')) {
+            // ref.read(a)
             final Uri uri = Uri.parse(url);
             final String? code = uri.queryParameters['code'];
-
             if (code != null) {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setString('userAuthenticationCode', code);

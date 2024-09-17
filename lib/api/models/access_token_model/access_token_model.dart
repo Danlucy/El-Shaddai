@@ -30,6 +30,7 @@ class AccessTokenNotifier extends _$AccessTokenNotifier {
   Future<AccessToken?> _loadAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
     String? decodedMap = prefs.getString('accessToken');
+
     if (decodedMap != null) {
       return AccessToken.fromJson(json.decode(decodedMap));
     }

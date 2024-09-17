@@ -1,3 +1,4 @@
+import 'package:el_shaddai/core/router/no_internet_screen.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/auth/presentations/login_screen.dart';
 import 'package:el_shaddai/features/auth/presentations/zoom_screen.dart';
@@ -21,6 +22,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       if (!loggedIn && !loggingIn) {
         return LoginRoute(from: state.matchedLocation).location;
       }
+
       if (loggedIn && loggingIn) {
         return const HomeRoute().location;
       }
@@ -58,7 +60,9 @@ class EventsRoute extends GoRouteData {
 }
 
 class ZoomRoute extends GoRouteData {
-  const ZoomRoute(this.url);
+  const ZoomRoute(
+    this.url,
+  );
   final String? url;
   @override
   Widget build(BuildContext context, GoRouterState state) => ZoomScreen(url);
@@ -73,4 +77,13 @@ class LoginRoute extends GoRouteData {
   Widget build(BuildContext context, GoRouterState state) {
     return LoginScreen(from: from);
   }
+}
+
+@TypedGoRoute<NoInternetRoute>(path: '/no-internet')
+class NoInternetRoute extends GoRouteData {
+  const NoInternetRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const NoInternetScreen();
 }

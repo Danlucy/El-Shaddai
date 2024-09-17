@@ -63,7 +63,6 @@ class _BookingLocationComponentState
                   ref
                       .read(bookingControllerProvider.notifier)
                       .setAddress(widget.googleController.text);
-                  print(LatLng(double.parse(l.lat!), double.parse(l.lng!)));
                   ref.read(bookingControllerProvider.notifier).setChords(
                       LatLng(double.parse(l.lat!), double.parse(l.lng!)));
                 });

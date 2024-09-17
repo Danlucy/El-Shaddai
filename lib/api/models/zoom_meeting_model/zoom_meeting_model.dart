@@ -22,7 +22,7 @@ class ZoomMeetingModel with _$ZoomMeetingModel {
     @RecurrenceConfigurationConverter()
     @JsonKey(name: 'recurrence')
     RecurrenceConfigurationModel? recurrenceConfiguration,
-    required DateTime startTime,
+    @JsonKey(name: 'start_time') required DateTime startTime,
     @JsonKey(
       defaultValue: 2,
     )

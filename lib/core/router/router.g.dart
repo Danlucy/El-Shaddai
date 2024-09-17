@@ -9,6 +9,7 @@ part of 'router.dart';
 List<RouteBase> get $appRoutes => [
       $homeRoute,
       $loginRoute,
+      $noInternetRoute,
     ];
 
 RouteBase get $homeRoute => GoRouteData.$route(
@@ -97,6 +98,29 @@ extension $LoginRouteExtension on LoginRoute {
         queryParams: {
           if (from != null) 'from': from,
         },
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $noInternetRoute => GoRouteData.$route(
+      path: '/no-internet',
+      factory: $NoInternetRouteExtension._fromState,
+    );
+
+extension $NoInternetRouteExtension on NoInternetRoute {
+  static NoInternetRoute _fromState(GoRouterState state) =>
+      const NoInternetRoute();
+
+  String get location => GoRouteData.$location(
+        '/no-internet',
       );
 
   void go(BuildContext context) => context.go(location);

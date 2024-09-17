@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:el_shaddai/api/models/zoom_meeting_model/zoom_meeting_model.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -15,39 +18,30 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(authStateChangeProvider).value;
-    print(userData);
-    if (userData != null) {
-      ref
-          .read(authControllerProvider.notifier)
-          .getUserData(userData.uid)
-          .first
-          .then((userModel) {
-        ref.read(userProvider.notifier).update((state) => userModel);
-      });
-    }
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // ZoomMeetingModel model = ZoomMeetingModel(
-          //     topic: 'dad',
-          //     description: 'dwad',
-          //     startTime: DateTime.now(),
-          //     type: 2);
-          // print(ZoomMeetingModel.fromJson(model.toJson()));
-          // print(ZoomMeetingModel.fromJson(model.toJson()));
+        onPressed: () async {
+          final prefs = await SharedPreferences.getInstance();
+          String? decodedMap = prefs.getString('accessToken');
+          if (decodedMap != null) {
+            print('rTOKEN');
+            Map<String, dynamic> data = jsonDecode(decodedMap);
+            print(data['refreshToken']);
+            print(data['duration']);
+            print(data['token']);
+          }
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       appBar: AppBar(
-        title: Text('Welcome ${userData?.displayName ?? 'User'}'),
+        title: Text('Welcome ${ref.read(userProvider)?.name ?? 'User'}'),
       ),
-      drawer: GeneralDrawer(),
+      drawer: const GeneralDrawer(),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Text(

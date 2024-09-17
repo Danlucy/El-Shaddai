@@ -15,7 +15,6 @@ class ApiRepository {
 
   final _authDio = Dio();
   final _functionDio = Dio()..interceptors.add(CustomInterceptor());
-
   Future<Response> getAccessToken(BuildContext context, String code) {
     final String encodedString = getEncodedString();
     return _authDio.post(
@@ -35,7 +34,6 @@ class ApiRepository {
   }
 
   Future<Response> getUser(String accessToken, BuildContext context) {
-    print('dad');
     return _functionDio.get('https://api.zoom.us/v2/users/me',
         options: Options(headers: {
           'Authorization': 'Bearer $accessToken',
@@ -43,9 +41,10 @@ class ApiRepository {
   }
 
   Future<Response> createMeeting(
-      ZoomMeetingModel meetingData, String accessToken, BuildContext context) {
+    ZoomMeetingModel meetingData,
+    String accessToken,
+  ) {
     print('CREATING');
-
     return _functionDio.post('https://api.zoom.us/v2/users/me/meetings',
         options: Options(
           headers: {

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:el_shaddai/core/router/no_internet_screen.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
@@ -31,25 +32,11 @@ void main() async {
 
   bool isOnline = await hasNetwork();
   runApp(
-    isOnline
+    (isOnline)
         ? const ProviderScope(
             child: MyApp(),
           )
-        : MaterialApp(
-            navigatorKey: navigatorKey,
-            debugShowCheckedModeBanner: false,
-            home: Scaffold(
-              body: Center(
-                child: Text(
-                  'No Internet',
-                  style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
+        : const NoInternetScreen(),
   );
 }
 
@@ -78,6 +65,16 @@ class _MyApp extends ConsumerStatefulWidget {
 class _MyAppState extends ConsumerState<_MyApp> {
   @override
   Widget build(BuildContext context) {
+    final userData = ref.watch(authStateChangeProvider).value;
+    if (userData != null) {
+      ref
+          .read(authControllerProvider.notifier)
+          .getUserData(userData.uid)
+          .first
+          .then((userModel) {
+        ref.read(userProvider.notifier).update((state) => userModel);
+      });
+    }
     final router = ref.watch(goRouterProvider);
     return MaterialApp.router(
       title: 'El Shaddai',

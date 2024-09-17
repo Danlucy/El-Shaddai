@@ -1,6 +1,6 @@
 import 'package:el_shaddai/core/constants/constants.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
-import 'package:el_shaddai/features/booking/presentations/booking_venues_component/booking_location_component.dart';
+import 'package:el_shaddai/features/booking/presentations/booking_venues_component/booking_location_component/booking_location_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
