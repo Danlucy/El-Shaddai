@@ -9,9 +9,8 @@ class RecurrenceConfigurationModel with _$RecurrenceConfigurationModel {
   const RecurrenceConfigurationModel._();
   @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   factory RecurrenceConfigurationModel(
-          {required RecurrenceState recurrenceState,
-          @JsonKey(name: 'end_times') required int recurrenceFrequency,
-          Weekday? weeklyDays,
+          {@JsonKey(name: 'end_times') required int recurrenceFrequency,
+          int? weeklyDays,
           required int type,
           @JsonKey(name: 'repeat_interval') required int recurrenceInterval}) =
       _RecurrenceConfigurationModel;
@@ -40,4 +39,24 @@ enum Weekday {
   }
 
   static int toValue(Weekday day) => day.value;
+  static Weekday fromDateTime(DateTime date) {
+    switch (date.weekday) {
+      case DateTime.sunday:
+        return Weekday.sun;
+      case DateTime.monday:
+        return Weekday.mon;
+      case DateTime.tuesday:
+        return Weekday.tue;
+      case DateTime.wednesday:
+        return Weekday.wed;
+      case DateTime.thursday:
+        return Weekday.thu;
+      case DateTime.friday:
+        return Weekday.fri;
+      case DateTime.saturday:
+        return Weekday.sat;
+      default:
+        throw ArgumentError('Invalid DateTime: ${date.toIso8601String()}');
+    }
+  }
 }

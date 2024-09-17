@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class LocationData {
   final LatLng? chords;
   final String? web;
-  final String address;
+  final String? address;
 
   LocationData({this.chords, required this.address, this.web});
 

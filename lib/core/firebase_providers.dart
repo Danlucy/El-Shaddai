@@ -7,7 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final firestoreProvider = Provider((ref) => FirebaseFirestore.instance
-  ..settings = const Settings(persistenceEnabled: false));
+  ..settings = const Settings(
+    persistenceEnabled: false,
+  ));
 
 final authProvider = Provider((ref) => FirebaseAuth.instance);
 

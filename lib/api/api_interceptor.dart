@@ -20,8 +20,9 @@ class CustomInterceptor extends Interceptor {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? decodedMap = prefs.getString('accessToken');
     Map<String, dynamic> accessTokenData = json.decode(decodedMap!);
-
+    print(accessTokenData);
     if (DateTime.now().isAfter(DateTime.parse(accessTokenData['duration']))) {
+      print('REFRESHING TOKENS');
       await refreshToken(
         accessTokenData['refreshToken'],
         options,
@@ -47,7 +48,7 @@ class CustomInterceptor extends Interceptor {
       print('dad');
       // Refresh the user's authentication token.
       try {
-        const ZoomRoute(zoomLoginRoute).push(navigatorKey.currentContext!);
+        ZoomRoute(zoomLoginRoute).push(navigatorKey.currentContext!);
       } catch (e, s) {
         print('Error getting authorization code: $e $s');
       }
@@ -69,6 +70,7 @@ class CustomInterceptor extends Interceptor {
     String refreshToken,
     RequestOptions options,
   ) async {
+    print('trying to refesh tokens');
     final Dio dio = Dio();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String encodedString = getEncodedString();
@@ -87,8 +89,17 @@ class CustomInterceptor extends Interceptor {
       ),
     )
         .then((response) async {
+      if (response.data['refresh_token'] == null) {
+        print('REFRESH TOKEN IS NULL');
+        throw Exception('Failed to refresh token');
+      }
+
+      print(response.data);
+      print('tracking');
+      print(response.data['refresh_token']);
       options.headers['Authorization'] =
           'Bearer ${response.data['access_token']}';
+
       Map<String, dynamic> accessTokenData = {
         "token": response.data['access_token'],
         'refresh_token': response.data['refresh_token'],
@@ -97,7 +108,8 @@ class CustomInterceptor extends Interceptor {
             .toIso8601String(),
       };
       String encodedMap = json.encode(accessTokenData);
-      await prefs.setString('accessToken', encodedMap);
+      print(encodedMap);
+      prefs.setString('accessToken', encodedMap);
       return response;
     });
   }

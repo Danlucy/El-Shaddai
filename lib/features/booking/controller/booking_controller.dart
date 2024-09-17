@@ -1,11 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
+import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/booking/state/booking_state.dart';
+import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:el_shaddai/models/location_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:time_range_picker/time_range_picker.dart';
-import 'package:http/http.dart' as http;
 part 'booking_controller.g.dart';
+
+enum BookingVenueComponent { location, zoom, hybrid }
+
+@riverpod
+class BookingVenueState extends _$BookingVenueState {
+  BookingVenueComponent build() {
+    return BookingVenueComponent.location;
+  }
+
+  void setVenue(BookingVenueComponent target) {
+    state = target;
+  }
+}
 
 @riverpod
 class BookingController extends _$BookingController {
@@ -117,19 +134,70 @@ class BookingController extends _$BookingController {
     );
   }
 
-  // void getAccessToken() {
-  //   const url = 'https://zoom.us/oauth/';
-  //   final uri = Uri.parse(url);
-  //   final header = {
-  //     "Authorization":
-  //         "Basic 8RVTda4nTpaR6h5XVpzL0A:NyPF1sBkWfJKX2kW59waqqlmel4c6Xeu"
-  //   };
-  //   final respsme = http.post(uri, headers: header);
-  // }
-  //
-  // void createMeeting() {
-  //   const url = 'https://api.zoom.us/v2/users/me/meetings';
-  //   final uri = Uri.parse(url);
-  //   // http.post(uri,)
-  // }
+  BookingModel createBookingModel() {
+    final user = ref.read(userProvider);
+    final currentVenue = ref.read(bookingVenueStateProvider);
+    return BookingModel(
+      recurrenceState: state.recurrenceState,
+      title: state.title!,
+      hostId: user!.uid,
+      timeRange: state.timeRange!,
+      userId: user.uid,
+      id: FirebaseFirestore.instance.collection('dog').doc().id,
+      location: LocationData(
+        web: currentVenue == BookingVenueComponent.location
+            ? null
+            : state.location?.web,
+        chords: currentVenue == BookingVenueComponent.zoom
+            ? null
+            : state.location?.chords,
+        address: currentVenue == BookingVenueComponent.zoom
+            ? null
+            : state.location?.address,
+      ),
+      description: state.description!,
+    );
+  }
+
+  RecurrenceConfigurationModel? getRecurrenceConfigurationModel() {
+    if (state.recurrenceState == RecurrenceState.none) return null;
+
+    return RecurrenceConfigurationModel(
+      weeklyDays: state.recurrenceState == RecurrenceState.weekly
+          ? Weekday.fromDateTime(state.timeRange!.start).value
+          : null,
+      recurrenceFrequency: state.recurrenceFrequency,
+      type: state.recurrenceState == RecurrenceState.daily ? 1 : 2,
+      recurrenceInterval: 1,
+    );
+  }
+
+  bool isBookingDataValid(
+      GlobalKey<FormState> formKey, void Function(String) errorCall) {
+    final currentVenue = ref.read(bookingVenueStateProvider);
+    final user = ref.read(userProvider);
+    final valid = formKey.currentState?.validate() ?? false;
+    if (!valid) return false;
+    final title = state.title;
+    final timeRange = state.timeRange;
+    final location = state.location;
+    final description = state.description;
+    if (user == null) {
+      errorCall('No User,Make sure internet connection is available');
+      return false;
+    }
+    // print(
+    //     '${bookingReader.title}${bookingReader.timeRange}${bookingReader.location}${bookingReader.description} ${currentVenue} ${user}');
+    return (title == null ||
+        timeRange == null ||
+        (currentVenue != BookingVenueComponent.zoom && location == null) ||
+        description == null ||
+        (location != null &&
+            location.address!.isEmpty &&
+            currentVenue != BookingVenueComponent.zoom));
+  }
+
+  int getZoomMeetingType() {
+    return state.recurrenceState == RecurrenceState.none ? 2 : 8;
+  }
 }
