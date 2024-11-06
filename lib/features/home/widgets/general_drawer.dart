@@ -1,4 +1,5 @@
 import 'package:el_shaddai/core/router/router.dart';
+import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,7 +56,7 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
               leading: const Icon(Icons.transit_enterexit_sharp),
               title: Text(
                 'Log out',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                style: TextStyle(color: context.colors.error),
               ),
               onTap: () {
                 showDialog(
@@ -67,9 +68,7 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                           width: width * 3 / 4,
                           height: height * 1 / 4,
                           decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
+                              color: context.colors.secondaryContainer,
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(16))),
                           child: Column(
@@ -88,18 +87,15 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                                 children: [
                                   ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                          backgroundColor: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant),
+                                          backgroundColor:
+                                              context.colors.onSurfaceVariant),
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },
                                       child: Text(
                                         'Cancel',
                                         style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface),
+                                            color: context.colors.onSurface),
                                       )),
                                   const SizedBox(
                                     width: 10,
@@ -113,9 +109,7 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                                     child: Text(
                                       'Confirm',
                                       style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface),
+                                          color: context.colors.onSurface),
                                     ),
                                   )
                                 ],

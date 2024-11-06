@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
 import 'package:el_shaddai/core/constants/firebase_constants.dart';
+import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
 import 'package:el_shaddai/core/firebase_providers.dart';
 import 'package:el_shaddai/core/utility/failure.dart';
 import 'package:el_shaddai/core/utility/future_either.dart';
@@ -8,7 +9,6 @@ import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:time_range_picker/time_range_picker.dart';
 part 'booking_repository.g.dart';
 
 final bookingRepositoryProvider = Provider((ref) {
@@ -44,10 +44,16 @@ class BookingRepository {
               : model.timeRange.start.add(Duration(days: i * 7));
 
           BookingModel newBookingModel = BookingModel(
+            timeRange: CustomDateTimeRange(
+              start: newDate, // Update start time
+              end: newDate.add(model.timeRange.end
+                  .difference(model.timeRange.start)), // Preserve duration
+            ),
+            createdAt: DateTime.now(),
             recurrenceState: model.recurrenceState,
             title: model.title,
-            hostId: model.hostId,
-            timeRange: DateTimeRange(
+            host: model.host,
+            appointmentTimeRange: CustomDateTimeRange(
               start: newDate, // Update start time
               end: newDate.add(model.timeRange.end
                   .difference(model.timeRange.start)), // Preserve duration

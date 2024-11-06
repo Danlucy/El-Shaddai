@@ -1,19 +1,13 @@
 import 'dart:io';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:el_shaddai/core/router/no_internet_screen.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
-import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
 import 'package:el_shaddai/firebase_options.dart';
-import 'package:el_shaddai/models/user_model/user_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,7 +50,7 @@ class MyApp extends StatelessWidget {
 }
 
 class _MyApp extends ConsumerStatefulWidget {
-  const _MyApp({super.key});
+  const _MyApp();
 
   @override
   ConsumerState<_MyApp> createState() => _MyAppState();

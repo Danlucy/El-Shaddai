@@ -1,20 +1,18 @@
-import 'package:el_shaddai/features/booking/state/booking_state.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'recurrence_configuration_model.freezed.dart';
 part 'recurrence_configuration_model.g.dart';
 
-@freezed
+@Freezed(fromJson: false, toJson: true)
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class RecurrenceConfigurationModel with _$RecurrenceConfigurationModel {
   const RecurrenceConfigurationModel._();
-  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   factory RecurrenceConfigurationModel(
           {@JsonKey(name: 'end_times') required int recurrenceFrequency,
           int? weeklyDays,
           required int type,
           @JsonKey(name: 'repeat_interval') required int recurrenceInterval}) =
       _RecurrenceConfigurationModel;
-  //if none then type 2, else 8
 
   factory RecurrenceConfigurationModel.fromJson(Map<String, dynamic> json) =>
       _$RecurrenceConfigurationModelFromJson(json);

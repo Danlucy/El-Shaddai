@@ -18,15 +18,15 @@ class AuthTokenNotifier extends _$AuthTokenNotifier {
     state = prefs.getString('userAuthenticationCode');
 
     // Start listening for token changes
-    _startTokenListener();
+    startTokenListener();
   }
 
-  void _startTokenListener() {
+  void startTokenListener() {
     // Start a periodic timer that checks for token changes every 2 seconds
+
     Timer timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? newToken = prefs.getString('userAuthenticationCode');
-
       if (newToken != state) {
         state = newToken; // Update the state
       }

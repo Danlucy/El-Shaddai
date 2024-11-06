@@ -23,6 +23,7 @@ class CustomInterceptor extends Interceptor {
     print(accessTokenData);
     if (DateTime.now().isAfter(DateTime.parse(accessTokenData['duration']))) {
       print('REFRESHING TOKENS');
+      print(accessTokenData['refreshToken']);
       await refreshToken(
         accessTokenData['refreshToken'],
         options,
@@ -44,11 +45,11 @@ class CustomInterceptor extends Interceptor {
     print(err.response?.statusCode);
     print(err.response?.data);
     print(err.message);
-    if (err.response?.statusCode == 401) {
+    if (err.response?.statusCode == 401 || err.response?.data == 400) {
       print('dad');
       // Refresh the user's authentication token.
       try {
-        ZoomRoute(zoomLoginRoute).push(navigatorKey.currentContext!);
+        const ZoomRoute(zoomLoginRoute).push(navigatorKey.currentContext!);
       } catch (e, s) {
         print('Error getting authorization code: $e $s');
       }
@@ -70,47 +71,57 @@ class CustomInterceptor extends Interceptor {
     String refreshToken,
     RequestOptions options,
   ) async {
-    print('trying to refesh tokens');
-    final Dio dio = Dio();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String encodedString = getEncodedString();
-    return dio
-        .post(
-      'https://zoom.us/oauth/token',
-      data: {
-        'grant_type': 'refresh_token',
-        'refresh_token': refreshToken,
-      },
-      options: Options(
-        headers: {
-          'Authorization': 'Basic $encodedString',
-          'Content-Type': 'application/x-www-form-urlencoded',
+    try {
+      print('trying to refesh tokens');
+      final Dio dio = Dio();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String encodedString = getEncodedString();
+      return await dio
+          .post(
+        'https://zoom.us/oauth/token',
+        data: {
+          'grant_type': 'refresh_token',
+          'refresh_token': refreshToken,
         },
-      ),
-    )
-        .then((response) async {
-      if (response.data['refresh_token'] == null) {
-        print('REFRESH TOKEN IS NULL');
-        throw Exception('Failed to refresh token');
-      }
+        options: Options(
+          headers: {
+            'Authorization': 'Basic $encodedString',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        ),
+      )
+          .then((response) async {
+        if (response.data['refresh_token'] == null) {
+          print('REFRESH TOKEN IS NULL');
+          throw Exception('Failed to refresh token');
+        }
 
-      print(response.data);
-      print('tracking');
-      print(response.data['refresh_token']);
-      options.headers['Authorization'] =
-          'Bearer ${response.data['access_token']}';
+        print(response.data);
 
-      Map<String, dynamic> accessTokenData = {
-        "token": response.data['access_token'],
-        'refresh_token': response.data['refresh_token'],
-        "duration": DateTime.now()
-            .add(Duration(seconds: response.data['expires_in']))
-            .toIso8601String(),
-      };
-      String encodedMap = json.encode(accessTokenData);
-      print(encodedMap);
-      prefs.setString('accessToken', encodedMap);
-      return response;
-    });
+        print(response.data['refresh_token']);
+        options.headers['Authorization'] =
+            'Bearer ${response.data['access_token']}';
+
+        Map<String, dynamic> accessTokenData = {
+          "token": response.data['access_token'],
+          'refreshToken': response.data['refresh_token'],
+          "duration": DateTime.now()
+              .add(Duration(seconds: response.data['expires_in']))
+              .toIso8601String(),
+        };
+        String encodedMap = json.encode(accessTokenData);
+        print(accessTokenData['refreshToken']);
+        print('object');
+        print(encodedMap);
+        prefs.setString('accessToken', encodedMap);
+        return response;
+      });
+    } catch (e) {
+      const ZoomRoute(zoomLoginRoute).push(navigatorKey.currentContext!);
+      print('hello');
+      print('Error refreshing tokens: $e');
+
+      throw Exception('Failed to refresh token');
+    }
   }
 }

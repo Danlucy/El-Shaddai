@@ -1,10 +1,12 @@
-import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
+import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
+import 'package:el_shaddai/features/calendar/presentations/daily_calendar_component.dart';
+import 'package:el_shaddai/features/calendar/presentations/monthly_calendar_component.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class BookingScreen extends ConsumerStatefulWidget {
   const BookingScreen({super.key});
@@ -14,6 +16,8 @@ class BookingScreen extends ConsumerStatefulWidget {
 }
 
 class _EventsScreenState extends ConsumerState<BookingScreen> {
+  final CalendarController dailyCalendarController = CalendarController();
+  final CalendarController monthlyCalendarController = CalendarController();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -22,23 +26,32 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           ref.read(bookingControllerProvider.notifier).clearState();
+
           showDialog(
+              useRootNavigator: false,
               context: context,
-              builder: (context) {
-                return BookingDialog(width: width, height: height);
+              builder: (dcontext) {
+                return BookingDialog(dcontext, width: width, height: height);
               });
         },
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        backgroundColor: context.colors.primaryContainer,
         child: Icon(
           Icons.add,
-          color: Theme.of(context).colorScheme.secondary,
+          color: context.colors.secondary,
         ),
       ),
       appBar: AppBar(title: const Text('Prayer Events')),
-      drawer: GeneralDrawer(),
+      drawer: const GeneralDrawer(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [],
+        children: [
+          MonthlyCalendarComponent(
+            monthlyCalendarController: monthlyCalendarController,
+          ),
+          DailyCalendarComponent(
+            dailyCalendarController: dailyCalendarController,
+          )
+        ],
       ),
     );
   }
