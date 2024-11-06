@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:el_shaddai/core/customs/custom_time_range_picker.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/core/utility/date_time_range.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
@@ -33,7 +34,7 @@ class _BookingTimePickerComponentState
         SystemChannels.textInput.invokeMethod('TextInput.hide');
         widget.controller.clear();
         sleep(const Duration(milliseconds: 100));
-        TimeRange? result = await showTimeRangePicker(
+        TimeRange? result = await showCustomTimeRangePicker(
           disabledTime: eventReader.timeRange?.start.upToMinute ==
                   eventReader.timeRange?.end.upToMinute
               ? TimeRange(
@@ -57,6 +58,26 @@ class _BookingTimePickerComponentState
           clockRotation: 180,
           autoAdjustLabels: false,
           context: context,
+          builder: (context, child) {
+            return Column(
+              children: [
+                Container(
+                  child: child,
+                ),
+                Container(
+                  color: context.colors.surface,
+                  width: 300,
+                  height: 100,
+                  child: Row(
+                    children: [
+                      IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+                      IconButton(onPressed: () {}, icon: Icon(Icons.add))
+                    ],
+                  ),
+                )
+              ],
+            );
+          },
           snap: true,
           minDuration: const Duration(minutes: 10),
           interval: const Duration(minutes: 10),

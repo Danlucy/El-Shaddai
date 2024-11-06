@@ -40,33 +40,6 @@ class BookingDataSource extends CalendarDataSource {
   String getDescription(int index) {
     return _getMeetingData(index).description;
   }
-  //
-  // @override
-  // Color getColor(int index) {
-  //   BookingModel currentBooking = _getMeetingData(index);
-  //   // Get all bookings for the same date
-  //   List bookingsOnSameDate = appointments!.where((booking) {
-  //     return booking.timeRange.start.year ==
-  //             currentBooking.timeRange.start.year &&
-  //         booking.timeRange.start.month ==
-  //             currentBooking.timeRange.start.month &&
-  //         booking.timeRange.start.day == currentBooking.timeRange.start.day;
-  //   }).toList() as List<BookingModel>;
-  //   print(bookingsOnSameDate);
-  //   print(currentBooking);
-  //   int totalBookedMinutes = bookingsOnSameDate.fold(0, (sum, booking) {
-  //     BookingModel b = booking as BookingModel;
-  //     return sum + booking.timeRange.duration.inMinutes;
-  //   });
-  //   print(totalBookedMinutes);
-  //   // Calculate total booked duration for that day
-  //
-  //   if (totalBookedMinutes <= 1440) {
-  //     return Colors.green;
-  //   } else {
-  //     return Colors.red;
-  //   }
-  // }
 
   BookingModel getAppointments(int index) =>
       appointments![index] as BookingModel;
