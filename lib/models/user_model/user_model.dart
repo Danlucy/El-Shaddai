@@ -3,9 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'user_model.g.dart';
 part 'user_model.freezed.dart';
 
-@freezed
+@Freezed()
+@JsonSerializable(explicitToJson: true)
 class UserModel with _$UserModel {
-  @JsonSerializable(explicitToJson: true)
   const UserModel._();
   const factory UserModel(
       {required String name,

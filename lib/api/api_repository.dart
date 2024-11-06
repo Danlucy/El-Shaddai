@@ -15,7 +15,7 @@ class ApiRepository {
 
   final _authDio = Dio();
   final _functionDio = Dio()..interceptors.add(CustomInterceptor());
-  Future<Response> getAccessToken(BuildContext context, String code) {
+  Future<Response> getAccessToken(String code) {
     final String encodedString = getEncodedString();
     return _authDio.post(
       'https://zoom.us/oauth/token',

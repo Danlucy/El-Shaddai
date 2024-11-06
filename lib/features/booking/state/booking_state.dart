@@ -1,7 +1,6 @@
-import 'package:el_shaddai/core/utility/date_time_range.dart';
+import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
 import 'package:el_shaddai/core/utility/json_converters.dart';
 import 'package:el_shaddai/models/location_data.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'booking_state.freezed.dart';
@@ -23,10 +22,10 @@ enum RecurrenceState {
 @freezed
 class BookingState with _$BookingState {
   const BookingState._();
-  @DateTimeRangeConverter()
+  @CustomDateTimeRangeConverter()
   @LocationDataConverter()
   const factory BookingState({
-    DateTimeRange? timeRange,
+    CustomDateTimeRange? timeRange,
     String? bookingId,
     String? hostId,
     String? title,

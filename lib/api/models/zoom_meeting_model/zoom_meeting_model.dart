@@ -1,8 +1,6 @@
-import 'dart:convert';
 
 import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
 import 'package:el_shaddai/core/utility/json_converters.dart';
-import 'package:el_shaddai/features/booking/state/booking_state.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'zoom_meeting_model.g.dart';

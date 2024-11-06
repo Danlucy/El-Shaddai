@@ -1,24 +1,28 @@
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
 
+extension ThemeExtension on BuildContext {
+  ColorScheme get colors => Theme.of(this).colorScheme;
+}
+
 final textTheme = TextTheme(
   displayLarge: GoogleFonts.inter(
     fontWeight: FontWeight.w400,
     fontSize: 57,
     height: 64 / 57,
     letterSpacing: -0.25,
-    color: Color(0xFFdadbd0),
+    color: const Color(0xFFdadbd0),
   ),
   displayMedium: GoogleFonts.inter(
     fontWeight: FontWeight.w400,
     fontSize: 45,
     height: 52 / 45,
-    color: Color(0xFFdadbd0),
+    color: const Color(0xFFdadbd0),
   ),
   displaySmall: GoogleFonts.inter(
     fontWeight: FontWeight.w400,
     fontSize: 36,
-    color: Color(0xFFdadbd0),
+    color: const Color(0xFFdadbd0),
     height: 44 / 36,
   ),
   headlineLarge: GoogleFonts.inter(
@@ -69,19 +73,19 @@ final textTheme = TextTheme(
     height: 16 / 11,
   ),
   bodyLarge: GoogleFonts.inter(
-    color: Color(0xFFdadbd0),
+    color: const Color(0xFFdadbd0),
     fontWeight: FontWeight.w400,
     fontSize: 16,
     height: 24 / 16,
   ),
   bodyMedium: GoogleFonts.inter(
-    color: Color(0xFFdadbd0),
+    color: const Color(0xFFdadbd0),
     fontWeight: FontWeight.w400,
     fontSize: 14,
     height: 20 / 14,
   ),
   bodySmall: GoogleFonts.inter(
-    color: Color(0xFFdadbd0),
+    color: const Color(0xFFdadbd0),
     fontWeight: FontWeight.w400,
     fontSize: 12,
     height: 16 / 12,

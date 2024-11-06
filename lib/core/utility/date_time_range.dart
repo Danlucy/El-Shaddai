@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:time_range_picker/time_range_picker.dart';
 
 class DateTimeRangeConverter
     implements JsonConverter<DateTimeRange, Map<String, dynamic>> {
@@ -24,22 +25,22 @@ class DateTimeRangeConverter
 
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
 
 extension DateTimeExtension on DateTime {
-  DateTime get dateOnly => DateTime(year, month, day, hour);
+  DateTime get upToMinute => DateTime(year, month, day, minute);
   bool isAfterOrEqualTo(DateTime dateTime) {
     final date = this;
-    final isAtSameMomentAs = dateTime.dateOnly.isAtSameMomentAs(date.dateOnly);
-    return isAtSameMomentAs || date.dateOnly.isAfter(dateTime.dateOnly);
+    final isAtSameMomentAs = dateTime.isAtSameMomentAs(date);
+    return isAtSameMomentAs || date.isAfter(dateTime);
   }
 
   bool isBeforeOrEqualTo(DateTime dateTime) {
     final date = this;
-    final isAtSameMomentAs = dateTime.dateOnly.isAtSameMomentAs(date.dateOnly);
-    return isAtSameMomentAs || date.dateOnly.isBefore(dateTime.dateOnly);
+    final isAtSameMomentAs = dateTime.isAtSameMomentAs(date);
+    return isAtSameMomentAs || date.isBefore(dateTime);
   }
 
   bool isBetween(
@@ -53,22 +54,22 @@ extension DateTimeExtension on DateTime {
   }
 
   DateTime setTimeOfDay(TimeOfDay time) {
-    return DateTime(this.year, this.month, this.day, time.hour, time.minute);
+    return DateTime(year, month, day, time.hour, time.minute);
   }
 
-  DateTime setTime({
+  DateTime setTime(
+    DateTime dateTime, {
     int hours = 0,
   }) {
     return DateTime(
-      this.year,
-      this.month,
-      this.day,
-      hours,
+      year,
+      month,
+      day,
     );
   }
 
   DateTime clearTime() {
-    return DateTime(this.year, this.month, this.day, 0, 0, 0, 0, 0);
+    return DateTime(year, month, day, 0, 0, 0, 0, 0);
   }
 }
 

@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:el_shaddai/core/theme.dart';
+import 'package:el_shaddai/core/utility/date_time_range.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
-import 'package:el_shaddai/features/booking/state/booking_state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,56 +29,97 @@ class _BookingTimePickerComponentState
 
     final eventFunction = ref.read(bookingControllerProvider.notifier);
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         SystemChannels.textInput.invokeMethod('TextInput.hide');
         widget.controller.clear();
         sleep(const Duration(milliseconds: 100));
-        showTimeRangePicker(
+        TimeRange? result = await showTimeRangePicker(
+          disabledTime: eventReader.timeRange?.start.upToMinute ==
+                  eventReader.timeRange?.end.upToMinute
+              ? TimeRange(
+                  startTime: const TimeOfDay(hour: 23, minute: 50),
+                  endTime: const TimeOfDay(hour: 0, minute: 0))
+              : null,
           start: eventReader.timeRange?.start != null
               ? TimeOfDay.fromDateTime(eventReader.timeRange!.start)
-              : const TimeOfDay(hour: 6, minute: 0),
+              : TimeOfDay(
+                  hour:
+                      (TimeOfDay.now().hour + 1), // Wrap around after midnight
+                  minute: 0),
           end: eventReader.timeRange?.end != null
               ? TimeOfDay.fromDateTime(eventReader.timeRange!.end)
-              : const TimeOfDay(hour: 18, minute: 0),
+              : TimeOfDay(
+                  hour:
+                      (TimeOfDay.now().hour + 2), // Wrap around after midnight
+                  minute: 10),
+          handlerRadius: 10,
           use24HourFormat: false,
+          clockRotation: 180,
+          autoAdjustLabels: false,
           context: context,
-          minDuration: const Duration(hours: 1),
-          interval: const Duration(hours: 1),
-          handlerColor: Theme.of(context).colorScheme.onSurfaceVariant,
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          snap: true,
+          minDuration: const Duration(minutes: 10),
+          interval: const Duration(minutes: 10),
+          handlerColor: context.colors.onSurfaceVariant,
+          selectedColor: Colors.transparent,
+          strokeColor: context.colors.primary,
           labels: [
             '12 AM',
-            '3 AM',
+            '2 AM',
+            '4 AM',
             '6 AM',
-            '9 AM',
+            '8 AM',
+            '10 AM',
             '12 PM',
-            '3 PM',
+            '2 PM',
+            '4 PM',
             '6 PM',
-            '9 PM'
+            '8 PM',
+            '10 PM',
           ].asMap().entries.map((e) {
             return ClockLabel.fromIndex(
               idx: e.key,
-              length: 8,
+              length: 12,
               text: e.value,
             );
           }).toList(),
           ticks: 12,
-        ).then((value) {
-          if (value != null) {
-            print(value);
-
-            eventFunction.setTimeRange(value);
+        );
+        if (kDebugMode) {
+          print("result $result");
+          if (result != null) {
+            print(result);
+            eventFunction.setTimeRange(result);
           }
-        });
+          // if (result != null &&
+          //     result.endTime.hour != 0 &&
+          //     !(result.startTime.hour == 23 && result.endTime.hour == 0) &&
+          //     result.endTime.hour <= result.startTime.hour) {
+          //   print('SUCESSS');
+          //
+          //   print('Start Time${result.startTime.hour}');
+          //
+          //   print('Start Time${result.endTime.hour}');
+          //   print(result);
+          //   eventFunction.setTimeRange(result);
+          // } else {
+          //   print('FAILED');
+          // }
+        }
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          IconButton(
+              onPressed: () {
+                print(eventReader.timeRange);
+              },
+              icon: const Icon(Icons.add)),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             decoration: BoxDecoration(
               borderRadius: BorderRadiusDirectional.circular(10),
-              color: Theme.of(context).colorScheme.outline,
+              color: context.colors.outline,
             ),
             child: Text(
               eventReader.timeRange?.start != null
@@ -89,7 +132,7 @@ class _BookingTimePickerComponentState
             padding: const EdgeInsets.symmetric(horizontal: 3),
             child: Icon(
               Icons.access_time,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: context.colors.onSurfaceVariant,
             ),
           ),
           const Icon(Icons.arrow_right_alt_outlined),
@@ -97,14 +140,14 @@ class _BookingTimePickerComponentState
             padding: const EdgeInsets.symmetric(horizontal: 3),
             child: Icon(
               Icons.access_time_filled,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: context.colors.onSurfaceVariant,
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             decoration: BoxDecoration(
               borderRadius: BorderRadiusDirectional.circular(10),
-              color: Theme.of(context).colorScheme.outline,
+              color: context.colors.outline,
             ),
             child: Text(
               eventReader.timeRange?.end != null

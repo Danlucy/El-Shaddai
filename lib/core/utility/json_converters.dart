@@ -78,7 +78,7 @@ class LocationDataConverter
   LocationData fromJson(Map json) {
     return LocationData(
       web: json['web'] as String?,
-      address: json['address'] as String,
+      address: json['address'] as String?,
       chords: json['location'] != null
           ? LatLng(
               json['location']['latitude'] as double,

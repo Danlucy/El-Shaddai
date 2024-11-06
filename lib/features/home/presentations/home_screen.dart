@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:el_shaddai/api/models/zoom_meeting_model/zoom_meeting_model.dart';
+import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
-import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,7 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 30,
-                color: Theme.of(context).colorScheme.secondary,
+                color: context.colors.secondary,
                 fontWeight: FontWeight.bold,
               ),
             ),

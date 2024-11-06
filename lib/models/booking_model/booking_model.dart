@@ -1,3 +1,4 @@
+import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
 import 'package:el_shaddai/core/utility/date_time_range.dart';
 import 'package:el_shaddai/core/utility/json_converters.dart';
 import 'package:el_shaddai/features/booking/state/booking_state.dart';
@@ -13,9 +14,12 @@ class BookingModel with _$BookingModel {
   const BookingModel._();
   const factory BookingModel(
       {required String title,
+      @CustomDateTimeRangeConverter()
+      required CustomDateTimeRange appointmentTimeRange,
       required RecurrenceState recurrenceState,
-      required String hostId,
-      @DateTimeRangeConverter() required DateTimeRange timeRange,
+      required String host,
+      required DateTime createdAt,
+      @CustomDateTimeRangeConverter() required CustomDateTimeRange timeRange,
       required String userId,
       required String id,
       @LocationDataConverter() required LocationData location,
