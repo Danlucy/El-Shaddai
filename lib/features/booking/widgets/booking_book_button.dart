@@ -39,7 +39,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
               BookingVenueComponent.location) {
             await apiRepository
                 .createMeeting(
-              bookingFunction.getZoomMeetingModel(),
+              bookingFunction.instantiateZoomMeetingModel(),
               ref.watch(accessTokenNotifierProvider).value!.token,
             )
                 .then((value) {
@@ -47,9 +47,10 @@ class _BookButtonState extends ConsumerState<BookButton> {
             });
           }
           ref.read(bookingRepositoryProvider).createBooking(
-                model: bookingFunction.createBookingModel(web),
+                model: bookingFunction.instantiateBookingModel(web),
                 call: widget.errorCall,
-                recurrence: bookingFunction.getRecurrenceConfigurationModel(),
+                recurrence:
+                    bookingFunction.instantiateRecurrenceConfigurationModel(),
               );
           Navigator.pop(context);
         } on FirebaseException catch (e) {
@@ -61,7 +62,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
                   : e.toString());
         }
       },
-      child: const Text('Create Event'),
+      child: const Text('Create Prayer Watch'),
     );
   }
 }

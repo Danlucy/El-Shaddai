@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:el_shaddai/api/models/access_token_model/access_token_model.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
@@ -18,20 +19,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final prefs = await SharedPreferences.getInstance();
-          String? decodedMap = prefs.getString('accessToken');
-          if (decodedMap != null) {
-            print('rTOKEN');
-            Map<String, dynamic> data = jsonDecode(decodedMap);
-            print(data['refreshToken']);
-            print(data['duration']);
-            print(data['token']);
-          }
-        },
-        child: const Icon(Icons.add),
-      ),
       appBar: AppBar(
         title: Text('Welcome ${ref.read(userProvider)?.name ?? 'User'}'),
       ),

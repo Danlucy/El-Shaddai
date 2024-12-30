@@ -20,10 +20,9 @@ class CustomInterceptor extends Interceptor {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? decodedMap = prefs.getString('accessToken');
     Map<String, dynamic> accessTokenData = json.decode(decodedMap!);
-    print(accessTokenData);
     if (DateTime.now().isAfter(DateTime.parse(accessTokenData['duration']))) {
-      print('REFRESHING TOKENS');
-      print(accessTokenData['refreshToken']);
+      // print('REFRESHING TOKENS');
+      // print(accessTokenData['refreshToken']);
       await refreshToken(
         accessTokenData['refreshToken'],
         options,
@@ -46,7 +45,6 @@ class CustomInterceptor extends Interceptor {
     print(err.response?.data);
     print(err.message);
     if (err.response?.statusCode == 401 || err.response?.data == 400) {
-      print('dad');
       // Refresh the user's authentication token.
       try {
         const ZoomRoute(zoomLoginRoute).push(navigatorKey.currentContext!);
@@ -110,15 +108,12 @@ class CustomInterceptor extends Interceptor {
               .toIso8601String(),
         };
         String encodedMap = json.encode(accessTokenData);
-        print(accessTokenData['refreshToken']);
-        print('object');
-        print(encodedMap);
+
         prefs.setString('accessToken', encodedMap);
         return response;
       });
     } catch (e) {
       const ZoomRoute(zoomLoginRoute).push(navigatorKey.currentContext!);
-      print('hello');
       print('Error refreshing tokens: $e');
 
       throw Exception('Failed to refresh token');

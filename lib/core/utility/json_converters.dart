@@ -79,10 +79,10 @@ class LocationDataConverter
     return LocationData(
       web: json['web'] as String?,
       address: json['address'] as String?,
-      chords: json['location'] != null
+      chords: json['chords'] != null
           ? LatLng(
-              json['location']['latitude'] as double,
-              json['location']['longitude'] as double,
+              json['chords']['latitude'] as double,
+              json['chords']['longitude'] as double,
             )
           : null,
     );

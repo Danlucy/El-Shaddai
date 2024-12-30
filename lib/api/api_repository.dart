@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:el_shaddai/api/api_interceptor.dart';
 import 'package:el_shaddai/api/models/zoom_meeting_model/zoom_meeting_model.dart';
 import 'package:el_shaddai/core/constants/constants.dart';
-import 'package:flutter/material.dart';
 
 class ApiRepository {
   String getEncodedString() {
@@ -22,7 +21,7 @@ class ApiRepository {
       data: {
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': 'https://catboy123example.com',
+        'redirect_uri': 'https://daniel-ong.com',
       },
       options: Options(
         headers: {
@@ -33,18 +32,17 @@ class ApiRepository {
     );
   }
 
-  Future<Response> getUser(String accessToken, BuildContext context) {
-    return _functionDio.get('https://api.zoom.us/v2/users/me',
-        options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
-        }));
-  }
+  // Future<Response> getUser(String accessToken, BuildContext context) {
+  //   return _functionDio.get('https://api.zoom.us/v2/users/me',
+  //       options: Options(headers: {
+  //         'Authorization': 'Bearer $accessToken',
+  //       }));
+  // }
 
   Future<Response> createMeeting(
     ZoomMeetingModel meetingData,
     String accessToken,
   ) {
-    print('CREATING');
     return _functionDio.post('https://api.zoom.us/v2/users/me/meetings',
         options: Options(
           headers: {

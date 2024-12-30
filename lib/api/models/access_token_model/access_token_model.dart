@@ -38,7 +38,6 @@ class AccessTokenNotifier extends _$AccessTokenNotifier {
   }
 
   Future<void> saveAccessToken(AccessToken accessToken) async {
-    print("DAWDAWD");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', json.encode(accessToken.toJson()));
     state = AsyncValue.data(accessToken);

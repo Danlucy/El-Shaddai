@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:time_range_picker/time_range_picker.dart';
@@ -29,7 +30,29 @@ extension StringExtension on String {
   }
 }
 
+bool doTimeRangesOverlap(CustomDateTimeRange a, CustomDateTimeRange b) {
+  return a.start.isBefore(b.end) && a.end.isAfter(b.start);
+}
+
+bool isOverlapping(DateTime date, CustomDateTimeRange timeRange) {
+  // Create DateTime for the start and end of the given date
+  final startOfDay = DateTime(date.year, date.month, date.day);
+  final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+
+  return (timeRange.start.isBefore(endOfDay)) &&
+      (timeRange.end.isAfter(startOfDay));
+}
+
 extension DateTimeExtension on DateTime {
+  bool doTimeRangesOverlap(
+      CustomDateTimeRange selectedRange, CustomDateTimeRange roomRange) {
+    return (selectedRange.start.isBefore(roomRange.end)
+        // || selectedRange.start.isAtSameMomentAs(roomRange.end)
+        ) &&
+        (selectedRange.end.isAfter(roomRange.start));
+    // || selectedRange.end.isAtSameMomentAs(roomRange.start)
+  }
+
   DateTime get upToMinute => DateTime(year, month, day, minute);
   bool isAfterOrEqualTo(DateTime dateTime) {
     final date = this;
@@ -43,13 +66,23 @@ extension DateTimeExtension on DateTime {
     return isAtSameMomentAs || date.isBefore(dateTime);
   }
 
-  bool isBetween(
+  bool isBetweenOrEqual(
     DateTime fromDateTime,
     DateTime toDateTime,
   ) {
     final date = this;
     final isAfter = date.isAfterOrEqualTo(fromDateTime);
     final isBefore = date.isBeforeOrEqualTo(toDateTime);
+    return isAfter && isBefore;
+  }
+
+  bool isBetween(
+    DateTime fromDateTime,
+    DateTime toDateTime,
+  ) {
+    final date = this;
+    final isAfter = date.isAfter(fromDateTime);
+    final isBefore = date.isBefore(toDateTime);
     return isAfter && isBefore;
   }
 
@@ -74,13 +107,13 @@ extension DateTimeExtension on DateTime {
 }
 
 List<DateTime> getDaysInBetweenIncludingStartEndDate(
-    {required DateTime startDateTime, required DateTime endDateTime}) {
+    CustomDateTimeRange dateRange) {
   // Converting dates provided to UTC
   // So that all things like DST don't affect subtraction and addition on dates
-  DateTime startDateInUTC =
-      DateTime.utc(startDateTime.year, startDateTime.month, startDateTime.day);
+  DateTime startDateInUTC = DateTime.utc(
+      dateRange.start.year, dateRange.start.month, dateRange.start.day);
   DateTime endDateInUTC =
-      DateTime.utc(endDateTime.year, endDateTime.month, endDateTime.day);
+      DateTime.utc(dateRange.end.year, dateRange.end.month, dateRange.end.day);
 
   // Created a list to hold all dates
   List<DateTime> daysInFormat = [];
@@ -94,7 +127,7 @@ List<DateTime> getDaysInBetweenIncludingStartEndDate(
     // Converting back UTC date to Local date if it was local before
     // Or keeping in UTC format if it was UTC
 
-    if (startDateTime.isUtc) {
+    if (dateRange.start.isUtc) {
       daysInFormat.add(i);
     } else {
       daysInFormat.add(DateTime(i.year, i.month, i.day));

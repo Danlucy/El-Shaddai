@@ -57,8 +57,7 @@ class _MonthlyCalendarComponentState
               final isSelected = details.date == selectedDate;
               List<BookingModel> bookings = data.where((element) {
                 // print(' ${element.timeRange} ${element.appointmentTimeRange}');
-                return isOverlapping(
-                    details.date, element.appointmentTimeRange);
+                return isOverlapping(details.date, element.timeRange);
               }).toList();
               bool isBooked = bookings.isNotEmpty;
               bool fullyBooked = false;
@@ -91,9 +90,6 @@ class _MonthlyCalendarComponentState
                               59);
 
                       splitBookings.add(BookingModel(
-                          appointmentTimeRange: CustomDateTimeRange(
-                              start: booking.timeRange.start,
-                              end: booking.timeRange.end),
                           timeRange: CustomDateTimeRange(
                               start: currentStartTime, end: currentEndTime),
                           description: booking.description,
@@ -110,97 +106,24 @@ class _MonthlyCalendarComponentState
                   return splitBookings;
                 }
 
-                print('TRACK');
-                print(details.date);
-                print(splitBookingsIntoDays(bookings));
-                // List<BookingModel> appointments = <BookingModel>[];
+                // print('TRACK');
+                // print(details.date);
+                // print(splitBookingsIntoDays(bookings));
 
-                // for (BookingModel booking in bookings) {
-                //   int duration =
-                //       booking.timeRange.end.day - booking.timeRange.start.day;
-                //   for (int i = 0; i < duration + 1; i++) {
-                //     DateTime appointmentDate =
-                //         booking.timeRange.start.add(Duration(days: i));
-                //
-                //     // For the first day, set the start time to the original start time
-                //     DateTime currentStartTime = (i == 0)
-                //         ? booking.timeRange.start
-                //         : DateTime(appointmentDate.year, appointmentDate.month,
-                //             appointmentDate.day, 0, 0);
-                //
-                //     // For the last day, set the end time to the original end time
-                //     DateTime currentEndTime = (i == duration)
-                //         ? booking.timeRange.end
-                //         : DateTime(appointmentDate.year, appointmentDate.month,
-                //             appointmentDate.day, 23, 59);
-                //
-                //     appointments.add(BookingModel(
-                //         appointmentTimeRange: CustomDateTimeRange(
-                //             start: booking.timeRange.start,
-                //             end: booking.timeRange.end),
-                //         timeRange: CustomDateTimeRange(
-                //             start: currentStartTime, end: currentEndTime),
-                //         description: booking.description,
-                //         title: booking.title,
-                //         recurrenceState: booking.recurrenceState,
-                //         location: booking.location,
-                //         createdAt: booking.createdAt,
-                //         host: booking.host,
-                //         userId: booking.userId,
-                //         id: booking.id));
-                //   }
-                // }
-                // int totalBookedMinutes =
-                //     splitBookingsIntoDays(bookings).fold(0, (sum, appointment) {
-                //   return sum + appointment.timeRange.duration.inMinutes;
-                // });
                 double sumBookingDurationsByDate(List<BookingModel> bookings) {
                   final dd = bookings.where((element) {
                     // print(' ${element.timeRange} ${element.appointmentTimeRange}');
                     return isOverlapping(details.date, element.timeRange);
                   });
-                  print('dd');
-                  print(dd);
+
                   final total = dd.fold<double>(
                       0,
                       (sum, booking) =>
                           sum + booking.timeRange.duration.inMinutes);
-                  // for (BookingModel booking in dd) {
-                  //   DateTime start = booking.timeRange.start;
-                  //   DateTime end = booking.timeRange.end;
-                  //
-                  //   for (DateTime date = start;
-                  //       date.isBefore(end) || date.isAtSameMomentAs(end);
-                  //       date = date.add(Duration(days: 1))) {
-                  //     DateTime startOfDay =
-                  //         DateTime(date.year, date.month, date.day);
-                  //     DateTime endOfDay =
-                  //         DateTime(date.year, date.month, date.day, 23, 59, 59);
-                  //
-                  //     DateTime currentStart =
-                  //         date.isAtSameMomentAs(start) ? start : startOfDay;
-                  //     DateTime currentEnd =
-                  //         date.isAtSameMomentAs(end) ? end : endOfDay;
-                  //
-                  //     int durationInMinutes =
-                  //         currentEnd.difference(currentStart).inMinutes;
-                  //
-                  //     if (totalDurations.containsKey(startOfDay)) {
-                  //       totalDurations[startOfDay] =
-                  //           totalDurations[startOfDay]! + durationInMinutes;
-                  //     } else {
-                  //       totalDurations[startOfDay] = durationInMinutes;
-                  //     }
-                  //   }
-                  // }
 
                   return total;
                 }
 
-                print(details.date);
-                print('duration');
-                print(
-                    sumBookingDurationsByDate(splitBookingsIntoDays(bookings)));
                 fullyBooked = (sumBookingDurationsByDate(
                         splitBookingsIntoDays(bookings)) >=
                     1439);
@@ -256,7 +179,6 @@ class _MonthlyCalendarComponentState
           );
         },
         error: (error, stack) {
-          print(error);
           return const Center(
             child: Text('Error'),
           );

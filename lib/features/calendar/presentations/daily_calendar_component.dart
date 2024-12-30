@@ -1,8 +1,11 @@
 import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
 import 'package:el_shaddai/core/theme.dart';
+import 'package:el_shaddai/core/utility/date_time_range.dart';
 import 'package:el_shaddai/core/utility/url_launcher.dart';
 import 'package:el_shaddai/core/widgets/calendar_widget.dart';
+import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/auth/widgets/loader.dart';
+import 'package:el_shaddai/features/booking/presentations/booking_venues_component/booking_location_component/booking_location_component.dart';
 import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
 import 'package:el_shaddai/features/calendar/controller/calendar_controller.dart';
 import 'package:el_shaddai/models/booking_model/booking_model.dart';
@@ -10,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -43,16 +48,21 @@ class _DailyCalendarComponentState
               return SfCalendar(
                 appointmentBuilder:
                     (BuildContext context, CalendarAppointmentDetails details) {
+                  // Extract the BookingModel from the appointment details
                   BookingModel bookingModel = details.appointments.first;
+
                   return GestureDetector(
                     onTap: () {
+                      // Show dialog with the correct bookingModel
                       showDialog(
                         context: context,
                         builder: (context) {
                           return BookingDetailsDialog(
-                              width: width,
-                              height: height,
-                              bookingModel: bookingModel);
+                            width: width,
+                            height: height,
+                            bookingModel:
+                                bookingModel, // Pass the correct BookingModel
+                          );
                         },
                       );
                     },
@@ -121,8 +131,6 @@ _AppointmentDataSource _getCalendarDataSource(List<BookingModel> bookingModel) {
               appointmentDate.day, 23, 59);
 
       appointments.add(BookingModel(
-          appointmentTimeRange: CustomDateTimeRange(
-              start: booking.timeRange.start, end: booking.timeRange.end),
           timeRange:
               CustomDateTimeRange(start: currentStartTime, end: currentEndTime),
           description: booking.description,
@@ -167,8 +175,7 @@ class _AppointmentDataSource extends CalendarDataSource<BookingModel> {
   BookingModel convertAppointmentToObject(
       BookingModel customData, Appointment appointment) {
     return BookingModel(
-        timeRange: customData.appointmentTimeRange,
-        appointmentTimeRange: customData.timeRange,
+        timeRange: customData.timeRange,
         description: customData.description,
         title: customData.title,
         recurrenceState: customData.recurrenceState,
@@ -180,7 +187,7 @@ class _AppointmentDataSource extends CalendarDataSource<BookingModel> {
   }
 }
 
-class BookingDetailsDialog extends StatelessWidget {
+class BookingDetailsDialog extends ConsumerWidget {
   const BookingDetailsDialog({
     super.key,
     required this.width,
@@ -193,7 +200,8 @@ class BookingDetailsDialog extends StatelessWidget {
   final BookingModel bookingModel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.read(userProvider);
     return AlertDialog(
       insetPadding: EdgeInsets.zero,
       content: Container(
@@ -223,25 +231,63 @@ class BookingDetailsDialog extends StatelessWidget {
             child: Row(
               children: [
                 CalenderWidget(
-                    date: bookingModel.appointmentTimeRange.start,
+                    date: bookingModel.timeRange.start,
                     color: Theme.of(context).colorScheme.primary),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Text(DateFormat.jm()
-                      .format(bookingModel.appointmentTimeRange.start)),
+                  child: Text(
+                      DateFormat.jm().format(bookingModel.timeRange.start)),
                 ),
                 const Icon(Icons.arrow_right_alt_outlined),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Text(DateFormat.jm()
-                      .format(bookingModel.appointmentTimeRange.end)),
+                  child:
+                      Text(DateFormat.jm().format(bookingModel.timeRange.end)),
                 ),
                 CalenderWidget(
-                    date: bookingModel.appointmentTimeRange.end,
+                    date: bookingModel.timeRange.end,
                     color: Theme.of(context).colorScheme.primary),
               ],
             ),
           ),
+          if (bookingModel.location.address != null)
+            Row(
+              children: [
+                const Icon(Icons.location_on),
+                const Gap(5),
+                Expanded(
+                  child: Text(
+                    bookingModel.location.address.toString(),
+                    maxLines: 2,
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                ),
+              ],
+            ),
+          if (bookingModel.location.chords != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: SizedBox(
+                  width: 300,
+                  height: 250,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    child: GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: bookingModel.location.chords!,
+                        zoom: 13,
+                      ),
+                      markers: {
+                        Marker(
+                          markerId: const MarkerId("1"),
+                          position: bookingModel.location.chords!,
+                        )
+                      },
+                    ),
+                  )),
+            ),
           if (bookingModel.location.web != null)
             Row(
               children: [
@@ -267,6 +313,11 @@ class BookingDetailsDialog extends StatelessWidget {
                 ),
               ],
             ),
+          const Gap(16),
+          Text(
+            'Shalom ${user?.name ?? ''}, these are our prayer focus.',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
           const Gap(5),
           Container(
             decoration: BoxDecoration(

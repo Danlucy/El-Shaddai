@@ -4,7 +4,6 @@ import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_
 import 'package:el_shaddai/api/models/zoom_meeting_model/zoom_meeting_model.dart';
 import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
 import 'package:el_shaddai/core/utility/date_time_range.dart';
-import 'package:el_shaddai/core/widgets/snack_bar.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
 import 'package:el_shaddai/features/booking/state/booking_state.dart';
@@ -42,6 +41,7 @@ class BookingController extends _$BookingController {
   }
 
   void setTitle(String title) => state = state.copyWith(title: title);
+
   void setDescription(String description) =>
       state = state.copyWith(description: description);
   void setLocation(LocationData location) =>
@@ -58,8 +58,6 @@ class BookingController extends _$BookingController {
   }
 
   void setWeb(String? web) {
-    print('called');
-    print(web);
     state = state.copyWith(
       location: state.location?.copyWith(
             web: web,
@@ -69,7 +67,6 @@ class BookingController extends _$BookingController {
               address: state.location?.address,
               web: web),
     );
-    print(state.location?.web ?? 'missing ');
   }
 
   void setChords(LatLng? chords) {
@@ -139,21 +136,7 @@ class BookingController extends _$BookingController {
     );
   }
 
-  // DateTimeRange(
-  // start: DateTime(
-  // start?.year ?? DateTime.now().year,
-  // start?.month ?? DateTime.now().month,
-  // start?.day ?? DateTime.now().day,
-  // timeOfDay.startTime.hour,
-  // ),
-  // end: DateTime(
-  // end?.year ?? DateTime.now().year,
-  // end?.month ?? DateTime.now().month,
-  // end?.day ?? DateTime.now().day,
-  // timeOfDay.endTime.hour,
-  // ),
-  // ),
-  BookingModel createBookingModel(String? web) {
+  BookingModel instantiateBookingModel(String? web) {
     final user = ref.read(userProvider);
     final currentVenue = ref.read(bookingVenueStateProvider);
     return BookingModel(
@@ -162,7 +145,6 @@ class BookingController extends _$BookingController {
       recurrenceState: state.recurrenceState,
       title: state.title!,
       host: user!.name,
-      appointmentTimeRange: state.timeRange!,
       userId: user.uid,
       id: FirebaseFirestore.instance.collection('dog').doc().id,
       location: LocationData(
@@ -178,9 +160,8 @@ class BookingController extends _$BookingController {
     );
   }
 
-  RecurrenceConfigurationModel? getRecurrenceConfigurationModel() {
+  RecurrenceConfigurationModel? instantiateRecurrenceConfigurationModel() {
     if (state.recurrenceState == RecurrenceState.none) return null;
-    print('recurrence state is ${state.recurrenceState}');
 
     return RecurrenceConfigurationModel(
       weeklyDays: state.recurrenceState == RecurrenceState.weekly
@@ -192,9 +173,7 @@ class BookingController extends _$BookingController {
     );
   }
 
-  ZoomMeetingModel getZoomMeetingModel() {
-    final recurrenceConfigurationModel = getRecurrenceConfigurationModel();
-    print('TRACKING ${state.timeRange!.start}');
+  ZoomMeetingModel instantiateZoomMeetingModel() {
     return ZoomMeetingModel(
       topic: state.title,
       description: state.description,
@@ -202,27 +181,36 @@ class BookingController extends _$BookingController {
       type: state.recurrenceState == RecurrenceState.none ? 2 : 8,
       recurrenceConfiguration: state.recurrenceState == RecurrenceState.none
           ? null
-          : recurrenceConfigurationModel,
+          : instantiateRecurrenceConfigurationModel(),
     );
   }
 
-  bool _isBookingDataNotValid(
+  bool isBookingDataInvalid(
     GlobalKey<FormState> formKey,
   ) {
+    final isValid = formKey.currentState?.validate() ?? false;
+    if (!isValid) throw 'Booking Failed! Fill in all the data.';
+
     final currentVenue = ref.read(bookingVenueStateProvider);
-    final user = ref.read(userProvider);
-    final valid = formKey.currentState?.validate() ?? false;
-    if (!valid) return false;
-    final title = state.title;
-    final timeRange = state.timeRange;
+
     final location = state.location;
-    final description = state.description;
-    if (user == null) {
-      throw ('No User, Make sure internet connection is available');
+
+    final requiredFields = [state.title, state.timeRange, state.description];
+    if (requiredFields.any((field) => field == null)) {
+      throw 'All fields are required.';
     }
 
-    print(
-        'Title:${state.title} TimeRange: ${state.timeRange} Location: ${state.location} Desc: ${state.description} $currentVenue USER IS $user');
+    final user = ref.read(userProvider);
+    if (user == null) {
+      throw 'No user found. Ensure internet connection is available.';
+    }
+    if (currentVenue != BookingVenueComponent.zoom &&
+        (location == null || location.address?.isEmpty == true)) {
+      throw 'Location details are required.';
+    }
+    // print(
+    //     'Title:${state.title} TimeRange: ${state.timeRange} Location: ${state.location} Desc: ${state.description} $currentVenue USER IS $user');
+
     // print((currentVenue != BookingVenueComponent.zoom && location == null));
     // print((location != null &&
     //     location.address!.isEmpty &&
@@ -235,47 +223,105 @@ class BookingController extends _$BookingController {
     //     (location != null &&
     //         location.address!.isEmpty &&
     //         currentVenue != BookingVenueComponent.zoom)));
-    return (title == null ||
-        timeRange == null ||
-        (currentVenue != BookingVenueComponent.zoom && location == null) ||
-        description == null ||
-        (location != null &&
-            location.address!.isEmpty &&
-            currentVenue != BookingVenueComponent.zoom));
-  }
-
-  bool isBookingDataInvalid(
-    GlobalKey<FormState> formKey,
-  ) {
-    if (_isBookingDataNotValid(formKey) ||
-        !(formKey.currentState?.validate() ?? false)) {
-      throw 'Booking Failed! Fill in all the Data.';
-    }
     return false;
   }
 
+  // bool isBookingDataInvalid(
+  //   GlobalKey<FormState> formKey,
+  // ) {
+  //   if (_isBookingDataInvalid(formKey) ||
+  //       !(formKey.currentState?.validate() ?? false)) {
+  //     throw 'Booking Failed! Fill in all the Data.';
+  //   }
+  //   return false;
+  // }
+
   bool isTimeRangeInvalid(BuildContext context) {
-    bool doTimeRangesOverlap(
-        CustomDateTimeRange selectedRange, CustomDateTimeRange roomRange) {
-      return (selectedRange.start.isBefore(roomRange.end)
-          // || selectedRange.start.isAtSameMomentAs(roomRange.end)
-          ) &&
-          (selectedRange.end.isAfter(roomRange.start)
-          // || selectedRange.end.isAtSameMomentAs(roomRange.start)
-
-          );
-    }
-
     final bookings =
         ref.watch(bookingsProvider).valueOrNull ?? <BookingModel>[];
-    final booking = bookings.firstWhereOrNull(
-      (element) {
-        return doTimeRangesOverlap(
-          state.timeRange!,
-          element.timeRange,
-        );
-      },
-    );
+
+    CustomDateTimeRange shiftTimeRange(CustomDateTimeRange range,
+        {int days = 0}) {
+      return CustomDateTimeRange(
+        start: range.start.add(Duration(days: days)),
+        end: range.end.add(Duration(days: days)),
+      );
+    }
+
+    bool checkDailyOverlap() {
+      if (state.recurrenceState == RecurrenceState.none) {
+        return bookings.any((booking) {
+          return doTimeRangesOverlap(booking.timeRange, state.timeRange!);
+        });
+      }
+      if (state.recurrenceState != RecurrenceState.daily) return false;
+      return bookings.any((booking) {
+        for (var i = 0; i < state.recurrenceFrequency; i++) {
+          final range = shiftTimeRange(state.timeRange!, days: i);
+          if (doTimeRangesOverlap(booking.timeRange, range)) return true;
+        }
+        return false;
+      });
+    }
+
+    bool checkWeeklyOverlap() {
+      if (state.recurrenceState != RecurrenceState.weekly) return false;
+      return bookings.any((booking) {
+        for (var i = 0; i < state.recurrenceFrequency; i++) {
+          final range = shiftTimeRange(state.timeRange!, days: i * 7);
+          if (doTimeRangesOverlap(booking.timeRange, range)) return true;
+        }
+        return false;
+      });
+    }
+
+    if (checkDailyOverlap()) {
+      throw 'Daily Booking Failed! Date is Already Booked!.';
+    } else if (checkWeeklyOverlap()) {
+      throw 'Weekly Booking Failed! Date is Already Booked!.';
+    }
+
+    // final booking = bookings.firstWhereOrNull(
+    //   (element) {
+    //     if (state.recurrenceState == RecurrenceState.daily) {
+    //       for (var i = 0; i < state.recurrenceFrequency; i++) {
+    //         if (doTimeRangesOverlap(
+    //           element.timeRange,
+    //           CustomDateTimeRange(
+    //             start: state.timeRange!.start.add(Duration(
+    //               days: i,
+    //             )), // Add 1 day to the start
+    //             end: state.timeRange!.end.add(Duration(
+    //               days: i,
+    //             )), // Add 1 day to the end
+    //           ),
+    //         )) {
+    //           throw 'Daily Booking Failed! Date is Already Booked!.';
+    //         }
+    //       }
+    //     } else if (state.recurrenceState == RecurrenceState.weekly) {
+    //       for (var i = 0; i < state.recurrenceFrequency; i++) {
+    //         if (doTimeRangesOverlap(
+    //           element.timeRange,
+    //           CustomDateTimeRange(
+    //             start: state.timeRange!.start.add(
+    //               Duration(days: i * 7),
+    //             ), // Add 1 day to the start
+    //             end: state.timeRange!.end.add(
+    //               Duration(days: i * 7),
+    //             ), // Add 1 day to the end
+    //           ),
+    //         )) {
+    //           throw 'Weekly Booking Failed! Date is Already Booked!.';
+    //         }
+    //       }
+    //     } else {
+    //       return doTimeRangesOverlap(element.timeRange, state.timeRange!);
+    //     }
+    //     return doTimeRangesOverlap(element.timeRange, state.timeRange!);
+    //   },
+    // );
+
     if (state.recurrenceState == RecurrenceState.daily &&
         state.timeRange!.duration > const Duration(days: 1)) {
       throw 'Daily bookings cant be more than 1 day!.';
@@ -283,9 +329,6 @@ class BookingController extends _$BookingController {
     if (state.recurrenceState == RecurrenceState.weekly &&
         state.timeRange!.duration > const Duration(days: 7)) {
       throw 'Weekly bookings cant be more than 7 day!.';
-    }
-    if (booking != null) {
-      throw 'Booking Failed! Date is Already Booked!.';
     }
     if (state.timeRange!.end.isBeforeOrEqualTo(state.timeRange!.start)) {
       throw 'Start Time Cannot Be After End Time.';
