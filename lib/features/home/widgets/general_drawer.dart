@@ -1,3 +1,4 @@
+import 'package:el_shaddai/api/models/access_token_model/access_token_model.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
@@ -24,7 +25,7 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
           children: [
             ListTile(
               leading: const Icon(Icons.house),
-              title: const Text('I Love You Mom'),
+              title: const Text('Home'),
               onTap: () {
                 const HomeRoute().push(context);
               },
@@ -52,6 +53,22 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
               onTap: () {},
             ),
             const Spacer(),
+            (ref.watch(accessTokenNotifierProvider).value == null)
+                ? const SizedBox()
+                : ListTile(
+                    leading: const Icon(Icons.account_circle),
+                    title: Text(
+                      'Log out Zoom',
+                      style: TextStyle(color: context.colors.error),
+                    ),
+                    onTap: () {
+                      ref
+                          .read(accessTokenNotifierProvider.notifier)
+                          .clearAccessToken();
+                      print('token cleared');
+                      print(ref.read(accessTokenNotifierProvider).value);
+                    },
+                  ),
             ListTile(
               leading: const Icon(Icons.transit_enterexit_sharp),
               title: Text(

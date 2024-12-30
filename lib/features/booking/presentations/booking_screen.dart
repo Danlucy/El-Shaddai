@@ -40,7 +40,7 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
           color: context.colors.secondary,
         ),
       ),
-      appBar: AppBar(title: const Text('Prayer Events')),
+      appBar: AppBar(title: const Text('Prayer Watches')),
       drawer: const GeneralDrawer(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

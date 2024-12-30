@@ -43,7 +43,6 @@ class _BookingDateRangePickerComponentState
       onSelectionChanged: (d) {
         final value = d.value;
 
-        print(value);
         try {
           if (value is PickerDateRange) {
             if (value.endDate != null) {
@@ -60,7 +59,7 @@ class _BookingDateRangePickerComponentState
             }
           }
         } catch (e) {
-          print(e);
+          throw e;
         }
       },
       backgroundColor: context.colors.secondaryContainer,

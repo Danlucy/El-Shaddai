@@ -6,7 +6,6 @@ import 'package:el_shaddai/core/firebase_providers.dart';
 import 'package:el_shaddai/core/utility/failure.dart';
 import 'package:el_shaddai/core/utility/future_either.dart';
 import 'package:el_shaddai/models/booking_model/booking_model.dart';
-import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'booking_repository.g.dart';
@@ -31,18 +30,20 @@ class BookingRepository {
       {required BookingModel model,
       required Function(String) call,
       RecurrenceConfigurationModel? recurrence}) async {
+    print('recurrent');
+    print(recurrence);
     try {
       if (recurrence == null) {
-        await _book
-            .doc(FirebaseFirestore.instance.collection('dog').doc().id)
-            .set(model.toJson());
+        await _book.doc(model.id).set(model.toJson());
         return right(model);
       } else {
         for (int i = 0; i < recurrence.recurrenceFrequency; i++) {
+          print('id');
+          print(i);
           DateTime newDate = recurrence.type == 1
               ? model.timeRange.start.add(Duration(days: i))
               : model.timeRange.start.add(Duration(days: i * 7));
-
+          final doc = _book.doc();
           BookingModel newBookingModel = BookingModel(
             timeRange: CustomDateTimeRange(
               start: newDate, // Update start time
@@ -53,22 +54,12 @@ class BookingRepository {
             recurrenceState: model.recurrenceState,
             title: model.title,
             host: model.host,
-            appointmentTimeRange: CustomDateTimeRange(
-              start: newDate, // Update start time
-              end: newDate.add(model.timeRange.end
-                  .difference(model.timeRange.start)), // Preserve duration
-            ),
             userId: model.userId,
-            id: FirebaseFirestore.instance
-                .collection('dog')
-                .doc()
-                .id, // Generate a new ID for each booking
+            id: doc.id, // Generate a new ID for each booking
             location: model.location,
             description: model.description,
           );
-          await _book
-              .doc(FirebaseFirestore.instance.collection('dog').doc().id)
-              .set({
+          await doc.set({
             ...newBookingModel.toJson(),
             'recurrence': recurrence.toJson(),
           });
@@ -78,8 +69,8 @@ class BookingRepository {
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e, stacktrace) {
-      print(e);
-      print(stacktrace);
+      // print(e);
+      // print(stacktrace);
       if (e.toString().contains('Null check operator used on a null value')) {
         call('Booking Failed! Fill in all the Data.');
       } else {
@@ -101,11 +92,12 @@ Stream<List<BookingModel>> bookings(BookingsRef ref) {
       .collection(FirebaseConstants.bookingCollection)
       .snapshots()
       .map(
-        (value) => value.docs
-            .map(
-              (e) => BookingModel.fromJson({...e.data(), 'id': e.id}),
-            )
-            .toList(),
+        (value) => value.docs.map(
+          (e) {
+            final x = BookingModel.fromJson({...e.data(), 'id': e.id});
+            return x;
+          },
+        ).toList(),
       );
   //List<BookingData> <- List<Map> <- QuerySnapshot <-
 }

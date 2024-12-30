@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:el_shaddai/core/constants/constants.dart';
 import 'package:el_shaddai/core/customs/custom_time_range_picker.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/core/utility/date_time_range.dart';
@@ -34,7 +35,10 @@ class _BookingTimePickerComponentState
         SystemChannels.textInput.invokeMethod('TextInput.hide');
         widget.controller.clear();
         sleep(const Duration(milliseconds: 100));
+
         TimeRange? result = await showCustomTimeRangePicker(
+          timeTextStyle: const TextStyle(fontSize: 22),
+          activeTimeTextStyle: const TextStyle(fontSize: 22),
           disabledTime: eventReader.timeRange?.start.upToMinute ==
                   eventReader.timeRange?.end.upToMinute
               ? TimeRange(
@@ -59,23 +63,8 @@ class _BookingTimePickerComponentState
           autoAdjustLabels: false,
           context: context,
           builder: (context, child) {
-            return Column(
-              children: [
-                Container(
-                  child: child,
-                ),
-                Container(
-                  color: context.colors.surface,
-                  width: 300,
-                  height: 100,
-                  child: Row(
-                    children: [
-                      IconButton(onPressed: () {}, icon: Icon(Icons.add)),
-                      IconButton(onPressed: () {}, icon: Icon(Icons.add))
-                    ],
-                  ),
-                )
-              ],
+            return Container(
+              child: child,
             );
           },
           snap: true,
@@ -84,20 +73,7 @@ class _BookingTimePickerComponentState
           handlerColor: context.colors.onSurfaceVariant,
           selectedColor: Colors.transparent,
           strokeColor: context.colors.primary,
-          labels: [
-            '12 AM',
-            '2 AM',
-            '4 AM',
-            '6 AM',
-            '8 AM',
-            '10 AM',
-            '12 PM',
-            '2 PM',
-            '4 PM',
-            '6 PM',
-            '8 PM',
-            '10 PM',
-          ].asMap().entries.map((e) {
+          labels: timeLabels.asMap().entries.map((e) {
             return ClockLabel.fromIndex(
               idx: e.key,
               length: 12,
@@ -106,36 +82,15 @@ class _BookingTimePickerComponentState
           }).toList(),
           ticks: 12,
         );
-        if (kDebugMode) {
-          print("result $result");
-          if (result != null) {
-            print(result);
-            eventFunction.setTimeRange(result);
-          }
-          // if (result != null &&
-          //     result.endTime.hour != 0 &&
-          //     !(result.startTime.hour == 23 && result.endTime.hour == 0) &&
-          //     result.endTime.hour <= result.startTime.hour) {
-          //   print('SUCESSS');
-          //
-          //   print('Start Time${result.startTime.hour}');
-          //
-          //   print('Start Time${result.endTime.hour}');
-          //   print(result);
-          //   eventFunction.setTimeRange(result);
-          // } else {
-          //   print('FAILED');
-          // }
+
+        // print("result $result");
+        if (result != null) {
+          eventFunction.setTimeRange(result);
         }
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          IconButton(
-              onPressed: () {
-                print(eventReader.timeRange);
-              },
-              icon: const Icon(Icons.add)),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             decoration: BoxDecoration(

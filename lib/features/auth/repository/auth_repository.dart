@@ -5,6 +5,7 @@ import 'package:el_shaddai/core/utility/failure.dart';
 import 'package:el_shaddai/core/utility/future_either.dart';
 import 'package:el_shaddai/models/user_model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -30,7 +31,14 @@ class AuthRepository {
       _firestore.collection(FirebaseConstants.usersCollection);
   Stream<User?> get authStateChange => _auth.authStateChanges();
 
-  Future<void> logout() => _auth.signOut();
+  Future<void> logout() async {
+    try {
+      await GoogleSignIn().signOut();
+    } catch (e) {
+      debugPrint('Error signing out. Try again.');
+    }
+    FirebaseAuth.instance.signOut();
+  }
 
   FutureEither<UserModel> signInWithGoogle() async {
     try {
@@ -52,7 +60,6 @@ class AuthRepository {
           uid: userCredential.user!.uid,
           role: UserRole.intercessor,
         );
-
         await _users.doc(userCredential.user?.uid).set(userModel.toJson());
       } else {
         userModel = await getUserData(userCredential.user!.uid).first;
@@ -72,7 +79,9 @@ class AuthRepository {
 
   Stream<UserModel> getUserData(String uid) {
     return _users.doc(uid).snapshots().map(
-          (event) => UserModel.fromJson(event.data() as Map<String, dynamic>),
-        );
+      (event) {
+        return UserModel.fromJson(event.data() as Map<String, dynamic>);
+      },
+    );
   }
 }

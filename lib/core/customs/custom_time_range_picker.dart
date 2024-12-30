@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:el_shaddai/core/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:time_range_picker/src/clock-gesture-recognizer.dart';
 import 'package:time_range_picker/src/clock-painter.dart';
@@ -550,6 +551,51 @@ class TimeRangePickerState extends State<TimeRangePicker>
     _updateTimeAndSnapAngle(_activeTime!, dir);
   }
 
+  void incrementAngle(ActiveTime type, double increment) {
+    if (type == ActiveTime.Start) {
+      setHandleAngle(type, _startAngle + increment);
+    } else {
+      setHandleAngle(type, _endAngle + increment);
+    }
+  }
+
+  void decrementAngle(ActiveTime type, double decrement) {
+    if (type == ActiveTime.Start) {
+      setHandleAngle(type, _startAngle - decrement);
+    } else {
+      setHandleAngle(type, _endAngle - decrement);
+    }
+  }
+
+  void setHandleAngle(ActiveTime type, double angle) {
+    var time = _angleToTime(angle - _offsetRad);
+
+    // 24 => 0
+    if (time.hour == 24) time = TimeOfDay(hour: 0, minute: time.minute);
+
+    // Snap to interval
+    final snapped =
+        widget.snap == true ? timeToAngle(time, -_offsetRad) : angle;
+
+    if (type == ActiveTime.Start) {
+      setState(() {
+        _startAngle = snapped;
+        _startTime = time;
+      });
+      if (widget.onStartChange != null) {
+        widget.onStartChange!(_startTime);
+      }
+    } else {
+      setState(() {
+        _endAngle = snapped;
+        _endTime = time;
+      });
+      if (widget.onEndChange != null) {
+        widget.onEndChange!(_endTime);
+      }
+    }
+  }
+
   _updateTimeAndSnapAngle(ActiveTime type, double angle) {
     var time = _angleToTime(angle - _offsetRad);
 
@@ -609,7 +655,6 @@ class TimeRangePickerState extends State<TimeRangePicker>
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
     final ThemeData themeData = Theme.of(context);
-
     return OrientationBuilder(
       builder: (_, orientation) => orientation == Orientation.portrait
           ? Column(
@@ -628,7 +673,63 @@ class TimeRangePickerState extends State<TimeRangePicker>
                       buildTimeRange(
                           localizations: localizations, themeData: themeData)
                     ]),
-                Text('dadad'),
+                ToggleButtons(
+                  children: ActiveTime.values
+                      .map((x) => Text(x.name.toString()))
+                      .toList(),
+                  isSelected:
+                      ActiveTime.values.map((x) => x == _activeTime).toList(),
+                  onPressed: (int index) {
+                    setState(() {
+                      _activeTime = ActiveTime.values[index];
+                    });
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                        highlightColor: context.colors.secondary,
+                        onPressed: () {
+                          if (_activeTime == null) return;
+
+                          setState(() {
+                            if (_activeTime == ActiveTime.Start) {
+                              incrementAngle(ActiveTime.Start, 0.04363);
+                              _startTime.replacing(
+                                  hour: _startTime.hour,
+                                  minute: _startTime.minute + 10);
+                            } else {
+                              incrementAngle(ActiveTime.End, 0.04363);
+                              _endTime.replacing(
+                                  hour: _startTime.hour,
+                                  minute: _startTime.minute + 10);
+                            }
+                          });
+                        },
+                        icon: const Icon(Icons.add)),
+                    IconButton(
+                        highlightColor: context.colors.secondary,
+                        onPressed: () {
+                          setState(() {
+                            if (_activeTime == null) return;
+
+                            if (_activeTime == ActiveTime.End) {
+                              decrementAngle(ActiveTime.End, 0.04363);
+                              _endTime.replacing(
+                                  hour: _startTime.hour,
+                                  minute: _startTime.minute - 10);
+                            } else {
+                              decrementAngle(ActiveTime.Start, 0.04363);
+                              _startTime.replacing(
+                                  hour: _startTime.hour,
+                                  minute: _startTime.minute - 10);
+                            }
+                          });
+                        },
+                        icon: const Icon(Icons.remove)),
+                  ],
+                ),
                 if (!widget.hideButtons)
                   buildButtonBar(localizations: localizations)
               ],
@@ -760,7 +861,7 @@ class TimeRangePickerState extends State<TimeRangePicker>
 
     return Container(
       color: backgroundColor,
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.all(24),
       child: Flex(
         direction: landscape ? Axis.vertical : Axis.horizontal,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
