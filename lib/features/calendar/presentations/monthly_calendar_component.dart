@@ -156,7 +156,7 @@ class _MonthlyCalendarComponentState
                     ),
                     if (isBooked)
                       Padding(
-                        padding: EdgeInsets.only(top: isSelected ? 1 : 4),
+                        padding: EdgeInsets.only(top: isSelected ? 0 : 3),
                         child: CircleAvatar(
                           radius: isSelected ? 4 : 3,
                           backgroundColor:

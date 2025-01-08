@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:el_shaddai/core/constants/constants.dart';
 import 'package:el_shaddai/core/customs/custom_time_range_picker.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/core/utility/date_time_range.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
+import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -91,17 +93,23 @@ class _BookingTimePickerComponentState
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadiusDirectional.circular(10),
-              color: context.colors.outline,
-            ),
-            child: Text(
-              eventReader.timeRange?.start != null
-                  ? DateFormat.jm().format(eventReader.timeRange!.start)
-                  : 'Start Time',
-              style: const TextStyle(fontWeight: FontWeight.w600),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadiusDirectional.circular(10),
+                color: context.colors.outline,
+              ),
+              child: AutoSizeText(
+                textAlign: TextAlign.center,
+                minFontSize: 10, // Minimum font size
+                maxFontSize: 20,
+                eventReader.timeRange?.start != null
+                    ? DateFormat.jm().format(eventReader.timeRange!.start)
+                    : 'Start Time',
+                maxLines: 1,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ),
           Padding(
@@ -119,17 +127,24 @@ class _BookingTimePickerComponentState
               color: context.colors.onSurfaceVariant,
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadiusDirectional.circular(10),
-              color: context.colors.outline,
-            ),
-            child: Text(
-              eventReader.timeRange?.end != null
-                  ? DateFormat.jm().format(eventReader.timeRange!.end)
-                  : 'End Time',
-              style: const TextStyle(fontWeight: FontWeight.w600),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadiusDirectional.circular(10),
+                color: context.colors.outline,
+              ),
+              child: AutoSizeText(
+                textAlign: TextAlign.center,
+
+                minFontSize: 10, // Minimum font size
+                maxFontSize: 20,
+                eventReader.timeRange?.end != null
+                    ? DateFormat.jm().format(eventReader.timeRange!.end)
+                    : 'End Time',
+                maxLines: 1,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ],

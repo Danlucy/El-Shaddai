@@ -23,7 +23,6 @@ class _BookingHybridComponentState
         const ZoomDisplayComponent(),
         const Gap(8),
         GoogleMapComponent(widget.googleController),
-        const RecurrenceComponent(),
       ],
     );
   }

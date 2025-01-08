@@ -23,7 +23,9 @@ class _BookingZoomComponentState extends ConsumerState<BookingZoomComponent> {
         Builder(
           builder: (context) {
             return const Column(
-              children: [ZoomDisplayComponent(), RecurrenceComponent()],
+              children: [
+                ZoomDisplayComponent(),
+              ],
             );
           },
         ),

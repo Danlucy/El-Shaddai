@@ -2,8 +2,10 @@ import 'package:el_shaddai/core/router/no_internet_screen.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/auth/presentations/login_screen.dart';
 import 'package:el_shaddai/features/auth/presentations/zoom_screen.dart';
+import 'package:el_shaddai/features/booking/presentations/booking_list_screen.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:el_shaddai/features/home/presentations/home_screen.dart';
+import 'package:el_shaddai/features/profile/presentations/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,11 +38,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 @TypedGoRoute<HomeRoute>(
   path: '/',
   routes: <TypedGoRoute<GoRouteData>>[
-    TypedGoRoute<EventsRoute>(
-      path: 'events',
+    TypedGoRoute<BookingRoute>(
+      path: 'booking',
     ),
     TypedGoRoute<ZoomRoute>(
       path: 'zoom',
+    ),
+    TypedGoRoute<ProfileRoute>(
+      path: 'profile',
+    ),
+    TypedGoRoute<BookingListRoute>(
+      path: 'booking-list',
     ),
   ],
 )
@@ -51,12 +59,28 @@ class HomeRoute extends GoRouteData {
   Widget build(BuildContext context, GoRouterState state) => const HomeScreen();
 }
 
-class EventsRoute extends GoRouteData {
-  const EventsRoute();
+class BookingRoute extends GoRouteData {
+  const BookingRoute();
 
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const BookingScreen();
+}
+
+class ProfileRoute extends GoRouteData {
+  const ProfileRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const ProfileScreen();
+}
+
+class BookingListRoute extends GoRouteData {
+  const BookingListRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const BookingListScreen();
 }
 
 class ZoomRoute extends GoRouteData {

@@ -6,12 +6,14 @@ import 'package:el_shaddai/core/utility/date_time_range.dart';
 import 'package:el_shaddai/core/widgets/snack_bar.dart';
 import 'package:el_shaddai/features/auth/controller/zoom_auth_controller.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
+import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_venues_component/booking_hybrid_component.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_venues_component/booking_location_component/booking_location_component.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_venues_component/booking_zoom_component.dart';
 import 'package:el_shaddai/features/booking/widgets/booking_book_button.dart';
 import 'package:el_shaddai/features/booking/widgets/booking_date_range_picker.dart';
 import 'package:el_shaddai/features/booking/widgets/booking_time_picker.dart';
+import 'package:el_shaddai/features/booking/widgets/recurrence_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -76,6 +78,9 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
     final bookingFunction = ref.read(bookingControllerProvider.notifier);
     final token =
         ref.watch(accessTokenNotifierProvider); // Use the new provider
+    final textScaler = MediaQuery.textScalerOf(context).scale(1);
+
+    // Adjust size factors based on TextScaleFactor
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -93,7 +98,11 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                 onTap: () {},
                 child: Container(
                   padding: EdgeInsets.zero,
-                  width: width * 0.8,
+                  width: width *
+                      (TextScaleFactor.oldMan ==
+                              TextScaleFactor.scaleFactor(textScaler)
+                          ? 0.85
+                          : 0.8),
                   height: height * 0.9,
                   child: Form(
                     key: formKey,
@@ -177,6 +186,7 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                           ),
                         ),
                         _buildSelectedComponent(builderContext),
+                        const RecurrenceComponent(),
 
                         if ((token.value == null &&
                                 ref.read(bookingVenueStateProvider) ==

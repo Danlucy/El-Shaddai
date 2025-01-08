@@ -46,7 +46,6 @@ class _BookingLocationComponentState
     return Column(
       children: [
         GoogleMapComponent(widget.googleController),
-        const RecurrenceComponent(),
       ],
     );
   }

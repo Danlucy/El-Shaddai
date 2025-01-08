@@ -34,7 +34,14 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
               leading: const Icon(Icons.message),
               title: const Text('Prayer Watch'),
               onTap: () {
-                const EventsRoute().push(context);
+                const BookingRoute().push(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.list),
+              title: const Text('Prayer List'),
+              onTap: () {
+                const BookingListRoute().push(context);
               },
             ),
             ListTile(
@@ -50,7 +57,9 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
             ListTile(
               leading: const Icon(Icons.account_circle),
               title: const Text('Profile'),
-              onTap: () {},
+              onTap: () {
+                const ProfileRoute().push(context);
+              },
             ),
             const Spacer(),
             (ref.watch(accessTokenNotifierProvider).value == null)
@@ -65,8 +74,6 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                       ref
                           .read(accessTokenNotifierProvider.notifier)
                           .clearAccessToken();
-                      print('token cleared');
-                      print(ref.read(accessTokenNotifierProvider).value);
                     },
                   ),
             ListTile(
