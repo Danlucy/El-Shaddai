@@ -1,4 +1,3 @@
-import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/core/utility/date_time_range.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
 import 'package:el_shaddai/features/booking/state/booking_state.dart';
@@ -18,23 +17,22 @@ class _RecurrenceComponentState extends ConsumerState<RecurrenceComponent> {
   Widget build(BuildContext context) {
     final bookingFunction = ref.read(bookingControllerProvider.notifier);
     final bookingReader = ref.watch(bookingControllerProvider);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: SizedBox(
-        height: 100,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Repeat',
-              style: TextStyle(color: context.colors.secondary),
-            ),
-            const SizedBox(width: 10),
-            ToggleButtons(
-              selectedColor: context.colors.secondary,
+
+    return SizedBox(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Text(
+            'Repeat',
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+            child: ToggleButtons(
+              selectedColor: Theme.of(context).colorScheme.secondary,
               textStyle: TextStyle(
                 fontSize: 16,
-                color: context.colors.secondary,
+                color: Theme.of(context).colorScheme.secondary,
               ),
               direction: Axis.vertical,
               isSelected: RecurrenceState.values
@@ -48,43 +46,41 @@ class _RecurrenceComponentState extends ConsumerState<RecurrenceComponent> {
               },
               borderRadius: const BorderRadius.all(Radius.circular(8)),
               constraints: const BoxConstraints(
-                  minHeight: 25, maxHeight: 35, minWidth: 80, maxWidth: 120),
+                minHeight: 30,
+                maxHeight: 35,
+                minWidth: 90,
+                maxWidth: 120,
+              ),
               children: RecurrenceState.values
-                  .map((key) => Text(
-                        key.name.capitalize(),
-                      ))
+                  .map((key) => Text(key.name.capitalize()))
                   .toList(),
             ),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 80, maxWidth: 120),
-              child: Container(
-                height: 100,
-                margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF1f9cd49f))),
-                child: SizedBox(
-                  width: 50,
-                  height: 60,
-                  child: NumberPicker(
-                    value: bookingReader.recurrenceFrequency,
-                    minValue: 1,
-                    maxValue: 60,
-                    itemHeight: 30,
-                    haptics: true,
-                    onChanged: (value) {
-                      bookingFunction.setRecurrenceFrequency(value);
-                    },
-                  ),
-                ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFF1f9cd49f)),
+            ),
+            child: SizedBox(
+              width: 50,
+              child: NumberPicker(
+                value: bookingReader.recurrenceFrequency,
+                minValue: 1,
+                maxValue: 60,
+                itemHeight: 40,
+                haptics: true,
+                onChanged: (value) {
+                  bookingFunction.setRecurrenceFrequency(value);
+                },
               ),
             ),
-            Text(
-              'Times',
-              style: TextStyle(color: context.colors.secondary),
-            )
-          ],
-        ),
+          ),
+          Text(
+            'Times',
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+          )
+        ],
       ),
     );
   }

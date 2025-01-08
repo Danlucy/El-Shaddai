@@ -73,10 +73,12 @@ class _MyAppState extends ConsumerState<_MyApp> {
     return MaterialApp.router(
       title: 'El Shaddai',
       theme: ThemeData(
+          appBarTheme: const AppBarTheme(titleSpacing: 0),
           textTheme: textTheme,
           useMaterial3: true,
           colorScheme: MaterialTheme.darkScheme()),
       darkTheme: ThemeData(
+          appBarTheme: const AppBarTheme(titleSpacing: 0),
           textTheme: textTheme,
           useMaterial3: true,
           colorScheme: MaterialTheme.darkScheme()),

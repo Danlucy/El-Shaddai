@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:time_range_picker/src/clock-gesture-recognizer.dart';
@@ -674,9 +675,6 @@ class TimeRangePickerState extends State<TimeRangePicker>
                           localizations: localizations, themeData: themeData)
                     ]),
                 ToggleButtons(
-                  children: ActiveTime.values
-                      .map((x) => Text(x.name.toString()))
-                      .toList(),
                   isSelected:
                       ActiveTime.values.map((x) => x == _activeTime).toList(),
                   onPressed: (int index) {
@@ -684,6 +682,9 @@ class TimeRangePickerState extends State<TimeRangePicker>
                       _activeTime = ActiveTime.values[index];
                     });
                   },
+                  children: ActiveTime.values
+                      .map((x) => Text(x.name.toString()))
+                      .toList(),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -866,13 +867,46 @@ class TimeRangePickerState extends State<TimeRangePicker>
         direction: landscape ? Axis.vertical : Axis.horizontal,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Column(
-            children: [
-              Text(widget.fromText, style: TextStyle(color: activeColor)),
-              Text(
-                MaterialLocalizations.of(context).formatTimeOfDay(_startTime,
+          Expanded(
+            child: Column(
+              children: [
+                AutoSizeText(widget.fromText,
+                    minFontSize: 10, // Minimum font size
+                    maxFontSize: 20,
+                    style: TextStyle(color: activeColor)),
+                AutoSizeText(
+                  minFontSize: 10, // Minimum font size
+                  maxFontSize: 20, maxLines: 1,
+                  MaterialLocalizations.of(context).formatTimeOfDay(_startTime,
+                      alwaysUse24HourFormat: widget.use24HourFormat),
+                  style: _activeTime == ActiveTime.Start
+                      ? widget.activeTimeTextStyle ??
+                          TextStyle(
+                              color: activeColor,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold)
+                      : widget.timeTextStyle ??
+                          TextStyle(
+                              color: inactiveColor,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(children: [
+              AutoSizeText(
+                widget.toText, style: TextStyle(color: activeColor),
+                minFontSize: 10, // Minimum font size
+                maxFontSize: 20,
+              ),
+              AutoSizeText(
+                minFontSize: 10, // Minimum font size
+                maxFontSize: 20, maxLines: 1,
+                MaterialLocalizations.of(context).formatTimeOfDay(_endTime,
                     alwaysUse24HourFormat: widget.use24HourFormat),
-                style: _activeTime == ActiveTime.Start
+                style: _activeTime == ActiveTime.End
                     ? widget.activeTimeTextStyle ??
                         TextStyle(
                             color: activeColor,
@@ -884,26 +918,8 @@ class TimeRangePickerState extends State<TimeRangePicker>
                             fontSize: 28,
                             fontWeight: FontWeight.bold),
               ),
-            ],
-          ),
-          Column(children: [
-            Text(widget.toText, style: TextStyle(color: activeColor)),
-            Text(
-              MaterialLocalizations.of(context).formatTimeOfDay(_endTime,
-                  alwaysUse24HourFormat: widget.use24HourFormat),
-              style: _activeTime == ActiveTime.End
-                  ? widget.activeTimeTextStyle ??
-                      TextStyle(
-                          color: activeColor,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold)
-                  : widget.timeTextStyle ??
-                      TextStyle(
-                          color: inactiveColor,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold),
-            ),
-          ])
+            ]),
+          )
         ],
       ),
     );

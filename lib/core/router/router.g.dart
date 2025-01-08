@@ -17,12 +17,20 @@ RouteBase get $homeRoute => GoRouteData.$route(
       factory: $HomeRouteExtension._fromState,
       routes: [
         GoRouteData.$route(
-          path: 'events',
-          factory: $EventsRouteExtension._fromState,
+          path: 'booking',
+          factory: $BookingRouteExtension._fromState,
         ),
         GoRouteData.$route(
           path: 'zoom',
           factory: $ZoomRouteExtension._fromState,
+        ),
+        GoRouteData.$route(
+          path: 'profile',
+          factory: $ProfileRouteExtension._fromState,
+        ),
+        GoRouteData.$route(
+          path: 'booking-list',
+          factory: $BookingListRouteExtension._fromState,
         ),
       ],
     );
@@ -44,11 +52,11 @@ extension $HomeRouteExtension on HomeRoute {
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $EventsRouteExtension on EventsRoute {
-  static EventsRoute _fromState(GoRouterState state) => const EventsRoute();
+extension $BookingRouteExtension on BookingRoute {
+  static BookingRoute _fromState(GoRouterState state) => const BookingRoute();
 
   String get location => GoRouteData.$location(
-        '/events',
+        '/booking',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -71,6 +79,41 @@ extension $ZoomRouteExtension on ZoomRoute {
         queryParams: {
           if (url != null) 'url': url,
         },
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $ProfileRouteExtension on ProfileRoute {
+  static ProfileRoute _fromState(GoRouterState state) => const ProfileRoute();
+
+  String get location => GoRouteData.$location(
+        '/profile',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $BookingListRouteExtension on BookingListRoute {
+  static BookingListRoute _fromState(GoRouterState state) =>
+      const BookingListRoute();
+
+  String get location => GoRouteData.$location(
+        '/booking-list',
       );
 
   void go(BuildContext context) => context.go(location);

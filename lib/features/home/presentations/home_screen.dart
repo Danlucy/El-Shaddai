@@ -1,12 +1,8 @@
-import 'dart:convert';
-
-import 'package:el_shaddai/api/models/access_token_model/access_token_model.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +16,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome ${ref.read(userProvider)?.name ?? 'User'}'),
+        title: Text('Welcome ${ref.watch(userProvider)?.name ?? 'User'}'),
       ),
       drawer: const GeneralDrawer(),
       body: SafeArea(
