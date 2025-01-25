@@ -4,6 +4,7 @@ import 'package:el_shaddai/features/auth/widgets/loader.dart';
 import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
 import 'package:el_shaddai/features/calendar/controller/calendar_controller.dart';
 import 'package:el_shaddai/features/calendar/widget/booking_details_dialog.dart';
+import 'package:el_shaddai/features/participant/participant_controller/participant_controller.dart';
 import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

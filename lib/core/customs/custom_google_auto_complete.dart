@@ -184,7 +184,7 @@ class _GooglePlaceAutoCompleteTextFieldState
 
       _overlayEntry = null;
       _overlayEntry = _createOverlayEntry(widget.context);
-      Overlay.of(context)!.insert(_overlayEntry!);
+      Overlay.of(context).insert(_overlayEntry!);
     } catch (e) {
       var errorHandler = ErrorHandler.internal().handleError(e);
       _showSnackBar("${errorHandler.message}");
@@ -224,7 +224,7 @@ class _GooglePlaceAutoCompleteTextFieldState
               child: GestureDetector(
                 onVerticalDragUpdate: (details) {
                   Scrollable.of(scrollableContext)?.position.moveTo(
-                        Scrollable.of(scrollableContext)!.position.pixels -
+                        Scrollable.of(scrollableContext).position.pixels -
                             details.delta.dy,
                       );
                 },

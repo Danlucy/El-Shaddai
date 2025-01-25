@@ -176,6 +176,7 @@ class BookingController extends _$BookingController {
   ZoomMeetingModel instantiateZoomMeetingModel() {
     return ZoomMeetingModel(
       topic: state.title,
+      duration: state.timeRange!.duration.inMinutes,
       description: state.description,
       startTime: state.timeRange!.start,
       type: state.recurrenceState == RecurrenceState.none ? 2 : 8,

@@ -1,7 +1,9 @@
 import 'package:el_shaddai/api/models/access_token_model/access_token_model.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
-import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
+import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
+import 'package:el_shaddai/features/auth/widgets/logout_button.dart';
+import 'package:el_shaddai/models/user_model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,30 +22,24 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      width: width,
       child: SafeArea(
         child: Column(
           children: [
             ListTile(
               leading: const Icon(Icons.house),
               title: const Text('Home'),
-              onTap: () {
-                const HomeRoute().push(context);
-              },
+              onTap: () => const HomeRoute().push(context),
             ),
             ListTile(
               leading: const Icon(Icons.message),
               title: const Text('Prayer Watch'),
-              onTap: () {
-                const BookingRoute().push(context);
-              },
+              onTap: () => const BookingRoute().push(context),
             ),
             ListTile(
-              leading: const Icon(Icons.list),
-              title: const Text('Prayer List'),
-              onTap: () {
-                const BookingListRoute().push(context);
-              },
-            ),
+                leading: const Icon(Icons.list),
+                title: const Text('Prayer List'),
+                onTap: () => const BookingListRoute().push(context)),
             ListTile(
               leading: const Icon(Icons.calendar_month),
               title: const Text('Prayer Leader'),
@@ -57,10 +53,15 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
             ListTile(
               leading: const Icon(Icons.account_circle),
               title: const Text('Profile'),
-              onTap: () {
-                const ProfileRoute().push(context);
-              },
+              onTap: () => const ProfileRoute().push(context),
             ),
+            (ref.watch(userProvider)?.role == UserRole.admin)
+                ? ListTile(
+                    leading: const Icon(Icons.account_circle),
+                    title: const Text('User Management'),
+                    onTap: () => const UserManagementRoute().push(context),
+                  )
+                : const SizedBox(),
             const Spacer(),
             (ref.watch(accessTokenNotifierProvider).value == null)
                 ? const SizedBox()
@@ -84,64 +85,11 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
               ),
               onTap: () {
                 showDialog(
-                    barrierColor: Colors.black.withOpacity(0.2),
+                    barrierColor: Colors.black.withOpac(0.2),
                     context: context,
                     builder: (context) {
-                      return Center(
-                        child: Container(
-                          width: width * 3 / 4,
-                          height: height * 1 / 4,
-                          decoration: BoxDecoration(
-                              color: context.colors.secondaryContainer,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(16))),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'Confirm Log Out?',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500, fontSize: 16),
-                              ),
-                              const SizedBox(
-                                height: 50,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              context.colors.onSurfaceVariant),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        'Cancel',
-                                        style: TextStyle(
-                                            color: context.colors.onSurface),
-                                      )),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.redAccent),
-                                    onPressed: () {
-                                      ref.read(authRepositoryProvider).logout();
-                                    },
-                                    child: Text(
-                                      'Confirm',
-                                      style: TextStyle(
-                                          color: context.colors.onSurface),
-                                    ),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      );
+                      return LogOutButton(
+                          width: width, height: height, ref: ref);
                     });
               },
             ),

@@ -793,7 +793,7 @@ class TimeRangePickerState extends State<TimeRangePicker>
         child: AspectRatio(
           aspectRatio: 1,
           child: Container(
-            color: Colors.white.withOpacity(0),
+            color: Colors.white.withOpac(0),
             child: Center(
               child: CustomPaint(
                 key: _circleKey,
@@ -811,9 +811,9 @@ class TimeRangePickerState extends State<TimeRangePicker>
                     selectedColor:
                         widget.selectedColor ?? themeData.primaryColorLight,
                     backgroundColor:
-                        widget.backgroundColor ?? Colors.grey.withOpacity(0.3),
+                        widget.backgroundColor ?? Colors.grey.withOpac(0.3),
                     disabledColor:
-                        widget.disabledColor ?? Colors.red.withOpacity(0.5),
+                        widget.disabledColor ?? Colors.red.withOpac(0.5),
                     paintingStyle: widget.paintingStyle,
                     ticks: widget.ticks,
                     ticksColor: widget.ticksColor,
@@ -861,7 +861,6 @@ class TimeRangePickerState extends State<TimeRangePicker>
     }
 
     return Container(
-      color: backgroundColor,
       padding: const EdgeInsets.all(24),
       child: Flex(
         direction: landscape ? Axis.vertical : Axis.horizontal,

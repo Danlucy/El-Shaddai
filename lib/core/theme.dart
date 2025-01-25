@@ -5,6 +5,14 @@ extension ThemeExtension on BuildContext {
   ColorScheme get colors => Theme.of(this).colorScheme;
 }
 
+extension ColorUtils on Color {
+  Color withOpac(double opacity) {
+    assert(opacity >= 0.0 && opacity <= 1.0,
+        'Opacity must be between 0.0 and 1.0');
+    return this.withAlpha((opacity * 255).toInt());
+  }
+}
+
 final textTheme = TextTheme(
   displayLarge: GoogleFonts.inter(
     fontWeight: FontWeight.w400,

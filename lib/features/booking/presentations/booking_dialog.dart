@@ -41,15 +41,20 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
   @override
   void initState() {
     super.initState();
-    _precacheImages();
     _googleController.addListener(_onTextChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _precacheImages(); // Move the precache logic here
   }
 
   Future<void> _precacheImages() async {
     // Precache the zoom logo
     await precacheImage(
       const AssetImage('assets/zoom.png'),
-      context,
+      context, // Safe to use context here
     );
   }
 

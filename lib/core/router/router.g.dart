@@ -32,6 +32,10 @@ RouteBase get $homeRoute => GoRouteData.$route(
           path: 'booking-list',
           factory: $BookingListRouteExtension._fromState,
         ),
+        GoRouteData.$route(
+          path: 'user-management',
+          factory: $UserManagementRouteExtension._fromState,
+        ),
       ],
     );
 
@@ -114,6 +118,24 @@ extension $BookingListRouteExtension on BookingListRoute {
 
   String get location => GoRouteData.$location(
         '/booking-list',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $UserManagementRouteExtension on UserManagementRoute {
+  static UserManagementRoute _fromState(GoRouterState state) =>
+      const UserManagementRoute();
+
+  String get location => GoRouteData.$location(
+        '/user-management',
       );
 
   void go(BuildContext context) => context.go(location);

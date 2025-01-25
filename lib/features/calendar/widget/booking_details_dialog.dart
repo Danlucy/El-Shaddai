@@ -1,7 +1,10 @@
+import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/core/utility/url_launcher.dart';
 import 'package:el_shaddai/core/widgets/calendar_widget.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
+import 'package:el_shaddai/features/participant/participant_controller/participant_controller.dart';
+import 'package:el_shaddai/features/participant/presentation/widgets/join_button.dart';
 import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +28,9 @@ class BookingDetailsDialog extends ConsumerWidget {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final user = ref.read(userProvider);
+    final participantController =
+        ref.read(participantControllerProvider(bookingModel.id).notifier);
+
     return AlertDialog(
       insetPadding: EdgeInsets.zero,
       content: Container(
@@ -92,10 +98,8 @@ class BookingDetailsDialog extends ConsumerWidget {
             const Gap(5),
             Container(
               decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSecondary
-                      .withOpacity(0.4),
+                  color:
+                      Theme.of(context).colorScheme.onSecondary.withOpac(0.4),
                   borderRadius: const BorderRadius.all(Radius.circular(8))),
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
@@ -170,6 +174,7 @@ class BookingDetailsDialog extends ConsumerWidget {
                   ),
                 ],
               ),
+            JoinButton(bookingId: bookingModel.id),
           ]),
         ),
       ),

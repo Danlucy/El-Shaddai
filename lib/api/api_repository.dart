@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:el_shaddai/api/api_interceptor.dart';
 import 'package:el_shaddai/api/models/zoom_meeting_model/zoom_meeting_model.dart';
 import 'package:el_shaddai/core/constants/constants.dart';
+import 'package:oauth2/oauth2.dart';
 
 class ApiRepository {
   String getEncodedString() {
@@ -14,22 +15,34 @@ class ApiRepository {
 
   final _authDio = Dio();
   final _functionDio = Dio()..interceptors.add(CustomInterceptor());
-  Future<Response> getAccessToken(String code) {
+  Future<Response> getAccessToken(String code, String codeVerifier) async {
     final String encodedString = getEncodedString();
-    return _authDio.post(
-      'https://zoom.us/oauth/token',
-      data: {
-        'grant_type': 'authorization_code',
-        'code': code,
-        'redirect_uri': 'https://daniel-ong.com',
-      },
-      options: Options(
-        headers: {
-          'Authorization': 'Basic $encodedString',
-          'Content-Type': 'application/x-www-form-urlencoded',
+    try {
+      final response = await _authDio.post(
+        'https://zoom.us/oauth/token',
+        data: {
+          'grant_type': 'authorization_code',
+          'code': code,
+          'redirect_uri': 'https://daniel-ong.com',
+          'code_verifier': codeVerifier,
         },
-      ),
-    );
+        options: Options(
+          headers: {
+            'Authorization': 'Basic $encodedString',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response; // Dio automatically parses JSON response
+      } else {
+        throw Exception(
+            'Failed to exchange authorization code: ${response.data}');
+      }
+    } catch (e) {
+      print('Testtt: $e');
+      throw Exception('Error exchanging authorization code $e');
+    }
   }
 
   // Future<Response> getUser(String accessToken, BuildContext context) {
@@ -51,5 +64,40 @@ class ApiRepository {
           },
         ),
         data: meetingData.toJson());
+  }
+
+  Future<Map<String, dynamic>> exchangeAuthorizationCode(
+      String authorizationCode, String codeVerifier) async {
+    final Dio dio = Dio();
+
+    try {
+      final response = await dio.post(
+        'https://zoom.us/oauth/token',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization':
+                'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
+          },
+        ),
+        data: {
+          'grant_type': 'authorization_code',
+          'code': authorizationCode,
+          'redirect_uri': redirectUrl,
+          'code_verifier': codeVerifier,
+        },
+      );
+
+      // Check for success
+      if (response.statusCode == 200) {
+        return response.data; // Dio automatically parses JSON response
+      } else {
+        throw Exception(
+            'Failed to exchange authorization code: ${response.data}');
+      }
+    } catch (e) {
+      print('Error during token exchange: $e');
+      throw Exception('Error exchanging authorization code');
+    }
   }
 }
