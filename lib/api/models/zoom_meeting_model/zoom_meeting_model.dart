@@ -1,4 +1,3 @@
-
 import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
 import 'package:el_shaddai/core/utility/json_converters.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -17,6 +16,7 @@ class ZoomMeetingModel with _$ZoomMeetingModel {
       name: 'agenda',
     )
     String? description,
+    int? duration,
     @RecurrenceConfigurationConverter()
     @JsonKey(name: 'recurrence')
     RecurrenceConfigurationModel? recurrenceConfiguration,

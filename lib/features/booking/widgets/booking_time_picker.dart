@@ -82,7 +82,7 @@ class _BookingTimePickerComponentState
               text: e.value,
             );
           }).toList(),
-          ticks: 12,
+          ticks: 24,
         );
 
         // print("result $result");

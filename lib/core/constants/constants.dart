@@ -1,7 +1,8 @@
 const googleAPI = 'AIzaSyB7yJR6X1DOKCmmHwH4wI0TXXhMAVxyV0g';
 const clientId = 'OLnqfeWuS1yQDh2alJOTQ';
 const clientSecret = 'Bi3RBwvo2z0vIPZ9KU50D9u9vgcGxlyI';
-
+const zoomLoginBaseUrl = 'https://zoom.us/oauth/authorize';
+const redirectUrl = 'https://daniel-ong.com';
 const zoomLoginRoute =
     'https://zoom.us/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=https://daniel-ong.com';
 const timeLabels = [

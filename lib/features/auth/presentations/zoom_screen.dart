@@ -1,5 +1,7 @@
 import 'package:el_shaddai/api/api_repository.dart';
 import 'package:el_shaddai/api/models/access_token_model/access_token_model.dart';
+import 'package:el_shaddai/api/pkce_utils.dart';
+import 'package:el_shaddai/core/constants/constants.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/features/auth/controller/zoom_auth_controller.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +24,19 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
   @override
   void initState() {
     super.initState();
+    final String codeVerifier = PKCEUtils.generateCodeVerifier();
+    final String codeChallenge = PKCEUtils.generateCodeChallenge(codeVerifier);
+    PKCEUtils().saveCodeVerifier(codeVerifier);
+    final String urld = '$zoomLoginBaseUrl'
+        '?response_type=code'
+        '&client_id=$clientId'
+        '&redirect_uri=https://daniel-ong.com'
+        '&code_challenge=$codeChallenge'
+        '&code_challenge_method=S256';
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(
-          widget.url ?? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'));
+      ..loadRequest(
+          Uri.parse(urld ?? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'));
 
     // Setting up the navigation delegate to listen for URL changes
     controller.setNavigationDelegate(
@@ -33,15 +44,15 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
         onPageStarted: (url) async {
           currentUrl.value = url; // Update the current URL
           // Check if the URL contains the specific query parameter
-          if (url.contains('daniel-ong.com/?code=')) {
+          if (url.contains('daniel-ong.com')) {
             ref.read(authTokenNotifierProvider.notifier).startTokenListener();
             final Uri uri = Uri.parse(url);
             final String? code = uri.queryParameters['code'];
             if (code != null) {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setString('userAuthenticationCode', code);
-              final response = await apiRepository.getAccessToken(code);
-
+              final response =
+                  await apiRepository.getAccessToken(code, codeVerifier);
               ref.read(accessTokenNotifierProvider.notifier).saveAccessToken(
                     AccessToken(
                       token: response.data['access_token'],

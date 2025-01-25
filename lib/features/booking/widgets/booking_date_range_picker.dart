@@ -29,7 +29,7 @@ class _BookingDateRangePickerComponentState
       ),
       monthCellStyle: DateRangePickerMonthCellStyle(
         blackoutDateTextStyle: TextStyle(
-          color: Colors.redAccent.withOpacity(0.4),
+          color: Colors.redAccent.withOpac(0.4),
         ),
         cellDecoration: BoxDecoration(
           borderRadius: const BorderRadius.all(

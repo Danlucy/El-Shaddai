@@ -6,6 +6,7 @@ import 'package:el_shaddai/features/booking/presentations/booking_list_screen.da
 import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:el_shaddai/features/home/presentations/home_screen.dart';
 import 'package:el_shaddai/features/profile/presentations/profile_screen.dart';
+import 'package:el_shaddai/features/user_management/presentations/user_management_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -50,6 +51,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     TypedGoRoute<BookingListRoute>(
       path: 'booking-list',
     ),
+    TypedGoRoute<UserManagementRoute>(
+      path: 'user-management',
+    ),
   ],
 )
 class HomeRoute extends GoRouteData {
@@ -81,6 +85,14 @@ class BookingListRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const BookingListScreen();
+}
+
+class UserManagementRoute extends GoRouteData {
+  const UserManagementRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const UserManagementScreen();
 }
 
 class ZoomRoute extends GoRouteData {
