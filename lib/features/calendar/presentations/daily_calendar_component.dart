@@ -97,36 +97,68 @@ class _DailyCalendarComponentState
   }
 }
 
-_AppointmentDataSource _getCalendarDataSource(List<BookingModel> bookingModel) {
+_AppointmentDataSource _getCalendarDataSource(
+    List<BookingModel> bookingModels) {
   List<BookingModel> appointments = <BookingModel>[];
-  for (BookingModel booking in bookingModel) {
-    int duration = booking.timeRange.end.day - booking.timeRange.start.day;
-    for (int i = 0; i < duration + 1; i++) {
-      DateTime appointmentDate = booking.timeRange.start.add(Duration(days: i));
 
-      // For the first day, set the start time to the original start time
-      DateTime currentStartTime = (i == 0)
-          ? booking.timeRange.start
-          : DateTime(appointmentDate.year, appointmentDate.month,
-              appointmentDate.day, 0, 0);
+  for (BookingModel booking in bookingModels) {
+    // Calculate the number of days between start and end dates
+    int duration =
+        booking.timeRange.end.difference(booking.timeRange.start).inDays;
 
-      // For the last day, set the end time to the original end time
-      DateTime currentEndTime = (i == duration)
-          ? booking.timeRange.end
-          : DateTime(appointmentDate.year, appointmentDate.month,
-              appointmentDate.day, 23, 59);
+    for (int i = 0; i <= duration; i++) {
+      DateTime currentDate = DateTime(
+        booking.timeRange.start.year,
+        booking.timeRange.start.month,
+        booking.timeRange.start.day + i,
+      );
+
+      DateTime startTime;
+      DateTime endTime;
+
+      if (i == 0) {
+        // First day: Use original start time
+        startTime = booking.timeRange.start;
+      } else {
+        // Other days: Start at midnight
+        startTime = DateTime(
+          currentDate.year,
+          currentDate.month,
+          currentDate.day,
+          0,
+          0,
+        );
+      }
+
+      if (i == duration) {
+        // Last day: Use original end time
+        endTime = booking.timeRange.end;
+      } else {
+        // Other days: End at 23:59:59
+        endTime = DateTime(
+          currentDate.year,
+          currentDate.month,
+          currentDate.day,
+          23,
+          59,
+          59,
+        );
+      }
 
       appointments.add(BookingModel(
-          timeRange:
-              CustomDateTimeRange(start: currentStartTime, end: currentEndTime),
-          description: booking.description,
-          title: booking.title,
-          recurrenceState: booking.recurrenceState,
-          location: booking.location,
-          createdAt: booking.createdAt,
-          host: booking.host,
-          userId: booking.userId,
-          id: booking.id));
+        timeRange: CustomDateTimeRange(
+          start: startTime,
+          end: endTime,
+        ),
+        description: booking.description,
+        title: booking.title,
+        recurrenceState: booking.recurrenceState,
+        location: booking.location,
+        createdAt: booking.createdAt,
+        host: booking.host,
+        userId: booking.userId,
+        id: booking.id,
+      ));
     }
   }
 

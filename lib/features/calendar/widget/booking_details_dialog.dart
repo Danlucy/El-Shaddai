@@ -4,6 +4,7 @@ import 'package:el_shaddai/core/widgets/calendar_widget.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:el_shaddai/features/participant/participant_controller/participant_controller.dart';
+import 'package:el_shaddai/features/participant/participant_repository/participant_repository.dart';
 import 'package:el_shaddai/features/participant/presentation/widgets/join_button.dart';
 import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:flutter/material.dart';
@@ -13,24 +14,31 @@ import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
-class BookingDetailsDialog extends ConsumerWidget {
+class BookingDetailsDialog extends ConsumerStatefulWidget {
   const BookingDetailsDialog({
     super.key,
     required this.bookingModel,
   });
 
   final BookingModel bookingModel;
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState createState() => _BookingDetailsDialogState();
+}
+
+class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final textScaleFactor = TextScaleFactor.scaleFactor(textScale);
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final user = ref.read(userProvider);
-    final participantController =
-        ref.read(participantControllerProvider(bookingModel.id).notifier);
-
+    final participantRepositary = ref
+        .watch(participantRepositoryProvider)
+        .getAllParticipants(widget.bookingModel.id);
+    print(participantRepositary);
     return AlertDialog(
       insetPadding: EdgeInsets.zero,
       content: Container(
@@ -44,14 +52,14 @@ class BookingDetailsDialog extends ConsumerWidget {
               height: 20,
             ),
             Text(
-              bookingModel.title,
+              widget.bookingModel.title,
               style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).colorScheme.inverseSurface),
             ),
             Text(
-              bookingModel.host,
+              widget.bookingModel.host,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -65,12 +73,12 @@ class BookingDetailsDialog extends ConsumerWidget {
                   Column(
                     children: [
                       CalendarWidget(
-                          date: bookingModel.timeRange.start,
+                          date: widget.bookingModel.timeRange.start,
                           color: Theme.of(context).colorScheme.primary),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Text(DateFormat.jm()
-                            .format(bookingModel.timeRange.start)),
+                            .format(widget.bookingModel.timeRange.start)),
                       ),
                     ],
                   ),
@@ -78,12 +86,12 @@ class BookingDetailsDialog extends ConsumerWidget {
                   Column(
                     children: [
                       CalendarWidget(
-                          date: bookingModel.timeRange.end,
+                          date: widget.bookingModel.timeRange.end,
                           color: Theme.of(context).colorScheme.primary),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Text(
-                            DateFormat.jm().format(bookingModel.timeRange.end)),
+                        child: Text(DateFormat.jm()
+                            .format(widget.bookingModel.timeRange.end)),
                       ),
                     ],
                   ),
@@ -104,20 +112,20 @@ class BookingDetailsDialog extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
               child: Text(
-                bookingModel.description,
+                widget.bookingModel.description,
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
             const Gap(16),
-            if (bookingModel.location.address != null)
+            if (widget.bookingModel.location.address != null)
               Row(
                 children: [
                   const Icon(Icons.location_on),
                   const Gap(5),
                   Expanded(
                     child: Text(
-                      bookingModel.location.address.toString(),
+                      widget.bookingModel.location.address.toString(),
                       maxLines: 2,
                       style: TextStyle(
                           fontSize: 12,
@@ -127,7 +135,7 @@ class BookingDetailsDialog extends ConsumerWidget {
                   ),
                 ],
               ),
-            if (bookingModel.location.chords != null)
+            if (widget.bookingModel.location.chords != null)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
                 child: SizedBox(
@@ -137,24 +145,24 @@ class BookingDetailsDialog extends ConsumerWidget {
                       borderRadius: const BorderRadius.all(Radius.circular(15)),
                       child: GoogleMap(
                         initialCameraPosition: CameraPosition(
-                          target: bookingModel.location.chords!,
+                          target: widget.bookingModel.location.chords!,
                           zoom: 13,
                         ),
                         markers: {
                           Marker(
                             markerId: const MarkerId("1"),
-                            position: bookingModel.location.chords!,
+                            position: widget.bookingModel.location.chords!,
                           )
                         },
                       ),
                     )),
               ),
-            if (bookingModel.location.web != null)
+            if (widget.bookingModel.location.web != null)
               Row(
                 children: [
                   GestureDetector(
                     onTap: () {
-                      launchURL(bookingModel.location.web!);
+                      launchURL(widget.bookingModel.location.web!);
                     },
                     child: CircleAvatar(
                       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -166,15 +174,25 @@ class BookingDetailsDialog extends ConsumerWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(
-                          text: bookingModel.location.meetingID()));
+                          text: widget.bookingModel.location.meetingID()));
                     },
                     child: Text(
-                      bookingModel.location.meetingID(spaced: true),
+                      widget.bookingModel.location.meetingID(spaced: true),
                     ),
                   ),
                 ],
               ),
-            JoinButton(bookingId: bookingModel.id),
+            StreamBuilder(
+                stream: participantRepositary,
+                builder: (context, snapshot) {
+                  print(snapshot.data);
+                  return snapshot.connectionState == ConnectionState.waiting
+                      ? const CircularProgressIndicator()
+                      : snapshot.data == null
+                          ? const Text('No Participants')
+                          : Text('Participants: ${snapshot.data?.length}');
+                }),
+            JoinButton(bookingId: widget.bookingModel.id),
           ]),
         ),
       ),

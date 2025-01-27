@@ -22,20 +22,12 @@ class MonthlyCalendarComponent extends ConsumerStatefulWidget {
       _MonthlyCalendarComponentState();
 }
 
-bool isOverlapping(DateTime date, CustomDateTimeRange timeRange) {
-  // Create DateTime for the start and end of the given date
-  final startOfDay = DateTime(date.year, date.month, date.day);
-  final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
-
-  return (timeRange.start.isBefore(endOfDay)) &&
-      (timeRange.end.isAfter(startOfDay));
-}
-
 class _MonthlyCalendarComponentState
     extends ConsumerState<MonthlyCalendarComponent> {
   @override
   Widget build(BuildContext context) {
     final selectedDate = ref.watch(calendarDateNotifierProvider);
+    MonthlyCalendarController controller = MonthlyCalendarController();
     ref.listen(
       calendarDateNotifierProvider,
       (previous, next) {
@@ -60,75 +52,9 @@ class _MonthlyCalendarComponentState
                 return isOverlapping(details.date, element.timeRange);
               }).toList();
               bool isBooked = bookings.isNotEmpty;
-              bool fullyBooked = false;
-              if (bookings.isNotEmpty) {
-                List<BookingModel> splitBookingsIntoDays(
-                    List<BookingModel> bookings) {
-                  List<BookingModel> splitBookings = [];
 
-                  for (BookingModel booking in bookings) {
-                    int duration =
-                        booking.timeRange.end.day - booking.timeRange.start.day;
-                    for (int i = 0; i < duration + 1; i++) {
-                      DateTime appointmentDate =
-                          booking.timeRange.start.add(Duration(days: i));
-
-                      // For the first day, set the start time to the original start time
-                      DateTime currentStartTime = (i == 0)
-                          ? booking.timeRange.start
-                          : DateTime(appointmentDate.year,
-                              appointmentDate.month, appointmentDate.day, 0, 0);
-
-                      // For the last day, set the end time to the original end time
-                      DateTime currentEndTime = (i == duration)
-                          ? booking.timeRange.end
-                          : DateTime(
-                              appointmentDate.year,
-                              appointmentDate.month,
-                              appointmentDate.day,
-                              23,
-                              59);
-
-                      splitBookings.add(BookingModel(
-                          timeRange: CustomDateTimeRange(
-                              start: currentStartTime, end: currentEndTime),
-                          description: booking.description,
-                          title: booking.title,
-                          recurrenceState: booking.recurrenceState,
-                          location: booking.location,
-                          createdAt: booking.createdAt,
-                          host: booking.host,
-                          userId: booking.userId,
-                          id: booking.id));
-                    }
-                  }
-
-                  return splitBookings;
-                }
-
-                // print('TRACK');
-                // print(details.date);
-                // print(splitBookingsIntoDays(bookings));
-
-                double sumBookingDurationsByDate(List<BookingModel> bookings) {
-                  final dd = bookings.where((element) {
-                    // print(' ${element.timeRange} ${element.appointmentTimeRange}');
-                    return isOverlapping(details.date, element.timeRange);
-                  });
-
-                  final total = dd.fold<double>(
-                      0,
-                      (sum, booking) =>
-                          sum + booking.timeRange.duration.inMinutes);
-
-                  return total;
-                }
-
-                fullyBooked = (sumBookingDurationsByDate(
-                        splitBookingsIntoDays(bookings)) >=
-                    1439);
-                // print(' ${details.date}$totalBookedMinutes');
-              }
+              bool fullyBooked =
+                  controller.isFullyBooked(details.date, bookings);
               return Container(
                 decoration: BoxDecoration(
                     color: Colors.transparent,
