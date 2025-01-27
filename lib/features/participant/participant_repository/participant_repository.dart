@@ -47,25 +47,23 @@ class ParticipantRepository {
   }
 
   /// Fetches all participants for a given booking and returns a list of `UserModel`.
-  Future<List<UserModel>> getAllParticipants(String bookingId) async {
-    try {
-      // Get the document for the given bookingId
-      final snapshot = await _participant.doc(bookingId).get();
-      if (snapshot.exists) {
-        // Cast snapshot data to a Map<String, dynamic>
-        final data = snapshot.data() as Map<String, dynamic>;
+  Stream<List<UserModel>> getAllParticipants(String bookingId) {
+    return _participant.doc(bookingId).snapshots().asyncMap((snapshot) async {
+      try {
+        if (!snapshot.exists) {
+          return [];
+        }
 
-        // Extract the list of participant data
+        final data = snapshot.data() as Map<String, dynamic>;
         final List participantsData = data['participantsId'] ?? [];
 
         if (participantsData.isEmpty) {
-          return []; // Return an empty list if no participants are found
+          return [];
         }
 
-        // Fetch user details for each participant ID
         final List<UserModel> participants = [];
         for (var participant in participantsData) {
-          final participantId = participant['participantId'] as String?;
+          final participantId = participant['userId'] as String?;
           if (participantId != null) {
             final userDoc = await _firestore
                 .collection(FirebaseConstants.usersCollection)
@@ -80,14 +78,11 @@ class ParticipantRepository {
         }
 
         return participants;
-      } else {
-        // Booking document doesn't exist
-        return [];
+      } catch (e) {
+        print('Error fetching participants: $e');
+        throw Exception('Failed to fetch participants');
       }
-    } catch (e) {
-      print('Error fetching participants: $e');
-      throw Exception('Failed to fetch participants');
-    }
+    });
   }
 
   /// Checks if a participant already exists in a given booking.
