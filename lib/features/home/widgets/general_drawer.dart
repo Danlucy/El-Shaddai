@@ -33,7 +33,7 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
             ),
             ListTile(
               leading: const Icon(Icons.message),
-              title: const Text('Prayer Watch'),
+              title: const Text('Book Prayer Watch'),
               onTap: () => const BookingRoute().push(context),
             ),
             ListTile(

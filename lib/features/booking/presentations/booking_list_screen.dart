@@ -26,14 +26,14 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
     final textScaleFactor = TextScaleFactor.scaleFactor(textScale);
 
     // Determine flex proportions based on TextScaleFactor
-    double appointmentHeight = 60; // Default: Equal space
+    double appointmentHeight = 70; // Default: Equal space
 
     if (textScaleFactor == TextScaleFactor.oldMan) {
-      appointmentHeight = 90; // DailyCalendarComponent takes 30%
+      appointmentHeight = 100; // DailyCalendarComponent takes 30%
     } else if (textScaleFactor == TextScaleFactor.boomer) {
-      appointmentHeight = 80; // DailyCalendarComponent takes 30%
+      appointmentHeight = 90; // DailyCalendarComponent takes 30%
     }
-    final bookingStream = ref.watch(bookingsProvider);
+    final bookingStream = ref.watch(bookingStreamProvider());
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -87,7 +87,9 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                     );
                   },
                   child: Container(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -105,7 +107,10 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const Gap(5),
+                          Text(
+                            bookingModel.host,
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
                           Row(
                             children: [
                               Text(

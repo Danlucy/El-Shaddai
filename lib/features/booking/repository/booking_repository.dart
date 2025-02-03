@@ -26,51 +26,73 @@ class BookingRepository {
   CollectionReference get _book =>
       _firestore.collection(FirebaseConstants.bookingCollection);
 
-  FutureEither<BookingModel> createBooking(
-      {required BookingModel model,
-      required Function(String) call,
-      RecurrenceConfigurationModel? recurrence}) async {
-    print('recurrent');
-    print(recurrence);
+  FutureEither<BookingModel> createOrEditBooking({
+    required BookingModel model,
+    String? bookingId, // Nullable booking ID (null = create, not null = update)
+    required Function(String) call,
+    RecurrenceConfigurationModel? recurrence,
+  }) async {
+    print('tracker');
+    print(bookingId);
     try {
-      if (recurrence == null) {
-        await _book.doc(model.id).set(model.toJson());
-        return right(model);
-      } else {
-        for (int i = 0; i < recurrence.recurrenceFrequency; i++) {
-          print('id');
-          print(i);
-          DateTime newDate = recurrence.type == 1
-              ? model.timeRange.start.add(Duration(days: i))
-              : model.timeRange.start.add(Duration(days: i * 7));
-          final doc = _book.doc();
-          BookingModel newBookingModel = BookingModel(
-            timeRange: CustomDateTimeRange(
-              start: newDate, // Update start time
-              end: newDate.add(model.timeRange.end
-                  .difference(model.timeRange.start)), // Preserve duration
-            ),
-            createdAt: DateTime.now(),
-            recurrenceState: model.recurrenceState,
-            title: model.title,
-            host: model.host,
-            userId: model.userId,
-            id: doc.id, // Generate a new ID for each booking
-            location: model.location,
-            description: model.description,
-          );
-          await doc.set({
-            ...newBookingModel.toJson(),
-            'recurrence': recurrence.toJson(),
-          });
+      if (bookingId == null) {
+        // 🔹 Create New Booking
+        final docRef = _book.doc(); // Generate a new document ID
+        final newModel = model.copyWith(
+          id: docRef.id, // Assign the generated ID
+          createdAt: DateTime.now(),
+        );
+
+        if (recurrence == null) {
+          // Simple one-time booking
+          await docRef.set(newModel.toJson());
+        } else {
+          // Recurring bookings
+          for (int i = 0; i < recurrence.recurrenceFrequency; i++) {
+            DateTime newDate = recurrence.type == 1
+                ? model.timeRange.start.add(Duration(days: i))
+                : model.timeRange.start.add(Duration(days: i * 7));
+
+            final recurringDoc =
+                _book.doc(); // Generate unique ID per recurrence
+            BookingModel newRecurringModel = newModel.copyWith(
+              id: recurringDoc.id,
+              timeRange: CustomDateTimeRange(
+                start: newDate,
+                end: newDate
+                    .add(model.timeRange.end.difference(model.timeRange.start)),
+              ),
+            );
+
+            await recurringDoc.set({
+              ...newRecurringModel.toJson(),
+              'recurrence': recurrence.toJson(),
+            });
+          }
         }
-        return right(model);
+        return right(newModel);
+      } else {
+        // 🔹 Update Existing Booking
+        final docRef = _book.doc(bookingId);
+        final existingBooking = await docRef.get();
+
+        if (!existingBooking.exists) {
+          throw "Booking with ID $bookingId does not exist.";
+        }
+
+        // **Ensure only the updated fields remain**
+        final updatedModel = model.copyWith(
+          id: bookingId,
+        );
+
+        await docRef.set(updatedModel.toJson(), SetOptions(merge: false));
+
+        return right(updatedModel);
       }
     } on FirebaseException catch (e) {
-      throw e.message!;
-    } catch (e, stacktrace) {
-      // print(e);
-      // print(stacktrace);
+      call(e.message ?? 'An error occurred.');
+      return left(Failure(e.message ?? 'Unknown Firebase error'));
+    } catch (e) {
       if (e.toString().contains('Null check operator used on a null value')) {
         call('Booking Failed! Fill in all the Data.');
       } else {
@@ -80,26 +102,49 @@ class BookingRepository {
     }
   }
 
-  void deleteGroupBooking(String id) {
-    _book.doc(id).delete();
+  void deleteGroupBooking(String bookingId) {
+    _book.doc(bookingId).delete();
+  }
+
+  void editBooking(
+      {required String bookingID, required BookingModel bookingModel}) {
+    try {
+      _book.doc(bookingID).update(bookingModel.toJson());
+    } catch (e) {
+      print('Error updating: $e');
+    }
   }
 }
 
 @riverpod
-Stream<List<BookingModel>> bookings(BookingsRef ref) {
-  return ref
-      .watch(firestoreProvider)
-      .collection(FirebaseConstants.bookingCollection)
-      .snapshots()
-      .map(
-        (value) => value.docs.map(
-          (e) {
-            final x = BookingModel.fromJson({...e.data(), 'id': e.id});
-            return x;
-          },
-        ).toList(),
-      );
-  //List<BookingData> <- List<Map> <- QuerySnapshot <-
+Stream<dynamic> bookingStream(BookingStreamRef ref, {String? bookingId}) {
+  final firestore = ref.watch(firestoreProvider);
+
+  if (bookingId == null) {
+    // ✅ If `bookingId` is null, return all bookings as a `Stream<List<BookingModel>>`
+    return firestore
+        .collection(FirebaseConstants.bookingCollection)
+        .snapshots()
+        .map(
+          (value) => value.docs
+              .map(
+                (e) => BookingModel.fromJson({...e.data(), 'id': e.id}),
+              )
+              .toList(),
+        );
+  } else {
+    // ✅ If `bookingId` is provided, return a single booking as `Stream<BookingModel?>`
+    return firestore
+        .collection(FirebaseConstants.bookingCollection)
+        .doc(bookingId)
+        .snapshots()
+        .map(
+          (doc) => doc.exists
+              ? BookingModel.fromJson(
+                  {...doc.data() as Map<String, dynamic>, 'id': doc.id})
+              : null, // Return `null` if booking doesn't exist
+        );
+  }
 }
 
 //List<BookingData> <- List<Map> <- QuerySnapshot <-

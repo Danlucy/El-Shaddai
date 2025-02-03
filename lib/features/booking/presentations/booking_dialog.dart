@@ -14,6 +14,7 @@ import 'package:el_shaddai/features/booking/widgets/booking_book_button.dart';
 import 'package:el_shaddai/features/booking/widgets/booking_date_range_picker.dart';
 import 'package:el_shaddai/features/booking/widgets/booking_time_picker.dart';
 import 'package:el_shaddai/features/booking/widgets/recurrence_component.dart';
+import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -21,6 +22,7 @@ import 'package:gap/gap.dart';
 class BookingDialog extends ConsumerStatefulWidget {
   const BookingDialog(
     this.context, {
+    this.bookingModel,
     super.key,
     required this.width,
     required this.height,
@@ -28,6 +30,7 @@ class BookingDialog extends ConsumerStatefulWidget {
   final BuildContext context;
   final double width;
   final double height;
+  final BookingModel? bookingModel;
 
   @override
   ConsumerState<BookingDialog> createState() => BookingDialogState();
@@ -81,6 +84,7 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
     var width = MediaQuery.of(context).size.width;
     ref.watch(bookingControllerProvider);
     final bookingFunction = ref.read(bookingControllerProvider.notifier);
+    final bool isUpdating = widget.bookingModel != null;
     final token =
         ref.watch(accessTokenNotifierProvider); // Use the new provider
     final textScaler = MediaQuery.textScalerOf(context).scale(1);
@@ -114,8 +118,11 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                     child: SingleChildScrollView(
                         child: Column(
                       children: [
-                        const Text('Book Your Prayer Time',
-                            style: TextStyle(
+                        Text(
+                            isUpdating
+                                ? 'Edit Your Prayer Time '
+                                : 'Book Your Prayer Time ',
+                            style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.bold)),
                         const BookingDateRangePickerComponent(),
 
@@ -198,7 +205,9 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                                     BookingVenueComponent.location) ||
                             token.value != null)
                           BookButton(
+                            isUpdating: isUpdating,
                             formKey: formKey,
+                            bookingId: widget.bookingModel?.id,
                             errorCall: (x) {
                               final contextKey = formKey.currentContext;
                               if (contextKey != null && contextKey.mounted) {

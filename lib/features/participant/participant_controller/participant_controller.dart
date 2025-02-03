@@ -47,7 +47,6 @@ class ParticipantController extends _$ParticipantController {
           state.bookingId!,
           state.userId!,
         );
-
         if (!exists) {
           // Add the participant along with a timestamp ("when" field)
           await repository.addParticipant(
@@ -56,6 +55,34 @@ class ParticipantController extends _$ParticipantController {
           );
         } else {
           print('Participant already exists in the booking');
+        }
+      } catch (e) {
+        throw 'Failed to add participant: $e';
+      }
+    } else {
+      throw 'Booking unavailable or participant ID is invalid';
+    }
+  }
+
+  Future<void> removeParticipant() async {
+    final repository = ref.read(participantRepositoryProvider);
+
+    if (state.userId!.isNotEmpty && state.userId != null) {
+      try {
+        // Check if the participant already exists in the booking
+        final exists = await repository.checkIfParticipantExists(
+          state.bookingId!,
+          state.userId!,
+        );
+        if (exists) {
+          // Add the participant along with a timestamp ("when" field)
+          await repository.removeParticipant(
+            state.bookingId!,
+            state.userId!,
+          );
+          // await repository.isEmptyThenRemove(state.bookingId!);
+        } else {
+          print('Participant does not exists in the booking');
         }
       } catch (e) {
         throw 'Failed to add participant: $e';

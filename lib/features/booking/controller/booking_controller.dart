@@ -4,12 +4,14 @@ import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_
 import 'package:el_shaddai/api/models/zoom_meeting_model/zoom_meeting_model.dart';
 import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
 import 'package:el_shaddai/core/utility/date_time_range.dart';
+import 'package:el_shaddai/core/widgets/snack_bar.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
 import 'package:el_shaddai/features/booking/state/booking_state.dart';
 import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:el_shaddai/models/location_data.dart';
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:time_range_picker/time_range_picker.dart';
@@ -123,17 +125,53 @@ class BookingController extends _$BookingController {
     );
   }
 
-  void setTimeRange(TimeRange timeOfDay) {
-    final start = state.timeRange?.start;
-    final end = state.timeRange?.end;
+  // void setTimeRange(TimeRange timeOfDay) {
+  //   final start = state.timeRange?.start;
+  //   final end = state.timeRange?.end;
+  //   state = state.copyWith(
+  //     timeRange: CustomDateTimeRange(
+  //       start: DateTime(start?.year ?? 0, start?.month ?? 0, start?.day ?? 0,
+  //           timeOfDay.startTime.hour, timeOfDay.startTime.minute),
+  //       end: DateTime(end?.year ?? 0, end?.month ?? 0, end?.day ?? 0,
+  //           timeOfDay.endTime.hour, timeOfDay.endTime.minute),
+  //     ),
+  //   );
+  // }
+  void setStartTime(DateTime startTime, BuildContext context) {
+    final currentRange = state.timeRange;
+    final startDate =
+        currentRange?.start ?? DateTime.now(); // Keep existing date
+
     state = state.copyWith(
       timeRange: CustomDateTimeRange(
-        start: DateTime(start?.year ?? 0, start?.month ?? 0, start?.day ?? 0,
-            timeOfDay.startTime.hour, timeOfDay.startTime.minute),
-        end: DateTime(end?.year ?? 0, end?.month ?? 0, end?.day ?? 0,
-            timeOfDay.endTime.hour, timeOfDay.endTime.minute),
+        start: DateTime(startDate.year, startDate.month, startDate.day,
+            startTime.hour, startTime.minute), // ✅ Only updating time
+        end: currentRange?.end ?? startDate, // Keep end time unchanged
       ),
     );
+    if (state.timeRange != null) {
+      if (state.timeRange!.end.isBefore(state.timeRange!.start)) {
+        showFailureSnackBar(context, 'Start Time Cannot Be After End Time');
+      }
+    }
+  }
+
+  void setEndTime(DateTime endTime, BuildContext context) {
+    final currentRange = state.timeRange;
+    final endDate = currentRange?.end ?? DateTime.now(); // Keep existing date
+
+    state = state.copyWith(
+      timeRange: CustomDateTimeRange(
+        start: currentRange?.start ?? endDate, // Keep start time unchanged
+        end: DateTime(endDate.year, endDate.month, endDate.day, endTime.hour,
+            endTime.minute), // ✅ Only updating time
+      ),
+    );
+    if (state.timeRange != null) {
+      if (state.timeRange!.start.isAfter(state.timeRange!.end)) {
+        showFailureSnackBar(context, 'End Time Cannot Be Before Start Time');
+      }
+    }
   }
 
   BookingModel instantiateBookingModel(String? web) {
@@ -186,44 +224,29 @@ class BookingController extends _$BookingController {
     );
   }
 
-  bool isBookingDataInvalid(
-    GlobalKey<FormState> formKey,
-  ) {
-    final isValid = formKey.currentState?.validate() ?? false;
-    if (!isValid) throw 'Booking Failed! Fill in all the data.';
-
-    final currentVenue = ref.read(bookingVenueStateProvider);
-
-    final location = state.location;
-
-    final requiredFields = [state.title, state.timeRange, state.description];
-    if (requiredFields.any((field) => field == null)) {
-      throw 'All fields are required.';
+  bool isBookingDataInvalid(GlobalKey<FormState> formKey) {
+    if (!(formKey.currentState?.validate() ?? false)) {
+      throw 'Booking Failed! Fill in all the data.';
     }
 
+    final currentVenue = ref.read(bookingVenueStateProvider);
+    final location = state.location;
     final user = ref.read(userProvider);
+
     if (user == null) {
       throw 'No user found. Ensure internet connection is available.';
     }
+
+    if ([state.title, state.timeRange, state.description]
+        .any((field) => field == null)) {
+      throw 'All fields are required.';
+    }
+
     if (currentVenue != BookingVenueComponent.zoom &&
         (location == null || location.address?.isEmpty == true)) {
       throw 'Location details are required.';
     }
-    // print(
-    //     'Title:${state.title} TimeRange: ${state.timeRange} Location: ${state.location} Desc: ${state.description} $currentVenue USER IS $user');
 
-    // print((currentVenue != BookingVenueComponent.zoom && location == null));
-    // print((location != null &&
-    //     location.address!.isEmpty &&
-    //     currentVenue != BookingVenueComponent.zoom));
-    // print(timeRange == null);
-    // print((title == null ||
-    //     timeRange == null ||
-    //     (currentVenue != BookingVenueComponent.zoom && location == null) ||
-    //     description == null ||
-    //     (location != null &&
-    //         location.address!.isEmpty &&
-    //         currentVenue != BookingVenueComponent.zoom)));
     return false;
   }
 
@@ -237,9 +260,14 @@ class BookingController extends _$BookingController {
   //   return false;
   // }
 
-  bool isTimeRangeInvalid(BuildContext context) {
-    final bookings =
-        ref.watch(bookingsProvider).valueOrNull ?? <BookingModel>[];
+  bool isTimeRangeInvalid(
+      BuildContext context, bool isUpdating, String? bookingId) {
+    final List<BookingModel> bookings =
+        ref.watch(bookingStreamProvider()).valueOrNull ?? <BookingModel>[];
+
+    // Filter out current booking if updating
+    final List<BookingModel> bookingsWithoutCurrent =
+        bookings.where((element) => element.id != bookingId).toList();
 
     CustomDateTimeRange shiftTimeRange(CustomDateTimeRange range,
         {int days = 0}) {
@@ -249,94 +277,87 @@ class BookingController extends _$BookingController {
       );
     }
 
-    bool checkDailyOverlap() {
-      if (state.recurrenceState == RecurrenceState.none) {
-        return bookings.any((booking) {
-          return doTimeRangesOverlap(booking.timeRange, state.timeRange!);
-        });
-      }
-      if (state.recurrenceState != RecurrenceState.daily) return false;
-      return bookings.any((booking) {
+    bool checkOverlap({bool isDaily = false, bool isWeekly = false}) {
+      if (!isDaily && !isWeekly) return false;
+
+      return bookingsWithoutCurrent.any((booking) {
         for (var i = 0; i < state.recurrenceFrequency; i++) {
-          final range = shiftTimeRange(state.timeRange!, days: i);
+          final range =
+              shiftTimeRange(state.timeRange!, days: isDaily ? i : i * 7);
           if (doTimeRangesOverlap(booking.timeRange, range)) return true;
         }
         return false;
       });
     }
 
-    bool checkWeeklyOverlap() {
-      if (state.recurrenceState != RecurrenceState.weekly) return false;
-      return bookings.any((booking) {
-        for (var i = 0; i < state.recurrenceFrequency; i++) {
-          final range = shiftTimeRange(state.timeRange!, days: i * 7);
-          if (doTimeRangesOverlap(booking.timeRange, range)) return true;
-        }
-        return false;
-      });
-    }
-
-    if (checkDailyOverlap()) {
+    if (state.recurrenceState == RecurrenceState.daily &&
+        checkOverlap(isDaily: true)) {
       throw 'Daily Booking Failed! Date is Already Booked!.';
-    } else if (checkWeeklyOverlap()) {
+    }
+
+    if (state.recurrenceState == RecurrenceState.weekly &&
+        checkOverlap(isWeekly: true)) {
       throw 'Weekly Booking Failed! Date is Already Booked!.';
     }
 
-    // final booking = bookings.firstWhereOrNull(
-    //   (element) {
-    //     if (state.recurrenceState == RecurrenceState.daily) {
-    //       for (var i = 0; i < state.recurrenceFrequency; i++) {
-    //         if (doTimeRangesOverlap(
-    //           element.timeRange,
-    //           CustomDateTimeRange(
-    //             start: state.timeRange!.start.add(Duration(
-    //               days: i,
-    //             )), // Add 1 day to the start
-    //             end: state.timeRange!.end.add(Duration(
-    //               days: i,
-    //             )), // Add 1 day to the end
-    //           ),
-    //         )) {
-    //           throw 'Daily Booking Failed! Date is Already Booked!.';
-    //         }
-    //       }
-    //     } else if (state.recurrenceState == RecurrenceState.weekly) {
-    //       for (var i = 0; i < state.recurrenceFrequency; i++) {
-    //         if (doTimeRangesOverlap(
-    //           element.timeRange,
-    //           CustomDateTimeRange(
-    //             start: state.timeRange!.start.add(
-    //               Duration(days: i * 7),
-    //             ), // Add 1 day to the start
-    //             end: state.timeRange!.end.add(
-    //               Duration(days: i * 7),
-    //             ), // Add 1 day to the end
-    //           ),
-    //         )) {
-    //           throw 'Weekly Booking Failed! Date is Already Booked!.';
-    //         }
-    //       }
-    //     } else {
-    //       return doTimeRangesOverlap(element.timeRange, state.timeRange!);
-    //     }
-    //     return doTimeRangesOverlap(element.timeRange, state.timeRange!);
-    //   },
-    // );
+    // Validate duration constraints
+    final maxDuration = state.recurrenceState == RecurrenceState.daily
+        ? const Duration(days: 1)
+        : const Duration(days: 7);
+    if (state.recurrenceState != RecurrenceState.none &&
+        state.timeRange!.duration > maxDuration) {
+      throw '${state.recurrenceState} bookings can\'t be more than ${maxDuration.inDays} day(s)!.';
+    }
 
-    if (state.recurrenceState == RecurrenceState.daily &&
-        state.timeRange!.duration > const Duration(days: 1)) {
-      throw 'Daily bookings cant be more than 1 day!.';
-    }
-    if (state.recurrenceState == RecurrenceState.weekly &&
-        state.timeRange!.duration > const Duration(days: 7)) {
-      throw 'Weekly bookings cant be more than 7 day!.';
-    }
+    // Check time range validity
     if (state.timeRange!.end.isBeforeOrEqualTo(state.timeRange!.start)) {
       throw 'Start Time Cannot Be After End Time.';
     }
+
     if (state.timeRange!.start.isBefore(DateTime.now())) {
       throw 'Booking Failed! Time is in the past.';
     }
+
     return false;
   }
 }
+// final booking = bookings.firstWhereOrNull(
+//   (element) {
+//     if (state.recurrenceState == RecurrenceState.daily) {
+//       for (var i = 0; i < state.recurrenceFrequency; i++) {
+//         if (doTimeRangesOverlap(
+//           element.timeRange,
+//           CustomDateTimeRange(
+//             start: state.timeRange!.start.add(Duration(
+//               days: i,
+//             )), // Add 1 day to the start
+//             end: state.timeRange!.end.add(Duration(
+//               days: i,
+//             )), // Add 1 day to the end
+//           ),
+//         )) {
+//           throw 'Daily Booking Failed! Date is Already Booked!.';
+//         }
+//       }
+//     } else if (state.recurrenceState == RecurrenceState.weekly) {
+//       for (var i = 0; i < state.recurrenceFrequency; i++) {
+//         if (doTimeRangesOverlap(
+//           element.timeRange,
+//           CustomDateTimeRange(
+//             start: state.timeRange!.start.add(
+//               Duration(days: i * 7),
+//             ), // Add 1 day to the start
+//             end: state.timeRange!.end.add(
+//               Duration(days: i * 7),
+//             ), // Add 1 day to the end
+//           ),
+//         )) {
+//           throw 'Weekly Booking Failed! Date is Already Booked!.';
+//         }
+//       }
+//     } else {
+//       return doTimeRangesOverlap(element.timeRange, state.timeRange!);
+//     }
+//     return doTimeRangesOverlap(element.timeRange, state.timeRange!);
+//   },
+// );
