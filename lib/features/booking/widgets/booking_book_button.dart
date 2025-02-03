@@ -11,10 +11,14 @@ class BookButton extends ConsumerStatefulWidget {
     super.key,
     required this.formKey,
     required this.errorCall,
+    this.bookingId,
+    required this.isUpdating,
   });
 
   final GlobalKey<FormState> formKey;
   final void Function(String) errorCall;
+  final bool isUpdating;
+  final String? bookingId;
 
   @override
   ConsumerState createState() => _BookButtonState();
@@ -33,8 +37,8 @@ class _BookButtonState extends ConsumerState<BookButton> {
           bookingFunction.isBookingDataInvalid(
             widget.formKey,
           );
-          bookingFunction.isTimeRangeInvalid(context);
-
+          bookingFunction.isTimeRangeInvalid(
+              context, widget.isUpdating, widget.bookingId);
           if (ref.read(bookingVenueStateProvider) !=
               BookingVenueComponent.location) {
             await apiRepository
@@ -46,12 +50,15 @@ class _BookButtonState extends ConsumerState<BookButton> {
               web = value.data['join_url'];
             });
           }
-          ref.read(bookingRepositoryProvider).createBooking(
+
+          ref.read(bookingRepositoryProvider).createOrEditBooking(
                 model: bookingFunction.instantiateBookingModel(web),
                 call: widget.errorCall,
+                bookingId: widget.bookingId,
                 recurrence:
                     bookingFunction.instantiateRecurrenceConfigurationModel(),
               );
+
           Navigator.pop(context);
         } on FirebaseException catch (e) {
           throw e.message!;
@@ -62,7 +69,8 @@ class _BookButtonState extends ConsumerState<BookButton> {
                   : e.toString());
         }
       },
-      child: const Text('Create Prayer Watch'),
+      child: Text(
+          widget.isUpdating ? 'Update Prayer Watch' : 'Create Prayer Watch'),
     );
   }
 }

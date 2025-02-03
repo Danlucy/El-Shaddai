@@ -34,7 +34,7 @@ class _MonthlyCalendarComponentState
         widget.monthlyCalendarController.selectedDate = next;
       },
     );
-    return ref.watch(bookingsProvider).when(
+    return ref.watch(bookingStreamProvider()).when(
         data: (data) {
           return SfCalendar(
             dataSource: BookingDataSource(data),

@@ -26,7 +26,7 @@ class _DailyCalendarComponentState
     extends ConsumerState<DailyCalendarComponent> {
   @override
   Widget build(BuildContext context) {
-    final bookingStream = ref.watch(bookingsProvider);
+    final bookingStream = ref.watch(bookingStreamProvider());
     ref.listen(
       calendarDateNotifierProvider,
       (previous, next) {
