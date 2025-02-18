@@ -10,8 +10,7 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class BookingTimePickerComponent extends ConsumerStatefulWidget {
-  const BookingTimePickerComponent({required this.controller, super.key});
-  final TextEditingController controller;
+  const BookingTimePickerComponent({super.key});
 
   @override
   ConsumerState<BookingTimePickerComponent> createState() =>
@@ -73,6 +72,7 @@ class _BookingTimePickerComponentState
     required Function(DateTime) onTimeSelected,
   }) {
     showDialog(
+      barrierColor: Colors.black.withOpac(0.5),
       context: context,
       builder: (context) => TimePickerDialog(onTimeSelected: onTimeSelected),
     );
@@ -132,18 +132,20 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           TimePickerSpinner(
             time: selectedTime,
-            is24HourMode: false,
+            is24HourMode: true,
             normalTextStyle: TextStyle(
                 fontSize: 30, color: context.colors.tertiaryContainer),
             highlightedTextStyle:
                 TextStyle(fontSize: 34, color: context.colors.tertiary),
-            spacing: 30,
+            spacing: 50,
             itemHeight: 50,
             itemWidth: 60,
+            alignment: Alignment.center,
             isForce2Digits: true,
             minutesInterval: 5,
             onTimeChange: (x) {

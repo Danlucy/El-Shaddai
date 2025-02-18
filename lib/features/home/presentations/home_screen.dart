@@ -39,16 +39,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       drawer: const GeneralDrawer(),
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             const SizedBox(
               height: 20,
             ),
             Text(
-              'EL Shaddai  Prayer Altar 24/7 for the Kingdom Of God',
+              'Welcome to EL Shaddai 247 Prayer Altar for the Kingdom Of God. \n\nThe Lord has prompted us to create the 247 prayer event calendar. This development is made possible with the appointment of Daniel Ong Zhi En, undergraduate student of Swineburne University. \n We started the development of this application since July 2024. Keep us in prayer that the heart of our Father will be fulfilled through our young generation under our guidance. Amen',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 30,
+                fontSize: 24,
                 color: context.colors.secondary,
                 fontWeight: FontWeight.bold,
               ),

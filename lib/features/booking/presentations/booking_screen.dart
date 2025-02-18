@@ -1,10 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:el_shaddai/core/theme.dart';
+import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
 import 'package:el_shaddai/features/calendar/presentations/daily_calendar_component.dart';
 import 'package:el_shaddai/features/calendar/presentations/monthly_calendar_component.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
+import 'package:el_shaddai/models/user_model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -40,7 +42,7 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
   Widget build(BuildContext context) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final textScaleFactor = TextScaleFactor.scaleFactor(textScale);
-
+    final user = ref.read(userProvider);
     // Determine flex proportions based on TextScaleFactor
     int monthlyFlex = 4; // Default: Equal space
     int dailyFlex = 5; // Default: Equal space
@@ -55,30 +57,30 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ref.read(bookingControllerProvider.notifier).clearState();
+      floatingActionButton: (user?.role == UserRole.intercessor)
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                ref.read(bookingControllerProvider.notifier).clearState();
 
-          showDialog(
-              useRootNavigator: false,
-              context: context,
-              builder: (context) {
-                // print('dadad');
-                // print(TextScaleFactor.scaleFactor(textScale));
-                // print(textScale);
-                return BookingDialog(
-                  context,
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                );
-              });
-        },
-        backgroundColor: context.colors.primaryContainer,
-        child: Icon(
-          Icons.add,
-          color: context.colors.secondary,
-        ),
-      ),
+                showDialog(
+                    useRootNavigator: false,
+                    context: context,
+                    builder: (context) {
+                      // print('dadad');
+                      // print(TextScaleFactor.scaleFactor(textScale));
+                      // print(textScale);
+                      return BookingDialog(
+                        context,
+                      );
+                    });
+              },
+              backgroundColor: context.colors.primaryContainer,
+              child: Icon(
+                Icons.add,
+                color: context.colors.secondary,
+              ),
+            ),
       appBar: AppBar(
         title: const AutoSizeText(
           minFontSize: 10, // Minimum font size

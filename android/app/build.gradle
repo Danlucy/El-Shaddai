@@ -30,10 +30,12 @@ android {
     namespace = "com.example.el_shaddai"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
-
+    kotlinOptions {
+        jvmTarget = '21' // Ensure this matches Java version
+    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     defaultConfig {

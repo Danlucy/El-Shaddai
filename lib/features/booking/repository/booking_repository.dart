@@ -25,15 +25,23 @@ class BookingRepository {
 
   CollectionReference get _book =>
       _firestore.collection(FirebaseConstants.bookingCollection);
+  void deleteBooking(String bookingId) async {
+    try {
+      await _book.doc(bookingId).delete();
+    } on FirebaseException catch (e) {
+      throw Failure(e.message ?? 'An error occurred.');
+    } catch (e) {
+      throw Failure(e.toString());
+    }
+  }
 
   FutureEither<BookingModel> createOrEditBooking({
-    required BookingModel model,
+    required BookingModel bookingModel,
     String? bookingId, // Nullable booking ID (null = create, not null = update)
     required Function(String) call,
     RecurrenceConfigurationModel? recurrence,
   }) async {
-    print('tracker');
-    print(bookingId);
+    final model = bookingModel.copyWith(recurrenceModel: recurrence);
     try {
       if (bookingId == null) {
         // 🔹 Create New Booking
@@ -66,7 +74,6 @@ class BookingRepository {
 
             await recurringDoc.set({
               ...newRecurringModel.toJson(),
-              'recurrence': recurrence.toJson(),
             });
           }
         }
@@ -99,19 +106,6 @@ class BookingRepository {
         call(e.toString());
       }
       return left(Failure(e.toString()));
-    }
-  }
-
-  void deleteGroupBooking(String bookingId) {
-    _book.doc(bookingId).delete();
-  }
-
-  void editBooking(
-      {required String bookingID, required BookingModel bookingModel}) {
-    try {
-      _book.doc(bookingID).update(bookingModel.toJson());
-    } catch (e) {
-      print('Error updating: $e');
     }
   }
 }
