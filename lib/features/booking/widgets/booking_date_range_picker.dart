@@ -7,8 +7,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class BookingDateRangePickerComponent extends ConsumerStatefulWidget {
-  const BookingDateRangePickerComponent({super.key});
-
+  const BookingDateRangePickerComponent({
+    super.key,
+    this.initialSelectedRange,
+  });
+  final PickerDateRange? initialSelectedRange;
   @override
   ConsumerState<BookingDateRangePickerComponent> createState() =>
       _BookingDateRangePickerComponentState();
@@ -21,7 +24,7 @@ class _BookingDateRangePickerComponentState
   Widget build(BuildContext context) {
     final eventFunction = ref.read(bookingControllerProvider.notifier);
     return SfDateRangePicker(
-      initialDisplayDate: DateTime.now(),
+      initialSelectedRange: widget.initialSelectedRange,
       enablePastDates: false,
       headerStyle: DateRangePickerHeaderStyle(
         textAlign: TextAlign.start,

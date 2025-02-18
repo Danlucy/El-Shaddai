@@ -28,18 +28,15 @@ class AuthController extends StateNotifier<bool> {
   Stream<User?> get authStateChange => _authRepository.authStateChange;
 
   void signInWithGoogle(BuildContext context) async {
-    print('signing in with google');
     state = true;
 
     final user = await _authRepository.signInWithGoogle();
-    print(user);
     if (user.isLeft()) {
       showFailureSnackBar(context, 'NO DATA');
     }
 
     state = false;
     user.fold((l) {
-      print(l.message);
       showFailureSnackBar(context, l.message);
     },
         (userModel) =>

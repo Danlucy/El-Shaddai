@@ -1,14 +1,16 @@
 import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
+import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
+import 'package:el_shaddai/features/auth/widgets/confirm_button.dart';
 import 'package:el_shaddai/features/auth/widgets/loader.dart';
-import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
-import 'package:el_shaddai/features/calendar/presentations/daily_calendar_component.dart';
 import 'package:el_shaddai/features/calendar/widget/booking_details_dialog.dart';
+import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
 import 'package:el_shaddai/models/booking_model/booking_model.dart';
+import 'package:el_shaddai/models/user_model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -24,7 +26,9 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
   Widget build(BuildContext context) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final textScaleFactor = TextScaleFactor.scaleFactor(textScale);
-
+    const height = 600.0;
+    const width = 300.0;
+    final user = ref.read(userProvider);
     // Determine flex proportions based on TextScaleFactor
     double appointmentHeight = 70; // Default: Equal space
 
@@ -35,6 +39,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
     }
     final bookingStream = ref.watch(bookingStreamProvider());
     return Scaffold(
+      drawer: const GeneralDrawer(),
       appBar: AppBar(
         title: const Text(
           'Prayer Watches',
@@ -45,22 +50,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
             return SfCalendar(
               showNavigationArrow: true,
               view: CalendarView.schedule,
-              onTap: (CalendarTapDetails details) {
-                if (details.appointments != null &&
-                    details.appointments!.isNotEmpty) {
-                  final BookingModel bookingModel = details.appointments!.first;
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return BookingDetailsDialog(
-                        bookingModel: bookingModel,
-                      );
-                    },
-                  );
-                } else {
-                  // Do Nothing
-                }
-              },
               scheduleViewSettings: ScheduleViewSettings(
                 dayHeaderSettings: const DayHeaderSettings(
                   width: 60,
@@ -76,6 +65,28 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                   (BuildContext context, CalendarAppointmentDetails details) {
                 BookingModel bookingModel = details.appointments.first;
                 return GestureDetector(
+                  onLongPress: () {
+                    if (bookingModel.userId != user?.uid &&
+                        user?.role != UserRole.admin) {
+                      return;
+                    }
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ConfirmButton(
+                              confirmText: 'Delete ',
+                              cancelText: 'Cancel',
+                              description:
+                                  'Are you sure you want to delete this booking? This action cannot be reversed',
+                              confirmAction: () {
+                                context.pop();
+
+                                ref
+                                    .read(bookingRepositoryProvider)
+                                    .deleteBooking(bookingModel.id);
+                              });
+                        });
+                  },
                   onTap: () {
                     showDialog(
                       context: context,
@@ -89,7 +100,8 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.secondaryContainer,
-                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(5))),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,

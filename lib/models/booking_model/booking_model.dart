@@ -1,3 +1,4 @@
+import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
 import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
 import 'package:el_shaddai/core/utility/json_converters.dart';
 import 'package:el_shaddai/features/booking/state/booking_state.dart';
@@ -19,7 +20,9 @@ class BookingModel with _$BookingModel {
       required String userId,
       required String id,
       @LocationDataConverter() required LocationData location,
-      required String description}) = _BookingModel;
+      required String description,
+      @RecurrenceConfigurationConverter()
+      RecurrenceConfigurationModel? recurrenceModel}) = _BookingModel;
 
   factory BookingModel.fromJson(Map<String, dynamic> json) =>
       _$BookingModelFromJson(json);

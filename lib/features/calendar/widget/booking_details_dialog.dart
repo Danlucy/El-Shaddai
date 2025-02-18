@@ -1,14 +1,17 @@
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
+import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/core/utility/url_launcher.dart';
 import 'package:el_shaddai/core/widgets/calendar_widget.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
+import 'package:el_shaddai/features/auth/widgets/confirm_button.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
 import 'package:el_shaddai/features/participant/participant_controller/participant_controller.dart';
 import 'package:el_shaddai/features/participant/participant_repository/participant_repository.dart';
-import 'package:el_shaddai/features/participant/presentation/widgets/join_button.dart';
 import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:el_shaddai/models/user_model/user_model.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +37,8 @@ class BookingDetailsDialog extends ConsumerStatefulWidget {
 class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
+    var height = MediaQuery.sizeOf(context).height;
+    var width = MediaQuery.sizeOf(context).width;
     final user =
         ref.watch(userProvider); // ✅ Ensure UI updates when user changes
 
@@ -61,18 +64,23 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    booking.title, // ✅ Uses updated booking data
-                    style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.inverseSurface),
+                  Expanded(
+                    child: AutoSizeText(
+                      minFontSize: 15, // Minimum font size
+                      maxFontSize: 30, maxLines: 1,
+                      booking.title, // ✅ Uses updated booking data
+                      style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.inverseSurface),
+                    ),
                   ),
-                  const Spacer(),
                   Align(
                     alignment: Alignment.centerRight,
                     child: IconButton(
+                        padding: EdgeInsets.zero,
                         onPressed: () {
                           context.pop();
                         },
@@ -222,64 +230,93 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                   final bool isJoined = participants
                       .any((userModel) => userModel.uid == user?.uid);
 
-                  return Column(
-                    children: [
-                      if (participants.isEmpty)
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withOpac(0.4),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10)),
-                          ),
-                          constraints: const BoxConstraints(
-                              minWidth: 200, minHeight: 40, maxWidth: 200),
-                          child: const Center(
-                            child: Text(
-                              'No Participants',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                  return Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: [
+                        if (participants.isEmpty)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpac(0.4),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                            ),
+                            constraints: const BoxConstraints(
+                                minWidth: 200, minHeight: 40, maxWidth: 200),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Column(
+                                children: [
+                                  const Center(
+                                    child: Text(
+                                      'No Intercessors',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  if (user?.uid != booking.userId)
+                                    joinButton(user, isJoined,
+                                        participationFunction, context),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      if (participants.isNotEmpty)
-                        Container(
-                          constraints: const BoxConstraints(
-                              minWidth: 200, minHeight: 40),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withOpac(0.4),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10)),
+                        if (participants.isNotEmpty)
+                          Container(
+                            constraints: const BoxConstraints(
+                                minWidth: 200, minHeight: 40),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpac(0.4),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                            ),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  'Intercessors',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                ...participants.map((UserModel userModel) =>
+                                    GestureDetector(
+                                      onTap: () {
+                                        ProfileRoute(userModel).push(context);
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2),
+                                        child: Text(
+                                          userModel.name,
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                    )),
+                                if (user?.uid != booking.userId)
+                                  joinButton(user, isJoined,
+                                      participationFunction, context),
+                              ],
+                            ),
                           ),
-                          child: Column(
+                        const SizedBox(height: 16),
+                        if ((user?.uid == booking.userId) ||
+                            user?.role == UserRole.admin)
+                          Row(
                             children: [
-                              const Text(
-                                'Participants',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              editButton(
+                                context,
+                                booking,
                               ),
-                              const SizedBox(height: 8),
-                              ...participants.map((UserModel userModel) => Text(
-                                    userModel.name,
-                                    style: const TextStyle(fontSize: 14),
-                                  )),
+                              const Gap(10),
+                              deleteButton(context, booking)
                             ],
-                          ),
-                        ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          if ((user?.uid == booking.userId) ||
-                              user?.role == UserRole.admin)
-                            editButton(context, booking),
-                          const Gap(10),
-                          if (user?.uid != booking.userId)
-                            joinButton(
-                                user, isJoined, participationFunction, context),
-                        ],
-                      )
-                    ],
+                          )
+                      ],
+                    ),
                   );
                 },
               ),
@@ -291,7 +328,10 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
     );
   }
 
-  Expanded editButton(BuildContext context, BookingModel booking) {
+  Expanded editButton(
+    BuildContext context,
+    BookingModel booking,
+  ) {
     return Expanded(
       child: ElevatedButton(
           onPressed: () {
@@ -299,11 +339,17 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                 useRootNavigator: false,
                 context: context,
                 builder: (context) {
+                  Future(() {
+                    ref
+                        .read(bookingControllerProvider.notifier)
+                        .setState(booking);
+                    ref
+                        .read(bookingVenueStateProvider.notifier)
+                        .switchVenue(booking);
+                  });
                   return BookingDialog(
                     bookingModel: booking, // ✅ Uses updated booking
                     context,
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
                   );
                 });
           },
@@ -311,32 +357,58 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
     );
   }
 
-  Expanded joinButton(UserModel? user, bool isJoined,
-      ParticipantController participationFunction, BuildContext context) {
+  Expanded deleteButton(
+    BuildContext context,
+    BookingModel booking,
+  ) {
     return Expanded(
       child: ElevatedButton(
-        onPressed: () async {
-          if (user?.uid != null) {
-            try {
-              if (isJoined) {
-                await participationFunction.removeParticipant();
-              } else {
-                await participationFunction.addParticipant();
-              }
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: ${e.toString()}')),
-              );
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return ConfirmButton(
+                      confirmText: 'Delete ',
+                      cancelText: 'Cancel',
+                      description:
+                          'Are you sure you want to delete this booking? This action cannot be reversed',
+                      confirmAction: () {
+                        context.pop();
+
+                        ref
+                            .read(bookingRepositoryProvider)
+                            .deleteBooking(booking.id);
+                      });
+                });
+          },
+          child: const Text('Delete')),
+    );
+  }
+
+  OutlinedButton joinButton(UserModel? user, bool isJoined,
+      ParticipantController participationFunction, BuildContext context) {
+    return OutlinedButton(
+      onPressed: () async {
+        if (user?.uid != null) {
+          try {
+            if (isJoined) {
+              await participationFunction.removeParticipant();
+            } else {
+              await participationFunction.addParticipant();
             }
-          } else {
+          } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text("User unavailable, check Internet connection")),
+              SnackBar(content: Text('Error: ${e.toString()}')),
             );
           }
-        },
-        child: Text(isJoined ? 'Leave' : 'Join'),
-      ),
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("User unavailable, check Internet connection")),
+          );
+        }
+      },
+      child: Text(isJoined ? 'Leave' : 'Join'),
     );
   }
 }

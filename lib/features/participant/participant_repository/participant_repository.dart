@@ -80,59 +80,43 @@ class ParticipantRepository {
     }
   }
 
-  void isEmptyThenRemove(String bookingId) async {
+  Future<void> isEmptyThenRemove(String bookingId) async {
     try {
-      // Get the reference to the subcollection
-      final querySnapshot = await _participant
-          .doc(bookingId)
-          .collection('participantsId')
-          // Only fetch one document to check if it's empty
-          .get();
-      if (querySnapshot.docs.isEmpty) {
-        _participant.doc(bookingId).delete();
+      final snapshot = await _participant.doc(bookingId).get();
+      if (snapshot.exists) {
+        final data = snapshot.data() as Map<String, dynamic>;
+        final List participants = data['participantsId'] ?? [];
+
+        if (participants.isEmpty) {
+          await _participant.doc(bookingId).delete();
+        }
       }
-      // If the snapshot is empty, return true
     } catch (e) {
-      print('Error checking if collection is empty: $e');
+      print('Error checking if booking is empty: $e');
     }
   }
 
   /// Fetches all participants for a given booking and returns a list of `UserModel`.
   Stream<List<UserModel>> getAllParticipants(String bookingId) {
     return _participant.doc(bookingId).snapshots().asyncMap((snapshot) async {
-      try {
-        if (!snapshot.exists) {
-          return [];
-        }
+      if (!snapshot.exists) return [];
 
-        final data = snapshot.data() as Map<String, dynamic>;
-        final List participantsData = data['participantsId'] ?? [];
+      final data = snapshot.data() as Map<String, dynamic>;
+      final List participantsData = data['participantsId'] ?? [];
 
-        if (participantsData.isEmpty) {
-          return [];
-        }
+      if (participantsData.isEmpty) return [];
 
-        final List<UserModel> participants = [];
-        for (var participant in participantsData) {
-          final participantId = participant['userId'] as String?;
-          if (participantId != null) {
-            final userDoc = await _firestore
-                .collection(FirebaseConstants.usersCollection)
-                .doc(participantId)
-                .get();
+      final userIds = participantsData.map((p) => p['userId']).toList();
 
-            if (userDoc.exists) {
-              final userData = userDoc.data() as Map<String, dynamic>;
-              participants.add(UserModel.fromJson(userData));
-            }
-          }
-        }
+      // Fetch all users in a single query
+      final userSnapshots = await _firestore
+          .collection(FirebaseConstants.usersCollection)
+          .where(FieldPath.documentId, whereIn: userIds)
+          .get();
 
-        return participants;
-      } catch (e) {
-        print('Error fetching participants: $e');
-        throw Exception('Failed to fetch participants');
-      }
+      return userSnapshots.docs
+          .map((doc) => UserModel.fromJson(doc.data()))
+          .toList();
     });
   }
 

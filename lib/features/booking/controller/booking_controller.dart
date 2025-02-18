@@ -29,6 +29,18 @@ class BookingVenueState extends _$BookingVenueState {
   void setVenue(BookingVenueComponent target) {
     state = target;
   }
+
+  void switchVenue(BookingModel booking) {
+    if (booking.location.web != null && booking.location.address != null) {
+      state = BookingVenueComponent.hybrid; // ✅ Both web and address exist
+    } else if (booking.location.web == null &&
+        booking.location.address != null) {
+      state = BookingVenueComponent.location; // ✅ Only address exists
+    } else if (booking.location.web != null &&
+        booking.location.address == null) {
+      state = BookingVenueComponent.zoom; // ✅ Only web exists
+    }
+  }
 }
 
 @riverpod
@@ -40,6 +52,21 @@ class BookingController extends _$BookingController {
 
   clearState() {
     state = const BookingState();
+  }
+
+  void setState(
+    BookingModel newState,
+  ) {
+    state = BookingState(
+      bookingId: newState.id,
+      description: newState.description,
+      hostId: newState.userId,
+      location: newState.location,
+      recurrenceFrequency: newState.recurrenceModel?.recurrenceFrequency ?? 2,
+      recurrenceState: newState.recurrenceState,
+      timeRange: newState.timeRange,
+      title: newState.title,
+    );
   }
 
   void setTitle(String title) => state = state.copyWith(title: title);

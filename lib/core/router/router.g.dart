@@ -29,8 +29,16 @@ RouteBase get $homeRoute => GoRouteData.$route(
           factory: $ProfileRouteExtension._fromState,
         ),
         GoRouteData.$route(
+          path: 'contact-us',
+          factory: $AboutUsRouteExtension._fromState,
+        ),
+        GoRouteData.$route(
           path: 'booking-list',
           factory: $BookingListRouteExtension._fromState,
+        ),
+        GoRouteData.$route(
+          path: 'intercessors-feed',
+          factory: $PrayerLeaderRouteExtension._fromState,
         ),
         GoRouteData.$route(
           path: 'user-management',
@@ -96,10 +104,31 @@ extension $ZoomRouteExtension on ZoomRoute {
 }
 
 extension $ProfileRouteExtension on ProfileRoute {
-  static ProfileRoute _fromState(GoRouterState state) => const ProfileRoute();
+  static ProfileRoute _fromState(GoRouterState state) => ProfileRoute(
+        state.extra as UserModel?,
+      );
 
   String get location => GoRouteData.$location(
         '/profile',
+      );
+
+  void go(BuildContext context) => context.go(location, extra: $extra);
+
+  Future<T?> push<T>(BuildContext context) =>
+      context.push<T>(location, extra: $extra);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location, extra: $extra);
+
+  void replace(BuildContext context) =>
+      context.replace(location, extra: $extra);
+}
+
+extension $AboutUsRouteExtension on AboutUsRoute {
+  static AboutUsRoute _fromState(GoRouterState state) => const AboutUsRoute();
+
+  String get location => GoRouteData.$location(
+        '/contact-us',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -118,6 +147,24 @@ extension $BookingListRouteExtension on BookingListRoute {
 
   String get location => GoRouteData.$location(
         '/booking-list',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $PrayerLeaderRouteExtension on PrayerLeaderRoute {
+  static PrayerLeaderRoute _fromState(GoRouterState state) =>
+      const PrayerLeaderRoute();
+
+  String get location => GoRouteData.$location(
+        '/intercessors-feed',
       );
 
   void go(BuildContext context) => context.go(location);

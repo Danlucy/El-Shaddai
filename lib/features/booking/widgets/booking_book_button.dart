@@ -52,7 +52,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
           }
 
           ref.read(bookingRepositoryProvider).createOrEditBooking(
-                model: bookingFunction.instantiateBookingModel(web),
+                bookingModel: bookingFunction.instantiateBookingModel(web),
                 call: widget.errorCall,
                 bookingId: widget.bookingId,
                 recurrence:

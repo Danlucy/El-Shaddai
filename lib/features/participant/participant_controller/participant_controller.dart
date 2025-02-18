@@ -1,9 +1,6 @@
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/participant/participant_repository/participant_repository.dart';
 import 'package:el_shaddai/features/participant/state/participant_state.dart';
-import 'package:el_shaddai/models/participant_model/participant_model.dart';
-import 'package:el_shaddai/models/user_model/user_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

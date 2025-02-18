@@ -53,7 +53,7 @@ class AuthRepository {
           await _auth.signInWithCredential(credential);
 
       UserModel userModel;
-
+      print(userCredential);
       if (userCredential.additionalUserInfo!.isNewUser) {
         userModel = UserModel(
           name: userCredential.user!.displayName ?? 'Nameless',
@@ -78,10 +78,14 @@ class AuthRepository {
   }
 
   Stream<UserModel> getUserData(String uid) {
-    return _users.doc(uid).snapshots().map(
-      (event) {
-        return UserModel.fromJson(event.data() as Map<String, dynamic>);
-      },
-    );
+    try {
+      return _users.doc(uid).snapshots().map(
+        (event) {
+          return UserModel.fromJson(event.data() as Map<String, dynamic>);
+        },
+      );
+    } catch (e) {
+      throw 'USER NOT FOUND, check internet.';
+    }
   }
 }

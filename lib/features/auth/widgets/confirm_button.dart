@@ -3,36 +3,48 @@ import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LogOutButton extends StatelessWidget {
-  const LogOutButton({
+class ConfirmButton extends StatelessWidget {
+  const ConfirmButton({
     super.key,
-    required this.width,
-    required this.height,
-    required this.ref,
+    required this.confirmText,
+    required this.cancelText,
+    required this.description,
+    required this.confirmAction,
   });
 
-  final double width;
-  final double height;
-  final WidgetRef ref;
+  final String confirmText;
+  final String description;
+  final String cancelText;
+  final Function() confirmAction;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: width * 3 / 4,
-        height: height * 1 / 4,
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        width: 300 * 8 / 9,
+        height: 600 * 1 / 3,
         decoration: BoxDecoration(
             color: context.colors.secondaryContainer,
             borderRadius: const BorderRadius.all(Radius.circular(16))),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text(
-              'Confirm Log Out?',
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Text(
+                description,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                ),
+              ),
             ),
             const SizedBox(
-              height: 50,
+              height: 40,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -44,7 +56,7 @@ class LogOutButton extends StatelessWidget {
                       Navigator.pop(context);
                     },
                     child: Text(
-                      'Cancel',
+                      cancelText,
                       style: TextStyle(color: context.colors.onSurface),
                     )),
                 const SizedBox(
@@ -53,11 +65,9 @@ class LogOutButton extends StatelessWidget {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent),
-                  onPressed: () {
-                    ref.read(authRepositoryProvider).logout();
-                  },
+                  onPressed: confirmAction,
                   child: Text(
-                    'Confirm',
+                    confirmText,
                     style: TextStyle(color: context.colors.onSurface),
                   ),
                 )

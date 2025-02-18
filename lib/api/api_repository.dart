@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:el_shaddai/api/api_interceptor.dart';
 import 'package:el_shaddai/api/models/zoom_meeting_model/zoom_meeting_model.dart';
 import 'package:el_shaddai/core/constants/constants.dart';
-import 'package:oauth2/oauth2.dart';
 
 class ApiRepository {
   String getEncodedString() {
@@ -40,7 +39,6 @@ class ApiRepository {
             'Failed to exchange authorization code: ${response.data}');
       }
     } catch (e) {
-      print('Testtt: $e');
       throw Exception('Error exchanging authorization code $e');
     }
   }

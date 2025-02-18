@@ -1,12 +1,15 @@
 import 'package:el_shaddai/core/router/no_internet_screen.dart';
+import 'package:el_shaddai/features/post/presentations/about_us_screens.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/auth/presentations/login_screen.dart';
 import 'package:el_shaddai/features/auth/presentations/zoom_screen.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_list_screen.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:el_shaddai/features/home/presentations/home_screen.dart';
+import 'package:el_shaddai/features/post/presentations/prayer_leader_screen.dart';
 import 'package:el_shaddai/features/profile/presentations/profile_screen.dart';
 import 'package:el_shaddai/features/user_management/presentations/user_management_screen.dart';
+import 'package:el_shaddai/models/user_model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -48,8 +51,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     TypedGoRoute<ProfileRoute>(
       path: 'profile',
     ),
+    TypedGoRoute<AboutUsRoute>(
+      path: 'contact-us',
+    ),
     TypedGoRoute<BookingListRoute>(
       path: 'booking-list',
+    ),
+    TypedGoRoute<PrayerLeaderRoute>(
+      path: 'intercessors-feed',
     ),
     TypedGoRoute<UserManagementRoute>(
       path: 'user-management',
@@ -63,6 +72,14 @@ class HomeRoute extends GoRouteData {
   Widget build(BuildContext context, GoRouterState state) => const HomeScreen();
 }
 
+class AboutUsRoute extends GoRouteData {
+  const AboutUsRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const AboutUsScreen();
+}
+
 class BookingRoute extends GoRouteData {
   const BookingRoute();
 
@@ -72,11 +89,12 @@ class BookingRoute extends GoRouteData {
 }
 
 class ProfileRoute extends GoRouteData {
-  const ProfileRoute();
-
+  const ProfileRoute(this.$extra);
+  final UserModel? $extra;
   @override
-  Widget build(BuildContext context, GoRouterState state) =>
-      const ProfileScreen();
+  Widget build(BuildContext context, GoRouterState state) => ProfileScreen(
+        userModel: $extra,
+      );
 }
 
 class BookingListRoute extends GoRouteData {
@@ -85,6 +103,14 @@ class BookingListRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const BookingListScreen();
+}
+
+class PrayerLeaderRoute extends GoRouteData {
+  const PrayerLeaderRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const PrayerLeaderScreen();
 }
 
 class UserManagementRoute extends GoRouteData {
