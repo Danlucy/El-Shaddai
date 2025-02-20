@@ -37,7 +37,7 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
     return Scaffold(
         drawer: const GeneralDrawer(),
         appBar: AppBar(
-          title: const Text('Intercessors Feed'),
+          title: const Text('Prayer Leaders'),
         ),
         floatingActionButton: user?.role == UserRole.admin
             ? FloatingActionButton(

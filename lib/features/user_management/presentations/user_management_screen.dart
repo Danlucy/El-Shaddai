@@ -63,7 +63,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                             title: Text(user.name),
                             subtitle: Text(user.role.name.capitalize()),
                             trailing: _PopMenuButton(
-                                user: user, ref: ref, controller: controller),
+                                user: user, controller: controller),
                           );
                         },
                       ),
@@ -82,19 +82,15 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 class _PopMenuButton extends StatelessWidget {
   const _PopMenuButton({
     required this.user,
-    required this.ref,
     required this.controller,
   });
 
   final UserModel user;
 
-  final WidgetRef ref;
   final UserManagementController controller;
 
   @override
   Widget build(BuildContext context) {
-    const height = 600.0;
-    const width = 300.0;
     return PopupMenuButton<String>(
       itemBuilder: (BuildContext context) => [
         PopupMenuItem(

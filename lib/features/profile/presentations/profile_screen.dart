@@ -11,6 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
+import 'package:phone_numbers_parser/phone_numbers_parser.dart' as dad;
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key, this.userModel});
@@ -72,7 +74,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               fontSize: 24, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
 
-                      _ProfileImage(uid: widget.userModel?.uid),
+                      _ProfileImage(
+                          uid: widget.userModel?.uid,
+                          ableToEdit: user?.uid == widget.userModel?.uid ||
+                              user?.role == UserRole.admin),
 
                       const SizedBox(height: 8),
 
@@ -154,6 +159,9 @@ class _EditableTextFieldState extends ConsumerState<EditableTextField> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
   String _initialText = '';
+  String _currentValue = ''; // Store the current value (phone number or text)
+  String _initialCountryCode = 'MY'; // Default to Malaysia
+  String _initialPhoneNumber = '';
 
   @override
   void initState() {
@@ -163,11 +171,33 @@ class _EditableTextFieldState extends ConsumerState<EditableTextField> {
 
     // ✅ Set initial text from passed userData
     _initialText = widget.userData[widget.fieldName]?.toString() ?? '';
-    _controller.text = _initialText;
+    _currentValue = _initialText; // Initialize with initial value
+
+    if (widget.isPhoneFormat) {
+      // Parse the phone number to extract country code and national number
+      if (_initialText.isNotEmpty) {
+        try {
+          final parsedPhoneNumber = dad.PhoneNumber.parse(_initialText);
+          _initialCountryCode = parsedPhoneNumber.isoCode.name;
+
+          _initialPhoneNumber = parsedPhoneNumber.nsn;
+          _controller.text =
+              _initialPhoneNumber; // Set the national number to the controller
+        } catch (e) {
+          print('Error parsing phone number: $e');
+          // Handle the error (e.g., set default country code)
+          _initialCountryCode = 'MY'; // Default to Malaysia if parsing fails
+          _initialPhoneNumber = _initialText; // Use the full number as fallback
+          _controller.text = _initialPhoneNumber;
+        }
+      }
+    } else {
+      _controller.text = _initialText;
+    }
   }
 
   void saveField() {
-    final newValue = _controller.text.trim();
+    final newValue = _currentValue.trim();
     if (newValue != _initialText && widget.uid != null) {
       ref
           .read(profileControllerProvider(widget.uid!)
@@ -183,8 +213,24 @@ class _EditableTextFieldState extends ConsumerState<EditableTextField> {
       return IntlPhoneField(
         controller: _controller,
         focusNode: _focusNode,
-        onChanged: (newValue) => saveField(),
-        initialCountryCode: 'MY',
+        onCountryChanged: (countryCode) {
+          if (!widget.ableToEdit) return;
+          // When the country code changes, rebuild the complete phone number
+          // using the current national number and the new country code.
+          PhoneNumber number = PhoneNumber(
+            countryCode: countryCode.dialCode,
+            countryISOCode: countryCode.code,
+            number: _controller.text,
+          );
+          _currentValue = number.completeNumber;
+          saveField();
+        },
+        onChanged: (number) {
+          _currentValue = number.completeNumber; // Store the full number
+          saveField();
+        },
+        initialCountryCode: _initialCountryCode,
+        initialValue: _initialPhoneNumber,
         autovalidateMode: AutovalidateMode.disabled,
         disableLengthCheck: true,
         readOnly: !widget.isEditable,
@@ -203,33 +249,43 @@ class _EditableTextFieldState extends ConsumerState<EditableTextField> {
               : null,
         ),
       );
+    } else {
+      return TextField(
+        controller: _controller,
+        maxLines: null,
+        focusNode: _focusNode,
+        onChanged: (newValue) {
+          _currentValue = newValue; // Store the text value
+          saveField();
+        },
+        textCapitalization: TextCapitalization.sentences,
+        readOnly: !widget.isEditable,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          suffixIcon: widget.ableToEdit
+              ? IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 16,
+                  onPressed: widget.onEdit,
+                  icon: const Icon(Icons.edit),
+                )
+              : null,
+        ),
+      );
     }
-    return TextField(
-      controller: _controller,
-      maxLines: null,
-      focusNode: _focusNode,
-      onChanged: (newValue) => saveField(),
-      textCapitalization: TextCapitalization.sentences,
-      readOnly: !widget.isEditable,
-      decoration: InputDecoration(
-        border: const OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        suffixIcon: widget.ableToEdit
-            ? IconButton(
-                padding: EdgeInsets.zero,
-                iconSize: 16,
-                onPressed: widget.onEdit,
-                icon: const Icon(Icons.edit),
-              )
-            : null,
-      ),
-    );
   }
 }
 
 class _ProfileImage extends ConsumerStatefulWidget {
   final String? uid;
-  const _ProfileImage({super.key, required this.uid});
+  final bool ableToEdit;
+  const _ProfileImage({
+    super.key,
+    required this.uid,
+    required this.ableToEdit,
+  });
 
   @override
   ConsumerState<_ProfileImage> createState() => _ProfileImageState();
@@ -250,7 +306,14 @@ class _ProfileImageState extends ConsumerState<_ProfileImage> {
                 : null);
 
         return GestureDetector(
+          onLongPress: () {
+            if (!widget.ableToEdit) return;
+            ref
+                .read(profileControllerProvider(widget.uid).notifier)
+                .deleteImage();
+          },
           onTap: () async {
+            if (!widget.ableToEdit) return;
             final pickedImage = await ref
                 .read(profileControllerProvider(widget.uid).notifier)
                 .pickAndSaveImage();

@@ -75,6 +75,10 @@ class ProfileController extends _$ProfileController {
     return null;
   }
 
+  void deleteImage() {
+    updateUserField('image', null);
+  }
+
   void checkFirestoreDocumentSize(Map<String, dynamic> documentData) {
     final jsonString = jsonEncode(documentData);
     final sizeInBytes = utf8.encode(jsonString).length;
@@ -90,7 +94,7 @@ class ProfileController extends _$ProfileController {
     img.Image? image = img.decodeImage(imageBytes);
     if (image == null) return imageBytes;
 
-    int targetWidth = image.width > 500 ? 200 : image.width;
+    int targetWidth = image.width > 500 ? 250 : image.width + 50;
     final img.Image resizedImage = img.copyResize(image, width: targetWidth);
 
     final Uint8List compressedBytes = Uint8List.fromList(

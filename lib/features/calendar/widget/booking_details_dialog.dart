@@ -378,6 +378,7 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                         ref
                             .read(bookingRepositoryProvider)
                             .deleteBooking(booking.id);
+                        context.pop();
                       });
                 });
           },

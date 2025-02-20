@@ -319,12 +319,12 @@ class BookingController extends _$BookingController {
 
     if (state.recurrenceState == RecurrenceState.daily &&
         checkOverlap(isDaily: true)) {
-      throw 'Daily Booking Failed! Date is Already Booked!.';
+      throw 'Daily Booking Failed, Date is Already Booked!. Check for Conflicting Dates That Are Already Booked.';
     }
 
     if (state.recurrenceState == RecurrenceState.weekly &&
         checkOverlap(isWeekly: true)) {
-      throw 'Weekly Booking Failed! Date is Already Booked!.';
+      throw 'Weekly Booking Failed, Date is Already Booked!. Check for Conflicting Dates That Are Already Booked';
     }
 
     // Validate duration constraints
@@ -342,7 +342,7 @@ class BookingController extends _$BookingController {
     }
 
     if (state.timeRange!.start.isBefore(DateTime.now())) {
-      throw 'Booking Failed! Time is in the past.';
+      throw 'Booking Failed! Time is in the past. Start Time cannot be after End Time!';
     }
 
     return false;
