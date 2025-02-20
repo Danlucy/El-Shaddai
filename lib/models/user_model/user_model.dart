@@ -16,9 +16,9 @@ class UserModel with _$UserModel {
     String? nationality,
     String? phoneNumber,
     String? description,
-    String? church,
     String? address,
     String? birthAddress,
+    String? church,
     String? beleifInGod,
     String? prayerNetwork,
     String? definitionOfGod,
@@ -33,20 +33,20 @@ class UserModel with _$UserModel {
 
 extension UserModelFieldLabels on UserModel {
   static const Map<String, String> fieldLabels = {
-    'lastName': 'Full Name',
-    'nationality': 'Nationality',
-    'phoneNumber': 'Phone Number',
-    'description': 'Introduce yourself as in personality',
-    'church': 'Church Name',
-    'address': 'Residence Address',
-    'birthAddress': 'Birth Place',
-    'prayerNetwork': 'Prayer Network you are involved with',
+    'lastName': 'Full Name.',
+    'nationality': 'Nationality.',
+    'phoneNumber': 'Phone Number.',
+    'description': 'Introduce yourself as in personality.',
+    'church': 'Church Name.',
+    'address': 'Residence Address.',
+    'birthAddress': 'Birth Place.',
+    'prayerNetwork': 'Prayer Network you are involved with.',
     'beleifInGod':
-        'Do you believe in God the Father, Jesus Christ the son and Holy Spirit? Yes/No',
-    'definitionOfGod': 'What is your definition of Kingdom of God',
-    'godsCalling': "Share with us the calling God has for you",
+        'Do you believe in God the Father, Jesus Christ the son and Holy Spirit? Yes/No.',
+    'definitionOfGod': 'What is your definition of The Kingdom of God?',
+    'godsCalling': "Share with us the calling God has for you.",
     'recommendation':
-        'Who recommended you to join EL Shaddai 247 Prayer Altar for the Kingdom of God',
+        'Who recommended you to join EL Shaddai 247 Prayer Altar for the Kingdom of God?',
   };
 
   /// ✅ Method to get the label for a given field

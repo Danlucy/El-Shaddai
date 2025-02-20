@@ -77,7 +77,7 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                           onChanged: postController.setTitle,
                           controller: _titleController,
                           decoration: InputDecoration(
-                              labelText: isFeedPost ? "Title" : 'Name',
+                              labelText: 'Name',
                               border: const OutlineInputBorder()),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {

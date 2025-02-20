@@ -131,13 +131,6 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
                             backgroundImage: post.image != null
                                 ? MemoryImage(Uint8List.fromList(post.image!))
                                 : null,
-                            child: post.image == null
-                                ? Image.asset(
-                                    'assets/logo/wings_of_freedom.png',
-                                    height: 160,
-                                    width: 160,
-                                  )
-                                : null,
                           ),
                           Text(
                             post.title,
