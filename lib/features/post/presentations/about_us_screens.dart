@@ -106,13 +106,6 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
                                       ? MemoryImage(
                                           Uint8List.fromList(post.image!))
                                       : null,
-                                  child: post.image == null
-                                      ? Image.asset(
-                                          'assets/logo/wings_of_freedom.png',
-                                          height: 160,
-                                          width: 160,
-                                        )
-                                      : null,
                                 ),
                                 title: Text(post.title),
                                 subtitle: Text(post.content),

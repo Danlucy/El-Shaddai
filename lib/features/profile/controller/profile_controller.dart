@@ -4,6 +4,7 @@ import 'dart:convert'; // For Base64 encoding
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:el_shaddai/core/constants/firebase_constants.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
@@ -26,21 +27,6 @@ class ProfileController extends _$ProfileController {
   }
 
   /// ✅ **Get list of nullable fields in the user model**
-  List<String> getNullableFields() {
-    final user = ref.read(userProvider);
-    if (user == null) return [];
-
-    const requiredFields = {'name', 'uid', 'role', 'image'};
-
-    return user
-        .toJson()
-        .entries
-        .where((entry) =>
-            !requiredFields.contains(entry.key) &&
-            (entry.value == null || entry.value is String?))
-        .map((entry) => entry.key)
-        .toList();
-  }
 
   /// ✅ **Update Firestore Field**
   Future<void> updateUserField(String fieldName, dynamic newValue) async {
@@ -83,7 +69,9 @@ class ProfileController extends _$ProfileController {
     final jsonString = jsonEncode(documentData);
     final sizeInBytes = utf8.encode(jsonString).length;
     final sizeInKB = sizeInBytes / 1024;
-    print('Document Size: $sizeInKB KB');
+    if (kDebugMode) {
+      print('Document Size: $sizeInKB KB');
+    }
   }
 
   /// 🔹 **Smart Compress & Resize Image**
