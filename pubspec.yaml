@@ -77,6 +77,7 @@ dependencies:
   image_picker: ^1.1.2
   image: ^4.5.2
   intl_phone_field: ^3.2.0
+  phone_numbers_parser: ^9.0.3
 
 
 dev_dependencies:

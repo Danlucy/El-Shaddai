@@ -42,14 +42,14 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
     controller.setNavigationDelegate(
       NavigationDelegate(
         onPageStarted: (url) async {
+          ref.read(authTokenNotifierProvider.notifier).startTokenListener();
+          SharedPreferences prefs = await SharedPreferences.getInstance();
           currentUrl.value = url; // Update the current URL
           // Check if the URL contains the specific query parameter
           if (url.contains('daniel-ong.com')) {
-            ref.read(authTokenNotifierProvider.notifier).startTokenListener();
             final Uri uri = Uri.parse(url);
             final String? code = uri.queryParameters['code'];
             if (code != null) {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setString('userAuthenticationCode', code);
               final response =
                   await apiRepository.getAccessToken(code, codeVerifier);
@@ -64,7 +64,6 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
 
               navigatorKey.currentState?.pop();
             } else {
-              ErrorWidget('Error: No code found in the URL');
               throw Exception('Error: No code found in the URL');
             }
           }
@@ -88,7 +87,6 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
         title: ValueListenableBuilder<String>(
           valueListenable: currentUrl,
           builder: (context, url, child) {
-            print(url);
             return Text(url.isEmpty ? 'Loading...' : url);
           },
         ),

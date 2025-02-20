@@ -45,7 +45,7 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                 onTap: () => const BookingListRoute().push(context)),
             ListTile(
               leading: const Icon(Icons.message),
-              title: const Text('Intercessors Involved'),
+              title: const Text('Prayer Leaders'),
               onTap: () => const PrayerLeaderRoute().push(context),
             ),
             ListTile(

@@ -33,20 +33,20 @@ class UserModel with _$UserModel {
 
 extension UserModelFieldLabels on UserModel {
   static const Map<String, String> fieldLabels = {
-    'lastName': 'Last Name',
+    'lastName': 'Full Name',
     'nationality': 'Nationality',
     'phoneNumber': 'Phone Number',
-    'description': 'About Yourself',
+    'description': 'Introduce yourself as in personality',
     'church': 'Church Name',
     'address': 'Residence Address',
     'birthAddress': 'Birth Place',
-    'prayerNetwork': 'Prayer Network',
+    'prayerNetwork': 'Prayer Network you are involved with',
     'beleifInGod':
         'Do you believe in God the Father, Jesus Christ the son and Holy Spirit? Yes/No',
-    'definitionOfGod': 'What is your definition of Kingdom of God?',
-    'godsCalling': "Share with us the calling God has for you.",
+    'definitionOfGod': 'What is your definition of Kingdom of God',
+    'godsCalling': "Share with us the calling God has for you",
     'recommendation':
-        'Who recommended you to join EL Shaddai 247 Prayer Altar for the Kingdom of God?',
+        'Who recommended you to join EL Shaddai 247 Prayer Altar for the Kingdom of God',
   };
 
   /// ✅ Method to get the label for a given field
@@ -56,11 +56,15 @@ extension UserModelFieldLabels on UserModel {
 }
 
 enum UserRole {
-  admin,
-  watchman,
-  watchLeader,
-  intercessor;
+  admin(name: 'Admin'),
+  watchman(name: 'Watchman'),
+  watchLeader(name: 'Watch Leader'),
+  intercessor(name: 'Intercessor'),
+  ;
 
+  final String name;
+
+  const UserRole({required this.name});
   static UserRole? fromName(String name) {
     for (UserRole enumVariant in UserRole.values) {
       if (enumVariant.name == name) return enumVariant;
