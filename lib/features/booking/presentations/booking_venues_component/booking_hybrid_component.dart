@@ -1,6 +1,5 @@
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_venues_component/booking_location_component/booking_location_component.dart';
-import 'package:el_shaddai/features/booking/widgets/recurrence_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';

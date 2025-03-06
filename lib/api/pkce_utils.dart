@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PKCEUtils {
@@ -23,6 +24,8 @@ class PKCEUtils {
   Future<void> saveCodeVerifier(String codeVerifier) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('codeVerifier', codeVerifier);
-    print('Code Verifier saved: $codeVerifier');
+    if (kDebugMode) {
+      print('Code Verifier saved: $codeVerifier');
+    }
   }
 }

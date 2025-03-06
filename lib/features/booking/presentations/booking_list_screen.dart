@@ -26,8 +26,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
   Widget build(BuildContext context) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final textScaleFactor = TextScaleFactor.scaleFactor(textScale);
-    const height = 600.0;
-    const width = 300.0;
+
     final user = ref.read(userProvider);
     // Determine flex proportions based on TextScaleFactor
     double appointmentHeight = 70; // Default: Equal space

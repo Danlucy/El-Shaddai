@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
 import 'package:el_shaddai/core/constants/firebase_constants.dart';
 import 'package:el_shaddai/core/firebase_providers.dart';
-import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
-import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:el_shaddai/models/user_model/user_model.dart';
-import 'package:fpdart/fpdart.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_management_repository.g.dart';

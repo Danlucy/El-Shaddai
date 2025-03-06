@@ -1,10 +1,8 @@
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
-import 'package:el_shaddai/features/participant/participant_controller/participant_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

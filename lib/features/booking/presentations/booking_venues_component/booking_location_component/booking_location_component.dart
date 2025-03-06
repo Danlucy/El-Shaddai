@@ -2,11 +2,9 @@ import 'package:el_shaddai/core/constants/constants.dart';
 import 'package:el_shaddai/core/customs/custom_google_auto_complete.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
-import 'package:el_shaddai/features/booking/widgets/recurrence_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

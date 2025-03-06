@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:el_shaddai/core/constants/constants.dart';
 import 'package:el_shaddai/core/router/router.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomInterceptor extends Interceptor {
@@ -41,9 +42,12 @@ class CustomInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     // Check if the user is unauthorized.
-    print(err.response?.statusCode);
-    print(err.response?.data);
-    print(err.message);
+    if (kDebugMode) {
+      print(err.response?.statusCode);
+      print(err.response?.data);
+      print(err.message);
+    }
+
     if (err.response?.statusCode == 401 || err.response?.data == 400) {
       // Refresh the user's authentication token.
       try {
@@ -70,7 +74,9 @@ class CustomInterceptor extends Interceptor {
     RequestOptions options,
   ) async {
     try {
-      print('trying to refesh tokens');
+      if (kDebugMode) {
+        print('trying to refesh tokens');
+      }
       final Dio dio = Dio();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final String encodedString = getEncodedString();
@@ -90,13 +96,12 @@ class CustomInterceptor extends Interceptor {
       )
           .then((response) async {
         if (response.data['refresh_token'] == null) {
-          print('REFRESH TOKEN IS NULL');
           throw Exception('Failed to refresh token');
         }
 
-        print(response.data);
-
-        print(response.data['refresh_token']);
+        // print(response.data);
+        //
+        // print(response.data['refresh_token']);
         options.headers['Authorization'] =
             'Bearer ${response.data['access_token']}';
 

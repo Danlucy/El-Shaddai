@@ -1,6 +1,5 @@
 library google_places_flutter;
 
-import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +8,6 @@ import 'package:google_places_flutter/model/place_details.dart';
 import 'package:google_places_flutter/model/place_type.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 
-import 'package:rxdart/subjects.dart';
 import 'package:dio/dio.dart';
 import 'package:rxdart/rxdart.dart';
 
