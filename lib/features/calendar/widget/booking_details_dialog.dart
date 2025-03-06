@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/core/utility/url_launcher.dart';
@@ -8,7 +7,6 @@ import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/auth/widgets/confirm_button.dart';
 import 'package:el_shaddai/features/booking/controller/booking_controller.dart';
 import 'package:el_shaddai/features/booking/presentations/booking_dialog.dart';
-import 'package:el_shaddai/features/booking/presentations/booking_screen.dart';
 import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
 import 'package:el_shaddai/features/participant/participant_controller/participant_controller.dart';
 import 'package:el_shaddai/features/participant/participant_repository/participant_repository.dart';
@@ -196,7 +194,12 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                   children: [
                     GestureDetector(
                       onTap: () {
+                        print('dad');
+                        print(booking.location.web!);
+                        //change1
                         launchURL(booking.location.web!);
+                        launchURL(
+                            'https://us02web.zoom.us/j/3128833664?pwd=joy');
                       },
                       child: CircleAvatar(
                         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -211,6 +214,8 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                             ClipboardData(text: booking.location.meetingID()));
                       },
                       child: Text(
+                        // '3128833664'
+                        //change2
                         booking.location.meetingID(spaced: true),
                       ),
                     ),

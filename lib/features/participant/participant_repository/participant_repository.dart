@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:el_shaddai/core/constants/firebase_constants.dart';
 import 'package:el_shaddai/core/firebase_providers.dart';
-import 'package:el_shaddai/features/participant/participant_controller/participant_controller.dart';
-import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:el_shaddai/models/user_model/user_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

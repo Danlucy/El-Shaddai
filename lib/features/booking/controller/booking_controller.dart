@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
 import 'package:el_shaddai/api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
 import 'package:el_shaddai/api/models/zoom_meeting_model/zoom_meeting_model.dart';
 import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
@@ -11,10 +10,8 @@ import 'package:el_shaddai/features/booking/state/booking_state.dart';
 import 'package:el_shaddai/models/booking_model/booking_model.dart';
 import 'package:el_shaddai/models/location_data.dart';
 import 'package:flutter/material.dart';
-import 'package:fpdart/fpdart.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:time_range_picker/time_range_picker.dart';
 part 'booking_controller.g.dart';
 
 enum BookingVenueComponent { location, zoom, hybrid }

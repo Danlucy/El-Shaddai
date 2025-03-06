@@ -41,6 +41,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
               context, widget.isUpdating, widget.bookingId);
           if (ref.read(bookingVenueStateProvider) !=
               BookingVenueComponent.location) {
+            // chane3
             await apiRepository
                 .createMeeting(
               bookingFunction.instantiateZoomMeetingModel(),
@@ -52,6 +53,9 @@ class _BookButtonState extends ConsumerState<BookButton> {
           }
 
           ref.read(bookingRepositoryProvider).createOrEditBooking(
+                // bookingModel: bookingFunction.instantiateBookingModel(
+                //     'https://us02web.zoom.us/j/3128833664?pwd=joy'),
+                //change4
                 bookingModel: bookingFunction.instantiateBookingModel(web),
                 call: widget.errorCall,
                 bookingId: widget.bookingId,

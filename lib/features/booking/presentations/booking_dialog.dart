@@ -256,8 +256,7 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
         } else {
           return BookingHyrbidComponent(googleController: _googleController);
         }
-      default:
-        return const SizedBox.shrink(); // Fallback
+      // Fallback
     }
   }
 }

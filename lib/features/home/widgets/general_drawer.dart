@@ -1,4 +1,3 @@
-import 'package:el_shaddai/api/models/access_token_model/access_token_model.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
@@ -66,20 +65,20 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
               onTap: () => const AboutUsRoute().push(context),
             ),
             const Spacer(),
-            (ref.watch(accessTokenNotifierProvider).value == null)
-                ? const SizedBox()
-                : ListTile(
-                    leading: const Icon(Icons.video_camera_front),
-                    title: Text(
-                      'Log out Zoom',
-                      style: TextStyle(color: context.colors.error),
-                    ),
-                    onTap: () {
-                      ref
-                          .read(accessTokenNotifierProvider.notifier)
-                          .clearAccessToken();
-                    },
-                  ),
+            // (ref.watch(accessTokenNotifierProvider).value == null)
+            //     ? const SizedBox()
+            //     : ListTile(
+            //         leading: const Icon(Icons.video_camera_front),
+            //         title: Text(
+            //           'Log out Zoom',
+            //           style: TextStyle(color: context.colors.error),
+            //         ),
+            //         onTap: () {
+            //           ref
+            //               .read(accessTokenNotifierProvider.notifier)
+            //               .clearAccessToken();
+            //         },
+            //       ),
             ListTile(
               leading: const Icon(Icons.transit_enterexit_sharp),
               title: Text(

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:el_shaddai/core/constants/firebase_constants.dart';
 import 'package:el_shaddai/core/firebase_providers.dart';
 import 'package:el_shaddai/features/post/controller/post_controller.dart';
 import 'package:el_shaddai/models/post_model/post_model.dart';
