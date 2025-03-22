@@ -2,53 +2,9 @@
   "project_info": {
     "project_number": "5347198504",
     "project_id": "el-shadd",
-    "storage_bucket": "el-shadd.appspot.com"
+    "storage_bucket": "el-shadd.firebasestorage.app"
   },
   "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:5347198504:android:ccc6533e70609e1829571d",
-        "android_client_info": {
-          "package_name": "com.company.elshaddai"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "5347198504-8nsftf8dlrmfhuhu68aqh4boj0olruuv.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.company.elshaddai",
-            "certificate_hash": "0ccc63ef2e67b5a503b4d5b80058bb2a8ff29b8e"
-          }
-        },
-        {
-          "client_id": "5347198504-mv7hsnnvvca4k7keda0410t262f95q8q.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAvlnyePX5BHvyHP4laYXnS2I0ia9U4jdw"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "5347198504-mv7hsnnvvca4k7keda0410t262f95q8q.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "5347198504-1g2jgrr8h2or0n7494mgenqi15305fd9.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.elShaddai"
-              }
-            }
-          ]
-        }
-      }
-    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:5347198504:android:8a9e148585b0e00929571d",
@@ -57,6 +13,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "5347198504-d6q6tjs07t6bv5lmdben0hjgjp5hbc5m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.el_shaddai",
+            "certificate_hash": "0ccc63ef2e67b5a503b4d5b80058bb2a8ff29b8e"
+          }
+        },
         {
           "client_id": "5347198504-mv7hsnnvvca4k7keda0410t262f95q8q.apps.googleusercontent.com",
           "client_type": 3
