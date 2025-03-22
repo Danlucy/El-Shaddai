@@ -42,12 +42,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyA4mTi8nMk0zkW99YxQHGFoJt6rW7FRc6U',
-    appId: '1:5347198504:web:235b8c0996d6859129571d',
+    appId: '1:5347198504:web:fc2706a03f0044bd29571d',
     messagingSenderId: '5347198504',
     projectId: 'el-shadd',
     authDomain: 'el-shadd.firebaseapp.com',
-    storageBucket: 'el-shadd.appspot.com',
-    measurementId: 'G-55GL31L0V1',
+    storageBucket: 'el-shadd.firebasestorage.app',
+    measurementId: 'G-ZVL2Q5PREE',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -55,26 +55,26 @@ class DefaultFirebaseOptions {
     appId: '1:5347198504:android:8a9e148585b0e00929571d',
     messagingSenderId: '5347198504',
     projectId: 'el-shadd',
-    storageBucket: 'el-shadd.appspot.com',
+    storageBucket: 'el-shadd.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDuo8LFLD0E8vzwExNsEjQX9hl04qlwWPo',
+    apiKey: 'AIzaSyAtN7volYsQjnFNWiEICqMPaxJ_w45N7Jc',
     appId: '1:5347198504:ios:7ceba25fb22fb03429571d',
     messagingSenderId: '5347198504',
     projectId: 'el-shadd',
-    storageBucket: 'el-shadd.appspot.com',
+    storageBucket: 'el-shadd.firebasestorage.app',
     androidClientId: '5347198504-8nsftf8dlrmfhuhu68aqh4boj0olruuv.apps.googleusercontent.com',
     iosClientId: '5347198504-1g2jgrr8h2or0n7494mgenqi15305fd9.apps.googleusercontent.com',
     iosBundleId: 'com.example.elShaddai',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDuo8LFLD0E8vzwExNsEjQX9hl04qlwWPo',
+    apiKey: 'AIzaSyAtN7volYsQjnFNWiEICqMPaxJ_w45N7Jc',
     appId: '1:5347198504:ios:7ceba25fb22fb03429571d',
     messagingSenderId: '5347198504',
     projectId: 'el-shadd',
-    storageBucket: 'el-shadd.appspot.com',
+    storageBucket: 'el-shadd.firebasestorage.app',
     androidClientId: '5347198504-8nsftf8dlrmfhuhu68aqh4boj0olruuv.apps.googleusercontent.com',
     iosClientId: '5347198504-1g2jgrr8h2or0n7494mgenqi15305fd9.apps.googleusercontent.com',
     iosBundleId: 'com.example.elShaddai',
@@ -86,7 +86,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '5347198504',
     projectId: 'el-shadd',
     authDomain: 'el-shadd.firebaseapp.com',
-    storageBucket: 'el-shadd.appspot.com',
+    storageBucket: 'el-shadd.firebasestorage.app',
     measurementId: 'G-ZVL2Q5PREE',
   );
+
 }
