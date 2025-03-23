@@ -206,25 +206,27 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                         ),
                         _buildSelectedComponent(builderContext),
                         const RecurrenceComponent(),
-                        if ((token.value == null &&
-                                ref.read(bookingVenueStateProvider) ==
-                                    BookingVenueComponent.location) ||
-                            token.value != null)
-                          BookButton(
-                            isUpdating: isUpdating,
-                            formKey: formKey,
-                            bookingId: widget.bookingModel?.id,
-                            errorCall: (x) {
-                              final contextKey = formKey.currentContext;
-                              if (contextKey != null && contextKey.mounted) {
-                                showFailureSnackBar(widget.context, x);
-                              } else {
-                                throw x;
-                              }
-                            },
-                          )
-                        else
-                          const SizedBox.shrink(),
+                        // if ((token.value == null &&
+                        //         ref.read(bookingVenueStateProvider) ==
+                        //             BookingVenueComponent.location) ||
+                        //     token.value != null)
+
+                        //change6
+                        BookButton(
+                          isUpdating: isUpdating,
+                          formKey: formKey,
+                          bookingId: widget.bookingModel?.id,
+                          errorCall: (x) {
+                            final contextKey = formKey.currentContext;
+                            if (contextKey != null && contextKey.mounted) {
+                              showFailureSnackBar(widget.context, x);
+                            } else {
+                              throw x;
+                            }
+                          },
+                        )
+                        // else
+                        //   const SizedBox.shrink(),
                       ],
                     ),
                   ),
@@ -243,7 +245,9 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
     switch (ref.read(bookingVenueStateProvider)) {
       case BookingVenueComponent.zoom:
         if (isSignedIn) {
-          return const ZoomSignInComponent();
+          return const BookingZoomComponent();
+          //change5
+          // return const ZoomSignInComponent();
         } else {
           return const BookingZoomComponent();
         }
@@ -252,7 +256,9 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
         return BookingLocationComponent(_googleController, builderContext);
       case BookingVenueComponent.hybrid:
         if (isSignedIn) {
-          return const ZoomSignInComponent();
+          return BookingHyrbidComponent(googleController: _googleController);
+          //change6
+          // return const ZoomSignInComponent();
         } else {
           return BookingHyrbidComponent(googleController: _googleController);
         }

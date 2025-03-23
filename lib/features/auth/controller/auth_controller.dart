@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:el_shaddai/core/widgets/snack_bar.dart';
 import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
 import 'package:el_shaddai/models/user_model/user_model.dart';
@@ -6,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userProvider = StateProvider<UserModel?>((ref) {
-  return;
+  return null; // Initialize with null
 });
 
 final authControllerProvider = StateNotifierProvider<AuthController, bool>(
@@ -43,7 +45,38 @@ class AuthController extends StateNotifier<bool> {
             _ref.read(userProvider.notifier).update((state) => userModel));
   }
 
-  Stream<UserModel> getUserData(String uid) {
-    return _authRepository.getUserData(uid);
+  Stream<UserModel?> getUserDataStream() async* {
+    final auth = FirebaseAuth.instance;
+    if (auth.currentUser == null) {
+      yield null; // No user logged in
+      return;
+    }
+
+    // Function to fetch user data with error handling
+
+    // Retry logic with connectivity check
+    while (true) {
+      try {
+        yield* _authRepository.getUserData(
+            auth.currentUser!.uid); // Yield the results of the fetch
+        break; // If successful, break the loop
+      } catch (e) {
+        print('Retrying after error: $e');
+        // Wait for connectivity to be restored
+        final connectivityResult = await (Connectivity()..checkConnectivity());
+        if (connectivityResult == ConnectivityResult.none) {
+          print('No internet connection. Waiting for connectivity...');
+          await for (final connectivityResult
+              in Connectivity().onConnectivityChanged) {
+            if (connectivityResult != ConnectivityResult.none) {
+              print('Internet connection restored!');
+              break; // Break the inner loop
+            }
+          }
+        }
+        // Wait a short duration before retrying (optional)
+        await Future.delayed(const Duration(seconds: 5));
+      }
+    }
   }
 }

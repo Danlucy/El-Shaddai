@@ -194,10 +194,10 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        print('dad');
-                        print(booking.location.web!);
+                        // print('dad');
+                        // print(booking.location.web!);
                         //change1
-                        launchURL(booking.location.web!);
+                        // launchURL(booking.location.web!);
                         launchURL(
                             'https://us02web.zoom.us/j/3128833664?pwd=joy');
                       },
@@ -213,11 +213,10 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                         Clipboard.setData(
                             ClipboardData(text: booking.location.meetingID()));
                       },
-                      child: Text(
-                        // '3128833664'
-                        //change2
-                        booking.location.meetingID(spaced: true),
-                      ),
+                      child: Text('3128833664'
+                          //change2
+                          // booking.location.meetingID(spaced: true),
+                          ),
                     ),
                   ],
                 ),
