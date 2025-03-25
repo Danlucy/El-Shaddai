@@ -1,5 +1,6 @@
 import 'package:el_shaddai/features/auth/widgets/login_button.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, this.from});
@@ -29,7 +30,13 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(
               height: 20,
             ),
-            const SignInButton()
+            const SignInButton(
+              mode: 'Google',
+            ),
+            Gap(20),
+            const SignInButton(
+              mode: 'Apple',
+            ),
           ],
         ),
       ),
