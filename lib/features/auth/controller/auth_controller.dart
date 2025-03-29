@@ -12,8 +12,7 @@ final userProvider = StateProvider<UserModel?>((ref) {
 });
 
 final authControllerProvider = StateNotifierProvider<AuthController, bool>(
-  (ref) => AuthController(
-      authRepository: ref.watch(authRepositoryProvider), ref: ref),
+  (ref) => AuthController(authRepository: ref.watch(authRepositoryProvider), ref: ref),
 );
 final authStateChangeProvider = StreamProvider((ref) {
   final authController = ref.watch(authControllerProvider.notifier);
@@ -29,6 +28,18 @@ class AuthController extends StateNotifier<bool> {
         super(false);
   Stream<User?> get authStateChange => _authRepository.authStateChange;
 
+  void signInWithApple(BuildContext context) async {
+    state = true;
+    final user = await _authRepository.signInWithApple();
+    if (user.isLeft()) {
+      showFailureSnackBar(context, 'NO DATA');
+    }
+    state = false;
+    user.fold((l) {
+      showFailureSnackBar(context, l.message);
+    }, (userModel) => _ref.read(userProvider.notifier).update((state) => userModel));
+  }
+
   void signInWithGoogle(BuildContext context) async {
     state = true;
 
@@ -40,9 +51,7 @@ class AuthController extends StateNotifier<bool> {
     state = false;
     user.fold((l) {
       showFailureSnackBar(context, l.message);
-    },
-        (userModel) =>
-            _ref.read(userProvider.notifier).update((state) => userModel));
+    }, (userModel) => _ref.read(userProvider.notifier).update((state) => userModel));
   }
 
   Stream<UserModel?> getUserDataStream() async* {

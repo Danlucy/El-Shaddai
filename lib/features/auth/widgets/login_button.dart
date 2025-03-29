@@ -9,6 +9,10 @@ class SignInButton extends ConsumerWidget {
     ref.read(authControllerProvider.notifier).signInWithGoogle(context);
   }
 
+  void signInWithApple(BuildContext context, WidgetRef ref) {
+    ref.read(authControllerProvider.notifier).signInWithApple(context);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool isGoogle = mode == 'Google';
@@ -20,7 +24,7 @@ class SignInButton extends ConsumerWidget {
         onPressed: () {
           isGoogle
               ? signInWithGoogle(context, ref)
-              : print('Sign in with Apple'); //Add apple heere
+              : signInWithApple(context, ref); //Add apple heere
         },
         icon: isGoogle
             ? Image.asset(
