@@ -27,8 +27,7 @@ class AuthRepository {
       : _firestore = firestore,
         _auth = auth,
         _googleSignIn = googleSignIn;
-  CollectionReference get _users =>
-      _firestore.collection(FirebaseConstants.usersCollection);
+  CollectionReference get _users => _firestore.collection(FirebaseConstants.usersCollection);
   Stream<User?> get authStateChange => _auth.authStateChanges();
 
   Future<void> logout() async {
@@ -40,6 +39,30 @@ class AuthRepository {
     FirebaseAuth.instance.signOut();
   }
 
+  FutureEither<UserModel> signInWithApple() async {
+    try {
+      final appleProvider = AppleAuthProvider();
+      final userCredential = await _auth.signInWithProvider(appleProvider);
+      UserModel userModel;
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        userModel = UserModel(
+          name: userCredential.user!.displayName ?? 'Nameless',
+          uid: userCredential.user!.uid,
+          role: UserRole.intercessor,
+        );
+        await _users.doc(userCredential.user?.uid).set(userModel.toJson());
+      } else {
+        userModel = await getUserData(userCredential.user!.uid).first;
+      }
+
+      return right(userModel);
+    } on FirebaseException catch (e) {
+      throw e.message!;
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
   FutureEither<UserModel> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -49,8 +72,7 @@ class AuthRepository {
       final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
 
       UserModel userModel;
       print(userCredential);
