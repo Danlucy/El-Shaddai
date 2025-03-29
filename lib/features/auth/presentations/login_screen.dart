@@ -1,6 +1,7 @@
 import 'package:el_shaddai/features/auth/widgets/login_button.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'dart:io' show Platform;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, this.from});
@@ -34,9 +35,10 @@ class _LoginScreenState extends State<LoginScreen> {
               mode: 'Google',
             ),
             Gap(20),
-            const SignInButton(
-              mode: 'Apple',
-            ),
+            if (Platform.isIOS)
+              const SignInButton(
+                mode: 'Apple',
+              ),
           ],
         ),
       ),
