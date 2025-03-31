@@ -1,10 +1,10 @@
 import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:el_shaddai/core/router/no_internet_screen.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
-import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
 import 'package:el_shaddai/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -64,11 +64,7 @@ class _MyAppState extends ConsumerState<_MyApp> with WidgetsBindingObserver {
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult != ConnectivityResult.none) {
       print('updating');
-      ref
-          .read(authControllerProvider.notifier)
-          .getUserDataStream()
-          .first
-          .then((userModel) {
+      ref.read(authControllerProvider.notifier).getUserDataStream().first.then((userModel) {
         ref.read(userProvider.notifier).update((state) => userModel);
       });
     }
@@ -101,6 +97,7 @@ class _MyAppState extends ConsumerState<_MyApp> with WidgetsBindingObserver {
     final router = ref.watch(goRouterProvider);
     return MaterialApp.router(
       title: 'El Shaddai',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
           appBarTheme: const AppBarTheme(titleSpacing: 0),
           textTheme: textTheme,
