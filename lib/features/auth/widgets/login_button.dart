@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +20,7 @@ class SignInButton extends ConsumerWidget {
     final width = MediaQuery.sizeOf(context).width;
     return SizedBox(
       width: width - 20,
-      height: 50,
+      height: 60,
       child: ElevatedButton.icon(
         onPressed: () {
           isGoogle
@@ -42,14 +43,17 @@ class SignInButton extends ConsumerWidget {
                 ),
               ),
         style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 40),
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(20),
             ),
           ),
         ),
-        label: Text(
+        label: AutoSizeText(
+          maxLines: 1,
+          minFontSize: 12,
+          maxFontSize: 20,
           'Continue with $mode',
           style: const TextStyle(fontSize: 18),
         ),
