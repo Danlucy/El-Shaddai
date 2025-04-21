@@ -15,9 +15,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'El Shaddai',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: const Center(
+          child: Text(
+            'El  Shaddai',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+          ),
         ),
       ),
       body: Center(
