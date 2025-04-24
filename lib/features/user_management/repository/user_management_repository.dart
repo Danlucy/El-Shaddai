@@ -27,9 +27,9 @@ class UserManagementRepository {
   /// ✅ **Update user role**
   Future<void> updateUserRole(UserRole role, String uId) async {
     try {
-      await _user
-          .doc(uId)
-          .update({'role': role.name}); // Use `name` instead of `toString()`
+      await _user.doc(uId).update({
+        'role': role.name.toLowerCase()
+      }); // Use `name` instead of `toString()`
     } catch (e) {
       print('Failed to update role: $e');
     }
