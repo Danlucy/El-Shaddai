@@ -27,7 +27,6 @@ class ProfileController extends _$ProfileController {
   }
 
   /// ✅ **Get list of nullable fields in the user model**
-
   /// ✅ **Update Firestore Field**
   Future<void> updateUserField(String fieldName, dynamic newValue) async {
     final user = ref.read(userProvider);

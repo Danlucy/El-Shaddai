@@ -36,8 +36,37 @@ class UserManagementRepository {
   }
 
   /// ✅ **Delete user**
-  Future<void> deleteUser(String uid) async {
+  Future<void> deleteUserData(String uid) async {
     await _user.doc(uid).delete();
+  }
+
+  Future<void> clearUserDataExcept(
+    String uid,
+  ) async {
+    try {
+      // First get the current document
+      DocumentSnapshot doc = await _user.doc(uid).get();
+
+      Map<String, dynamic> userData = doc.data() as Map<String, dynamic>;
+      Map<String, dynamic> updatedData = {};
+
+      // Set all fields to null except those we want to keep
+      for (String key in userData.keys) {
+        if (['name', 'role', 'uid'].contains(key)) {
+          // Keep the original value for fields we want to preserve
+          updatedData[key] = userData[key];
+        } else {
+          // Set all other fields to null
+          updatedData[key] = null;
+        }
+      }
+
+      // Update the document with the new data
+      await _user.doc(uid).update(updatedData);
+    } catch (e) {
+      print('Error clearing user data: $e');
+      rethrow;
+    }
   }
 }
 
