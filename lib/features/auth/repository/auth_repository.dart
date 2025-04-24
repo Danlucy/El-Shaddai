@@ -27,7 +27,8 @@ class AuthRepository {
       : _firestore = firestore,
         _auth = auth,
         _googleSignIn = googleSignIn;
-  CollectionReference get _users => _firestore.collection(FirebaseConstants.usersCollection);
+  CollectionReference get _users =>
+      _firestore.collection(FirebaseConstants.usersCollection);
   Stream<User?> get authStateChange => _auth.authStateChanges();
 
   Future<void> logout() async {
@@ -72,7 +73,8 @@ class AuthRepository {
       final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
 
       UserModel userModel;
       print(userCredential);
@@ -93,7 +95,7 @@ class AuthRepository {
     } catch (e) {
       return left(
         Failure(
-          e.toString(),
+          'An error occurred while signing in with Google. Please try again.',
         ),
       );
     }

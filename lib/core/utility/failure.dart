@@ -14,7 +14,7 @@ class ErrorText extends StatelessWidget {
   Widget build(BuildContext context) {
     showFailureSnackBar(context, error);
     return Center(
-      child: Text(error),
+      child: Text(error, style: const TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 }
