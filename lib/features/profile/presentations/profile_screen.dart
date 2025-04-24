@@ -1,7 +1,10 @@
+import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
+import 'package:el_shaddai/features/auth/widgets/confirm_button.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
 import 'package:el_shaddai/features/profile/controller/profile_controller.dart';
+import 'package:el_shaddai/features/user_management/repository/user_management_repository.dart';
 import 'package:el_shaddai/models/user_model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,7 +42,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context1) {
     final user = ref.watch(userProvider);
     final userDataState =
         ref.watch(profileControllerProvider(widget.userModel?.uid));
@@ -115,6 +118,45 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ],
                         );
                       }),
+                      if (user?.uid == widget.userModel!.uid)
+                        OutlinedButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context1,
+                                  builder: (context) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        context.pop();
+                                      },
+                                      child: AlertDialog(
+                                        backgroundColor: Colors.transparent,
+                                        content: GestureDetector(
+                                          onTap: () {},
+                                          child: ConfirmButton(
+                                            confirmText: 'Delete',
+                                            description:
+                                                'Are you sure you want to delete your Account?',
+                                            cancelText: 'Cancel',
+                                            confirmAction: () {
+                                              ref
+                                                  .read(authControllerProvider
+                                                      .notifier)
+                                                  .deleteUser(
+                                                      user!.uid, context1);
+                                              context.pop();
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  });
+                            },
+                            child: const Text(
+                              'Delete Account',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red),
+                            ))
                     ],
                   ),
                 ),
@@ -331,7 +373,7 @@ class _ProfileImageState extends ConsumerState<_ProfileImage> {
         );
       },
       loading: () => const CircularProgressIndicator(),
-      error: (error, stack) => Text("Error loading profile"),
+      error: (error, stack) => const Text("Error loading profile"),
     );
   }
 }

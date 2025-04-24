@@ -1,6 +1,8 @@
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
 import 'package:el_shaddai/core/utility/date_time_range.dart';
+import 'package:el_shaddai/core/widgets/snack_bar.dart';
+import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/features/auth/widgets/confirm_button.dart';
 import 'package:el_shaddai/features/home/widgets/general_drawer.dart';
 import 'package:el_shaddai/features/user_management/controller/user_management_controller.dart';
@@ -79,7 +81,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   }
 }
 
-class _PopMenuButton extends StatelessWidget {
+class _PopMenuButton extends ConsumerWidget {
   const _PopMenuButton({
     required this.user,
     required this.controller,
@@ -90,7 +92,7 @@ class _PopMenuButton extends StatelessWidget {
   final UserManagementController controller;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return PopupMenuButton<String>(
       itemBuilder: (BuildContext context) => [
         PopupMenuItem(
@@ -116,21 +118,28 @@ class _PopMenuButton extends StatelessWidget {
             Text('Delete ')
           ]),
           onTap: () {
-            showDialog(
-              barrierColor: Colors.black.withOpac(0.3),
-              context: context,
-              builder: (context) {
-                return ConfirmButton(
-                  confirmText: 'Delete',
-                  cancelText: 'Cancel',
-                  description: 'Delete User? This cannot be reverted.',
-                  confirmAction: () {
-                    controller.deleteUser(user.uid);
-                    context.pop();
-                  },
-                );
-              },
-            );
+            if (user.role == UserRole.admin) {
+              showFailureSnackBar(context, 'You cannot delete an admin user');
+              return;
+            } else {
+              showDialog(
+                barrierColor: Colors.black.withOpac(0.3),
+                context: context,
+                builder: (context) {
+                  return ConfirmButton(
+                    confirmText: 'Delete',
+                    cancelText: 'Cancel',
+                    description: 'Delete User? This cannot be reverted.',
+                    confirmAction: () {
+                      ref
+                          .read(authControllerProvider.notifier)
+                          .deleteUser(user.uid, context);
+                      context.pop();
+                    },
+                  );
+                },
+              );
+            }
           },
         ),
       ],

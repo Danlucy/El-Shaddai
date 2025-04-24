@@ -93,7 +93,7 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                       return ConfirmButton(
                         confirmText: 'Log out',
                         confirmAction: () {
-                          ref.read(authRepositoryProvider).logout();
+                          ref.read(authControllerProvider.notifier).signOut();
                         },
                         description: 'Are you sure you want to log out?',
                         cancelText: 'Cancel',
