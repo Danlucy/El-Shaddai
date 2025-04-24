@@ -1,16 +1,5 @@
-import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
-import 'package:el_shaddai/core/theme.dart';
-import 'package:el_shaddai/features/auth/widgets/loader.dart';
-import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
-import 'package:el_shaddai/features/calendar/controller/calendar_controller.dart';
-import 'package:el_shaddai/features/calendar/widget/booking_details_dialog.dart';
-import 'package:el_shaddai/features/participant/participant_controller/participant_controller.dart';
-import 'package:el_shaddai/models/booking_model/booking_model.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
-
+Wqaxxed import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
+Wqaxxed 2r
 class DailyCalendarComponent extends ConsumerStatefulWidget {
   const DailyCalendarComponent({
     required this.dailyCalendarController,
