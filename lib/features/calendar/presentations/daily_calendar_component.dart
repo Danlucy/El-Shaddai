@@ -1,5 +1,14 @@
-Wqaxxed import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
-Wqaxxed 2r
+import 'package:el_shaddai/core/customs/custom_date_time_range.dart';
+import 'package:el_shaddai/core/theme.dart';
+import 'package:el_shaddai/core/widgets/loader.dart';
+import 'package:el_shaddai/features/booking/repository/booking_repository.dart';
+import 'package:el_shaddai/features/calendar/controller/calendar_controller.dart';
+import 'package:el_shaddai/features/calendar/widget/booking_details_dialog.dart';
+import 'package:el_shaddai/models/booking_model/booking_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
+
 class DailyCalendarComponent extends ConsumerStatefulWidget {
   const DailyCalendarComponent({
     required this.dailyCalendarController,
@@ -7,12 +16,10 @@ class DailyCalendarComponent extends ConsumerStatefulWidget {
   });
   final CalendarController dailyCalendarController;
   @override
-  ConsumerState<DailyCalendarComponent> createState() =>
-      _DailyCalendarComponentState();
+  ConsumerState<DailyCalendarComponent> createState() => _DailyCalendarComponentState();
 }
 
-class _DailyCalendarComponentState
-    extends ConsumerState<DailyCalendarComponent> {
+class _DailyCalendarComponentState extends ConsumerState<DailyCalendarComponent> {
   @override
   Widget build(BuildContext context) {
     final bookingStream = ref.watch(bookingStreamProvider());
@@ -25,8 +32,7 @@ class _DailyCalendarComponentState
     return bookingStream.when(
         data: (data) {
           return SfCalendar(
-            appointmentBuilder:
-                (BuildContext context, CalendarAppointmentDetails details) {
+            appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
               // Extract the BookingModel from the appointment details
               BookingModel bookingModel = details.appointments.first;
 
@@ -37,8 +43,7 @@ class _DailyCalendarComponentState
                     context: context,
                     builder: (context) {
                       return BookingDetailsDialog(
-                        bookingModel:
-                            bookingModel, // Pass the correct BookingModel
+                        bookingModel: bookingModel, // Pass the correct BookingModel
                       );
                     },
                   );
@@ -86,14 +91,12 @@ class _DailyCalendarComponentState
   }
 }
 
-_AppointmentDataSource _getCalendarDataSource(
-    List<BookingModel> bookingModels) {
+_AppointmentDataSource _getCalendarDataSource(List<BookingModel> bookingModels) {
   List<BookingModel> appointments = <BookingModel>[];
 
   for (BookingModel booking in bookingModels) {
     // Calculate the number of days between start and end dates
-    int duration =
-        booking.timeRange.end.difference(booking.timeRange.start).inDays;
+    int duration = booking.timeRange.end.difference(booking.timeRange.start).inDays;
 
     for (int i = 0; i <= duration; i++) {
       DateTime currentDate = DateTime(
@@ -179,8 +182,7 @@ class _AppointmentDataSource extends CalendarDataSource<BookingModel> {
   }
 
   @override
-  BookingModel convertAppointmentToObject(
-      BookingModel customData, Appointment appointment) {
+  BookingModel convertAppointmentToObject(BookingModel customData, Appointment appointment) {
     return BookingModel(
         timeRange: customData.timeRange,
         description: customData.description,
