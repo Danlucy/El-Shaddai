@@ -30,7 +30,8 @@ class AuthRepository {
       : _firestore = firestore,
         _auth = auth,
         _googleSignIn = googleSignIn;
-  CollectionReference get _users => _firestore.collection(FirebaseConstants.usersCollection);
+  CollectionReference get _users =>
+      _firestore.collection(FirebaseConstants.usersCollection);
   Stream<User?> get authStateChange => _auth.authStateChanges();
 
   FutureEither<UserModel> signInWithApple() async {
@@ -66,7 +67,8 @@ class AuthRepository {
 
     try {
       AuthCredential credential;
-      if (user.providerData.any((info) => info.providerId == GoogleAuthProvider().providerId)) {
+      if (user.providerData
+          .any((info) => info.providerId == GoogleAuthProvider().providerId)) {
         // Google re-authentication - initiate the Google Sign-In flow again
         await _googleSignIn.signOut();
         final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -84,7 +86,8 @@ class AuthRepository {
 
         await user.reauthenticateWithCredential(credential);
         print('User re-authenticated with Google successfully');
-        return right(true); //Return to success on successful authentication with google.
+        return right(
+            true); //Return to success on successful authentication with google.
       } else if (user.providerData
           .any((info) => info.providerId == AppleAuthProvider().providerId)) {
         // Apple re-authentication
@@ -119,7 +122,8 @@ class AuthRepository {
 
       throw 'Should not reach here'; //I had a throw previously before.
     } catch (e) {
-      return left(Failure(e.toString())); //Generic handler. Catch any other exception
+      return left(
+          Failure(e.toString())); //Generic handler. Catch any other exception
     }
   }
 
@@ -145,7 +149,9 @@ class AuthRepository {
         },
         (success) async {
           try {
-            await ref.read(userManagementRepositoryProvider).clearUserDataExcept(currentUser.uid);
+            await ref
+                .read(userManagementRepositoryProvider)
+                .clearUserDataExcept(currentUser.uid);
 
             // Then delete the Firebase Authentication account
             await currentUser.delete();
@@ -156,7 +162,8 @@ class AuthRepository {
             showSuccessfulSnackBar(context, 'Account deleted successfully');
             return right(null);
           } on FirebaseException catch (e) {
-            return left(Failure(e.message ?? 'Firebase error occurred during account deletion'));
+            return left(Failure(e.message ??
+                'Firebase error occurred during account deletion'));
           } catch (e) {
             return left(Failure('Failed to delete account: ${e.toString()}'));
           }
@@ -193,7 +200,8 @@ class AuthRepository {
       final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
 
       UserModel userModel;
       // print(userCredential);
@@ -213,6 +221,8 @@ class AuthRepository {
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
+      print('Error signing in with Google: $e');
+      print(e);
       return left(
         Failure(
           'An error occurred while signing in with Google. Please try again.',
