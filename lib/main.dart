@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'dart:io';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:el_shaddai/core/router/no_internet_screen.dart';
 import 'package:el_shaddai/core/router/router.dart';
 import 'package:el_shaddai/core/theme.dart';
+import 'package:el_shaddai/core/utility/backend_checker.dart';
 import 'package:el_shaddai/features/auth/controller/auth_controller.dart';
 import 'package:el_shaddai/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,21 +19,12 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  Future<bool> hasNetwork() async {
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } on SocketException catch (_) {
-      return false;
-    }
-  }
+  // Check both basic internet and Firebase connectivity
+  bool hasConnectivity = await BackendChecker.checkConnectivity();
 
-  bool isOnline = await hasNetwork();
   runApp(
-    (isOnline)
-        ? const ProviderScope(
-            child: MyApp(),
-          )
+    hasConnectivity
+        ? const ProviderScope(child: MyApp())
         : const NoInternetScreen(),
   );
 }
@@ -45,9 +38,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
       DeviceOrientation.portraitUp,
     ]);
-    return const ProviderScope(
-      child: _MyApp(),
-    );
+    return const ProviderScope(child: _MyApp());
   }
 }
 
@@ -59,35 +50,63 @@ class _MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<_MyApp> with WidgetsBindingObserver {
-//This is a great practice for knowing what has happened
+  Timer? _connectivityTimer;
+
   Future<void> _checkConnectivityAndUpdateUser() async {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult != ConnectivityResult.none) {
-      print('updating');
-      ref.read(authControllerProvider.notifier).getUserDataStream().first.then((userModel) {
-        ref.read(userProvider.notifier).update((state) => userModel);
-      });
+    try {
+      final hasConnection = await BackendChecker.checkConnectivity();
+
+      if (hasConnection && mounted) {
+        print('Connected - updating user data');
+        ref
+            .read(authControllerProvider.notifier)
+            .getUserDataStream()
+            .first
+            .then((userModel) {
+          if (mounted) {
+            ref.read(userProvider.notifier).update((state) => userModel);
+          }
+        }).catchError((error) {
+          print('Error updating user data: $error');
+        });
+      }
+    } catch (e) {
+      print('Connectivity check error: $e');
     }
   }
 
   @override
   void initState() {
     super.initState();
-// Get the latest data in the provider
-    _checkConnectivityAndUpdateUser();
     WidgetsBinding.instance.addObserver(this);
+
+    // Initial check after frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkConnectivityAndUpdateUser();
+    });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+
     if (state == AppLifecycleState.resumed) {
-      _checkConnectivityAndUpdateUser(); // Refresh when app resumes
+      // Debounce connectivity checks when app resumes
+      _connectivityTimer?.cancel();
+      _connectivityTimer = Timer(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          _checkConnectivityAndUpdateUser();
+        }
+      });
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _connectivityTimer?.cancel();
     }
   }
 
   @override
   void dispose() {
+    _connectivityTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

@@ -18,9 +18,13 @@ class SignInButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bool isGoogle = mode == 'Google';
     final width = MediaQuery.sizeOf(context).width;
-    return SizedBox(
-      width: width - 20,
-      height: 60,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: width * 0.8,
+        minWidth: width * 0.5,
+        maxHeight: 70,
+        minHeight: 50,
+      ),
       child: ElevatedButton.icon(
         onPressed: () {
           isGoogle

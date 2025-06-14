@@ -17,12 +17,19 @@ class _BookingHybridComponentState
     extends ConsumerState<BookingHyrbidComponent> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const ZoomDisplayComponent(),
-        const Gap(8),
-        GoogleMapComponent(widget.googleController),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          children: [
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth),
+              child: const ZoomDisplayComponent(),
+            ),
+            const Gap(8),
+            GoogleMapComponent(widget.googleController),
+          ],
+        );
+      },
     );
   }
 }

@@ -204,8 +204,22 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                                 .toList(),
                           ),
                         ),
-                        _buildSelectedComponent(builderContext),
-                        const RecurrenceComponent(),
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          alignment: Alignment.topCenter,
+                          child: Align(
+                            alignment: Alignment
+                                .topCenter, // 🟢 Important to place child at top
+
+                            child: _buildSelectedComponent(builderContext),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        if (widget.bookingModel?.id == null)
+                          const RecurrenceComponent(),
                         // if ((token.value == null &&
                         //         ref.read(bookingVenueStateProvider) ==
                         //             BookingVenueComponent.location) ||
@@ -245,22 +259,27 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
     switch (ref.read(bookingVenueStateProvider)) {
       case BookingVenueComponent.zoom:
         if (isSignedIn) {
-          return const BookingZoomComponent();
           //change5
           // return const ZoomSignInComponent();
+          return const BookingZoomComponent(key: ValueKey('zoom'));
         } else {
-          return const BookingZoomComponent();
+          return const BookingZoomComponent(key: ValueKey('zoom'));
         }
 
       case BookingVenueComponent.location:
-        return BookingLocationComponent(_googleController, builderContext);
+        return BookingLocationComponent(_googleController, builderContext,
+            key: const ValueKey('location'));
       case BookingVenueComponent.hybrid:
         if (isSignedIn) {
-          return BookingHyrbidComponent(googleController: _googleController);
+          return BookingHyrbidComponent(
+              googleController: _googleController,
+              key: const ValueKey('hybrid'));
+        } else {
+          return BookingHyrbidComponent(
+              googleController: _googleController,
+              key: const ValueKey('hybrid'));
           //change6
           // return const ZoomSignInComponent();
-        } else {
-          return BookingHyrbidComponent(googleController: _googleController);
         }
       // Fallback
     }
