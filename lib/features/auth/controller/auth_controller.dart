@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:el_shaddai/core/utility/future_either.dart';
 import 'package:el_shaddai/core/widgets/snack_bar.dart';
 import 'package:el_shaddai/features/auth/repository/auth_repository.dart';
@@ -92,18 +91,19 @@ class AuthController extends StateNotifier<bool> {
         break; // If successful, break the loop
       } catch (e) {
         print('Retrying after error: $e');
+        print('Waiting for connectivity...');
         // Wait for connectivity to be restored
-        final connectivityResult = await (Connectivity()..checkConnectivity());
-        if (connectivityResult == ConnectivityResult.none) {
-          print('No internet connection. Waiting for connectivity...');
-          await for (final connectivityResult
-              in Connectivity().onConnectivityChanged) {
-            if (connectivityResult != ConnectivityResult.none) {
-              print('Internet connection restored!');
-              break; // Break the inner loop
-            }
-          }
-        }
+        // final connectivityResult = await (Connectivity()..checkConnectivity());
+        // if (connectivityResult == ConnectivityResult.none) {
+        //   print('No internet connection. Waiting for connectivity...');
+        //   await for (final connectivityResult
+        //       in Connectivity().onConnectivityChanged) {
+        //     if (connectivityResult != ConnectivityResult.none) {
+        //       print('Internet connection restored!');
+        //       break; // Break the inner loop
+        //     }
+        //   }
+        // }
         // Wait a short duration before retrying (optional)
         await Future.delayed(const Duration(seconds: 5));
       }

@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
+import 'dart:async';
 part 'booking_location_component.g.dart';
 
 @riverpod
@@ -58,6 +58,7 @@ class GoogleMapComponent extends ConsumerStatefulWidget {
 
 class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
   final FocusNode _autoCompleteFocusNode = FocusNode();
+  final Completer<GoogleMapController> _mapController = Completer();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -75,16 +76,15 @@ class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
             containerHorizontalPadding: 5,
             isLatLngRequired: true,
             getPlaceDetailWithLatLng: (l) {
-              setState(() {
-                ref.read(targetNotifierProvider.notifier).setTarget(
-                    LatLng(double.parse(l.lat!), double.parse(l.lng!)));
-                ref
-                    .read(bookingControllerProvider.notifier)
-                    .setAddress(widget.googleController.text);
-                // print(LatLng(double.parse(l.lat!), double.parse(l.lng!)));
-                ref.read(bookingControllerProvider.notifier).setChords(
-                    LatLng(double.parse(l.lat!), double.parse(l.lng!)));
-              });
+              final newTarget =
+                  LatLng(double.parse(l.lat!), double.parse(l.lng!));
+              ref.read(targetNotifierProvider.notifier).setTarget(newTarget);
+              ref
+                  .read(bookingControllerProvider.notifier)
+                  .setAddress(widget.googleController.text);
+              // print(LatLng(double.parse(l.lat!), double.parse(l.lng!)));
+              ref.read(bookingControllerProvider.notifier).setChords(newTarget);
+              _updateCameraPosition(newTarget);
             },
             itemClick: (Prediction prediction) {
               widget.googleController.text = prediction.description ?? "";
@@ -125,32 +125,53 @@ class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
         SizedBox(
           width: 300,
           height: 250,
-          child: ref.watch(targetNotifierProvider) != null
-              ? ClipRRect(
+          child: Builder(
+            builder: (context) {
+              final target = ref.watch(targetNotifierProvider);
+              if (target != null) {
+                return ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(15)),
                   child: GoogleMap(
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController.complete(controller);
+                      if (target != null) _updateCameraPosition(target);
+                    },
                     initialCameraPosition: CameraPosition(
-                      target: ref.watch(targetNotifierProvider)!,
+                      target: target,
                       zoom: 13,
                     ),
                     markers: {
                       Marker(
                         markerId: const MarkerId("1"),
-                        position: ref.watch(targetNotifierProvider)!,
+                        position: target,
                       )
                     },
                   ),
-                )
-              : Container(
+                );
+              } else {
+                // Placeholder while the map is not initialized
+                return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     color: context.colors.tertiaryContainer,
                   ),
                   width: 300,
                   height: 250,
-                ),
+                );
+              }
+            },
+          ),
         )
       ],
     );
+  }
+
+  Future<void> _updateCameraPosition(LatLng target) async {
+    final GoogleMapController controller = await _mapController.future;
+    CameraPosition newPosition = CameraPosition(
+      target: target,
+      zoom: 13,
+    );
+    controller.animateCamera(CameraUpdate.newCameraPosition(newPosition));
   }
 }

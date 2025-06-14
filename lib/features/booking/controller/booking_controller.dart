@@ -70,10 +70,13 @@ class BookingController extends _$BookingController {
 
   void setDescription(String description) =>
       state = state.copyWith(description: description);
+
   void setLocation(LocationData location) =>
       state = state.copyWith(location: location);
+
   void setRecurrenceFrequency(int frequency) =>
       state = state.copyWith(recurrenceFrequency: frequency);
+
   void setAddress(String address) {
     state = state.copyWith(
       location: state.location?.copyWith(
@@ -123,9 +126,12 @@ class BookingController extends _$BookingController {
 
   void setEventId(String bookingId) =>
       state = state.copyWith(bookingId: bookingId);
+
   void setHostId(String hostId) => state = state.copyWith(hostId: hostId);
+
   void setRecurrenceState(RecurrenceState recurrenceState) =>
       state = state.copyWith(recurrenceState: recurrenceState);
+
   void setDateRange(DateTimeRange timeRange) {
     final start = state.timeRange?.start;
     final end = state.timeRange?.end;
@@ -293,6 +299,16 @@ class BookingController extends _$BookingController {
     final List<BookingModel> bookingsWithoutCurrent =
         bookings.where((element) => element.id != bookingId).toList();
 
+    // Check for overlap for non-recurring bookings
+    if (state.recurrenceState == RecurrenceState.none) {
+      bool overlaps = bookingsWithoutCurrent.any((booking) {
+        return doTimeRangesOverlap(booking.timeRange, state.timeRange!);
+      });
+      if (overlaps) {
+        throw 'Booking Failed, Date is Already Booked!. Check for Conflicting Dates That Are Already Booked.';
+      }
+    }
+
     CustomDateTimeRange shiftTimeRange(CustomDateTimeRange range,
         {int days = 0}) {
       return CustomDateTimeRange(
@@ -302,7 +318,7 @@ class BookingController extends _$BookingController {
     }
 
     bool checkOverlap({bool isDaily = false, bool isWeekly = false}) {
-      if (!isDaily && !isWeekly) return false;
+      if (!isDaily && !isWeekly || bookingId != null) return false;
 
       return bookingsWithoutCurrent.any((booking) {
         for (var i = 0; i < state.recurrenceFrequency; i++) {
@@ -327,10 +343,12 @@ class BookingController extends _$BookingController {
     // Validate duration constraints
     final maxDuration = state.recurrenceState == RecurrenceState.daily
         ? const Duration(days: 1)
-        : const Duration(days: 7);
-    if (state.recurrenceState != RecurrenceState.none &&
-        state.timeRange!.duration > maxDuration) {
-      throw '${state.recurrenceState} bookings can\'t be more than ${maxDuration.inDays} day(s)!.';
+        : state.recurrenceState == RecurrenceState.weekly
+            ? const Duration(days: 7)
+            : const Duration(hours: 24); // max 24 hours for none
+
+    if (state.timeRange!.duration > maxDuration) {
+      throw '${state.recurrenceState == RecurrenceState.none ? "Single" : state.recurrenceState} bookings can\'t be more than ${maxDuration.inDays != 0 ? maxDuration.inDays : maxDuration.inHours}  ${maxDuration.inDays != 0 ? "day(s)" : "hour(s)"} !.';
     }
 
     // Check time range validity
@@ -344,7 +362,6 @@ class BookingController extends _$BookingController {
 
     return false;
   }
-}
 // final booking = bookings.firstWhereOrNull(
 //   (element) {
 //     if (state.recurrenceState == RecurrenceState.daily) {
@@ -385,3 +402,4 @@ class BookingController extends _$BookingController {
 //     return doTimeRangesOverlap(element.timeRange, state.timeRange!);
 //   },
 // );
+}
