@@ -7,62 +7,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:5347198504:android:6575bafa11f0d68c29571d",
+        "mobilesdk_app_id": "1:5347198504:android:af2d86554c06e80429571d",
         "android_client_info": {
-          "package_name": "com.elshaddai.app"
+          "package_name": "com.el.shaddai"
         }
       },
       "oauth_client": [
         {
-          "client_id": "5347198504-nup26mvioh4vpo34oae0l1ok324qjlc1.apps.googleusercontent.com",
+          "client_id": "5347198504-dhbmh1o34pf1tk3grpe9joqu9541ofbf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.elshaddai.app",
+            "package_name": "com.el.shaddai",
             "certificate_hash": "b346aa684be8eb4ae57e884353e44c72abf5237d"
-          }
-        },
-        {
-          "client_id": "5347198504-mv7hsnnvvca4k7keda0410t262f95q8q.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAvlnyePX5BHvyHP4laYXnS2I0ia9U4jdw"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "5347198504-mv7hsnnvvca4k7keda0410t262f95q8q.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "5347198504-1g2jgrr8h2or0n7494mgenqi15305fd9.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.elShaddai"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:5347198504:android:8a9e148585b0e00929571d",
-        "android_client_info": {
-          "package_name": "com.example.el_shaddai"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "5347198504-d6q6tjs07t6bv5lmdben0hjgjp5hbc5m.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.el_shaddai",
-            "certificate_hash": "0ccc63ef2e67b5a503b4d5b80058bb2a8ff29b8e"
           }
         },
         {

@@ -79,6 +79,8 @@ dependencies:
   phone_numbers_parser: ^9.0.3
   flutter_launcher_icons: ^0.14.3
   sign_in_with_apple: ^7.0.1
+  firebase_crashlytics: ^4.3.7
+  melos: ^6.0.0
 
 dev_dependencies:
   flutter_test:

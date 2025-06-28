@@ -1,0 +1,5 @@
+name: elshaddai
+
+packages:
+  - apps/*
+  - packages/*
