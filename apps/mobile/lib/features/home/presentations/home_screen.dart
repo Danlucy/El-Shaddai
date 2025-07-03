@@ -1,10 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:el_shaddai/core/theme.dart';
+import 'package:constants/constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../../packages/constants/lib/src/theme.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../widgets/general_drawer.dart';
 

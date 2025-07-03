@@ -21,8 +21,8 @@ class SignInButton extends ConsumerWidget {
     final width = MediaQuery.sizeOf(context).width;
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: width * 0.8,
-        minWidth: width * 0.5,
+        maxWidth: width * 0.9,
+        minWidth: width * 0.4,
         maxHeight: 70,
         minHeight: 50,
       ),
@@ -58,7 +58,7 @@ class SignInButton extends ConsumerWidget {
         label: AutoSizeText(
           maxLines: 1,
           minFontSize: 12,
-          maxFontSize: 20,
+          maxFontSize: 18,
           'Continue with $mode',
           style: const TextStyle(fontSize: 18),
         ),

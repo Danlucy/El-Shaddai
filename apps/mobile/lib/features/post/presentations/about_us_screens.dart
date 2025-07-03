@@ -1,5 +1,5 @@
-import 'package:el_shaddai/core/theme.dart';
 
+import 'package:constants/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../../packages/constants/lib/src/theme.dart';
 import '../../../models/user_model/user_model.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
