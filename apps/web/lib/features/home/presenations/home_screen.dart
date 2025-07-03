@@ -1,11 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
-
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../../../mobile/lib/core/theme.dart';
-import '../../../../../mobile/lib/features/auth/controller/auth_controller.dart';
-import '../../../../../mobile/lib/features/home/widgets/general_drawer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -31,13 +27,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome ${user?.name ?? 'User'}'),
+        title: Text('Welcome ${'User'}'),
       ),
-      drawer: const GeneralDrawer(),
       body: SafeArea(
         bottom: true,
         child: Column(

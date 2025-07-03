@@ -1,5 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:el_shaddai/core/theme.dart';
+import 'package:constants/constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +10,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/router/router.dart';
-import '../../../../../../packages/constants/lib/src/theme.dart';
 import '../../../core/utility/url_launcher.dart';
 import '../../../core/widgets/calendar_widget.dart';
 import '../../../models/booking_model/booking_model.dart';
