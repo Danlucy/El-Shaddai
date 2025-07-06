@@ -36,8 +36,12 @@ mixin _$BookingModel {
   RecurrenceConfigurationModel? get recurrenceModel =>
       throw _privateConstructorUsedError;
 
+  /// Serializes this BookingModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $BookingModelCopyWith<BookingModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -74,6 +78,8 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -132,6 +138,8 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
     ) as $Val);
   }
 
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceModel {
@@ -179,6 +187,8 @@ class __$$BookingModelImplCopyWithImpl<$Res>
       _$BookingModelImpl _value, $Res Function(_$BookingModelImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -310,12 +320,14 @@ class _$BookingModelImpl extends _BookingModel {
                 other.recurrenceModel == recurrenceModel));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, title, recurrenceState, host,
       createdAt, timeRange, userId, id, location, description, recurrenceModel);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$BookingModelImplCopyWith<_$BookingModelImpl> get copyWith =>
@@ -374,8 +386,11 @@ abstract class _BookingModel extends BookingModel {
   @override
   @RecurrenceConfigurationConverter()
   RecurrenceConfigurationModel? get recurrenceModel;
+
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$BookingModelImplCopyWith<_$BookingModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

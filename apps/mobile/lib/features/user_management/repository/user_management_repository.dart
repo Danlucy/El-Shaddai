@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -10,8 +11,7 @@ part 'user_management_repository.g.dart';
 
 /// ✅ **Provider for UserManagementRepository**
 @riverpod
-UserManagementRepository userManagementRepository(
-    UserManagementRepositoryRef ref) {
+UserManagementRepository userManagementRepository(Ref ref) {
   final firestore = ref.watch(firestoreProvider);
   return UserManagementRepository(firestore);
 }
@@ -27,11 +27,11 @@ class UserManagementRepository {
       _firestore.collection(FirebaseConstants.usersCollection);
 
   /// ✅ **Update user role**
-  Future<void> updateUserRole(UserRole role, String uId) async {
+  Future<void> updateUserRole(String role, String uId) async {
     try {
-      await _user.doc(uId).update({
-        'role': role.name.toLowerCase()
-      }); // Use `name` instead of `toString()`
+      await _user
+          .doc(uId)
+          .update({'role': role}); // Use `name` instead of `toString()`
     } catch (e) {
       print('Failed to update role: $e');
     }
@@ -73,8 +73,7 @@ class UserManagementRepository {
 }
 
 @riverpod
-Stream<List<UserModel>> usersByRole(UsersByRoleRef ref,
-    {String searchTerm = ''}) {
+Stream<List<UserModel>> usersByRole(Ref ref, {String searchTerm = ''}) {
   final firestore = ref.watch(firestoreProvider);
 
   return firestore

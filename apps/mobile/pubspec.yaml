@@ -45,8 +45,8 @@ dependencies:
   cr_calendar: ^1.2.1
   flutter_neat_and_clean_calendar: ^0.3.18+40
   json_serializable: ^6.8.0
-  go_router: ^14.2.3
-  go_router_builder: ^2.7.1
+  go_router: ^16.0.0
+  go_router_builder: ^3.0.1
   shared_preferences: ^2.3.2
   freezed: ^2.5.2
   freezed_annotation: ^2.4.4

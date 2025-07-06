@@ -10,7 +10,7 @@ class UserManagementController extends _$UserManagementController {
   @override
   void build() {}
 
-  void changeUserRole(String uid, UserRole role) {
+  void changeUserRole(String uid, String role) {
     final repository = ref.read(userManagementRepositoryProvider);
     repository.updateUserRole(role, uid);
   }

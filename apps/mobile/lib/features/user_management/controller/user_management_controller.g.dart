@@ -7,7 +7,7 @@ part of 'user_management_controller.dart';
 // **************************************************************************
 
 String _$userManagementControllerHash() =>
-    r'5ecec10472f533bf1041c06d15580dccdb4dd20d';
+    r'f84f8fb40aa4738663577dfee9a8a089058a796a';
 
 /// See also [UserManagementController].
 @ProviderFor(UserManagementController)
@@ -24,4 +24,4 @@ final userManagementControllerProvider =
 
 typedef _$UserManagementController = AutoDisposeNotifier<void>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

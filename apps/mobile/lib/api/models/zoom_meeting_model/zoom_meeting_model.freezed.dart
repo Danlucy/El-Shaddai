@@ -33,8 +33,12 @@ mixin _$ZoomMeetingModel {
   @JsonKey(defaultValue: 2)
   int get type => throw _privateConstructorUsedError;
 
+  /// Serializes this ZoomMeetingModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ZoomMeetingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ZoomMeetingModelCopyWith<ZoomMeetingModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -68,6 +72,8 @@ class _$ZoomMeetingModelCopyWithImpl<$Res, $Val extends ZoomMeetingModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ZoomMeetingModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -106,6 +112,8 @@ class _$ZoomMeetingModelCopyWithImpl<$Res, $Val extends ZoomMeetingModel>
     ) as $Val);
   }
 
+  /// Create a copy of ZoomMeetingModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceConfiguration {
@@ -150,6 +158,8 @@ class __$$ZoomMeetingModelImplCopyWithImpl<$Res>
       $Res Function(_$ZoomMeetingModelImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ZoomMeetingModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -247,12 +257,14 @@ class _$ZoomMeetingModelImpl extends _ZoomMeetingModel {
             (identical(other.type, type) || other.type == type));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, topic, description, duration,
       recurrenceConfiguration, startTime, type);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ZoomMeetingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ZoomMeetingModelImplCopyWith<_$ZoomMeetingModelImpl> get copyWith =>
@@ -300,8 +312,11 @@ abstract class _ZoomMeetingModel extends ZoomMeetingModel {
   @override
   @JsonKey(defaultValue: 2)
   int get type;
+
+  /// Create a copy of ZoomMeetingModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ZoomMeetingModelImplCopyWith<_$ZoomMeetingModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

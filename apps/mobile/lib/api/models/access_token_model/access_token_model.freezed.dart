@@ -24,8 +24,12 @@ mixin _$AccessToken {
   String get refreshToken => throw _privateConstructorUsedError;
   DateTime get duration => throw _privateConstructorUsedError;
 
+  /// Serializes this AccessToken to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of AccessToken
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $AccessTokenCopyWith<AccessToken> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -49,6 +53,8 @@ class _$AccessTokenCopyWithImpl<$Res, $Val extends AccessToken>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of AccessToken
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -92,6 +98,8 @@ class __$$AccessTokenImplCopyWithImpl<$Res>
       _$AccessTokenImpl _value, $Res Function(_$AccessTokenImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of AccessToken
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -151,11 +159,13 @@ class _$AccessTokenImpl implements _AccessToken {
                 other.duration == duration));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, token, refreshToken, duration);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of AccessToken
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$AccessTokenImplCopyWith<_$AccessTokenImpl> get copyWith =>
@@ -184,8 +194,11 @@ abstract class _AccessToken implements AccessToken {
   String get refreshToken;
   @override
   DateTime get duration;
+
+  /// Create a copy of AccessToken
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AccessTokenImplCopyWith<_$AccessTokenImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

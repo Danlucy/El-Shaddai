@@ -22,7 +22,7 @@ final bookingVenueStateProvider = AutoDisposeNotifierProvider<BookingVenueState,
 );
 
 typedef _$BookingVenueState = AutoDisposeNotifier<BookingVenueComponent>;
-String _$bookingControllerHash() => r'0b1e04bc0224b69895e377ee6a4c43b56b55bfe6';
+String _$bookingControllerHash() => r'4cac1add526caa41727292f632f8c3f8a6b8fbb5';
 
 /// See also [BookingController].
 @ProviderFor(BookingController)
@@ -39,4 +39,4 @@ final bookingControllerProvider =
 
 typedef _$BookingController = AutoDisposeNotifier<BookingState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

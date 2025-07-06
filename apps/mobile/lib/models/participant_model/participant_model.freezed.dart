@@ -23,8 +23,12 @@ mixin _$ParticipantModel {
   String get bookingId => throw _privateConstructorUsedError;
   List<String> get participantsId => throw _privateConstructorUsedError;
 
+  /// Serializes this ParticipantModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ParticipantModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ParticipantModelCopyWith<ParticipantModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -48,6 +52,8 @@ class _$ParticipantModelCopyWithImpl<$Res, $Val extends ParticipantModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ParticipantModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -86,6 +92,8 @@ class __$$ParticipantModelImplCopyWithImpl<$Res>
       $Res Function(_$ParticipantModelImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ParticipantModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -142,12 +150,14 @@ class _$ParticipantModelImpl extends _ParticipantModel {
                 .equals(other._participantsId, _participantsId));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, bookingId,
       const DeepCollectionEquality().hash(_participantsId));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ParticipantModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ParticipantModelImplCopyWith<_$ParticipantModelImpl> get copyWith =>
@@ -175,8 +185,11 @@ abstract class _ParticipantModel extends ParticipantModel {
   String get bookingId;
   @override
   List<String> get participantsId;
+
+  /// Create a copy of ParticipantModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ParticipantModelImplCopyWith<_$ParticipantModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

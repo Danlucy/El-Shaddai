@@ -64,7 +64,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                               ProfileRoute(user).push(context);
                             },
                             title: Text(user.name),
-                            subtitle: Text(user.role.name.capitalize()),
+                            subtitle: Text(user.role.displayName),
                             trailing: _PopMenuButton(
                                 user: user, controller: controller),
                           );
@@ -179,7 +179,7 @@ class _PopMenuButton extends ConsumerWidget {
                               UserRole.values[index]; // Update selected role
                         });
 
-                        controller.changeUserRole(user.uid, selectedRole);
+                        controller.changeUserRole(user.uid, selectedRole.name);
                         context.pop(); // Close dialog after selection
                       },
                       borderRadius: BorderRadius.circular(10),
@@ -195,7 +195,7 @@ class _PopMenuButton extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 8),
                             child: Text(
-                              role.name.capitalize(),
+                              role.displayName.capitalize(),
                             ));
                       }).toList(),
                     ),

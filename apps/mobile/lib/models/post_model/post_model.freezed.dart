@@ -27,8 +27,12 @@ mixin _$PostModel {
   String get userId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
+  /// Serializes this PostModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PostModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PostModelCopyWith<PostModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -57,6 +61,8 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PostModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -121,6 +127,8 @@ class __$$PostModelImplCopyWithImpl<$Res>
       _$PostModelImpl _value, $Res Function(_$PostModelImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PostModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -216,12 +224,14 @@ class _$PostModelImpl extends _PostModel {
                 other.createdAt == createdAt));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, title, content,
       const DeepCollectionEquality().hash(_image), userId, createdAt);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PostModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PostModelImplCopyWith<_$PostModelImpl> get copyWith =>
@@ -260,8 +270,11 @@ abstract class _PostModel extends PostModel {
   String get userId;
   @override
   DateTime get createdAt;
+
+  /// Create a copy of PostModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PostModelImplCopyWith<_$PostModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
