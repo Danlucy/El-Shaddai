@@ -55,19 +55,11 @@ extension UserModelFieldLabels on UserModel {
 }
 
 enum UserRole {
-  admin(name: 'Admin'),
-  watchman(name: 'Watchman'),
-  watchLeader(name: 'Watch Leader'),
-  intercessor(name: 'Intercessor'),
-  ;
+  admin(displayName: 'Admin'),
+  watchman(displayName: 'Watchman'),
+  watchLeader(displayName: 'Watch Leader'),
+  intercessor(displayName: 'Intercessor');
 
-  final String name;
-
-  const UserRole({required this.name});
-  static UserRole? fromName(String name) {
-    for (UserRole enumVariant in UserRole.values) {
-      if (enumVariant.name == name) return enumVariant;
-    }
-    return null;
-  }
+  const UserRole({required this.displayName});
+  final String displayName;
 }

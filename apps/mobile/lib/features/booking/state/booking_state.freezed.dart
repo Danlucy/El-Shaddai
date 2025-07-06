@@ -29,8 +29,12 @@ mixin _$BookingState {
   RecurrenceState get recurrenceState => throw _privateConstructorUsedError;
   int get recurrenceFrequency => throw _privateConstructorUsedError;
 
+  /// Serializes this BookingState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of BookingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $BookingStateCopyWith<BookingState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -62,6 +66,8 @@ class _$BookingStateCopyWithImpl<$Res, $Val extends BookingState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of BookingState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -138,6 +144,8 @@ class __$$BookingStateImplCopyWithImpl<$Res>
       _$BookingStateImpl _value, $Res Function(_$BookingStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of BookingState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -251,12 +259,14 @@ class _$BookingStateImpl extends _BookingState {
                 other.recurrenceFrequency == recurrenceFrequency));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, timeRange, bookingId, hostId,
       title, description, location, recurrenceState, recurrenceFrequency);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of BookingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$BookingStateImplCopyWith<_$BookingStateImpl> get copyWith =>
@@ -301,8 +311,11 @@ abstract class _BookingState extends BookingState {
   RecurrenceState get recurrenceState;
   @override
   int get recurrenceFrequency;
+
+  /// Create a copy of BookingState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$BookingStateImplCopyWith<_$BookingStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

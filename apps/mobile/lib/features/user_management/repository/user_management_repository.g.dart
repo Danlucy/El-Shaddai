@@ -7,7 +7,7 @@ part of 'user_management_repository.dart';
 // **************************************************************************
 
 String _$userManagementRepositoryHash() =>
-    r'3a1a18db301f1f55b93f0e24ab4dee397c9ffa5d';
+    r'26d6a8ac566e5dfea6b565bec3e8caa7a14327c2';
 
 /// ✅ **Provider for UserManagementRepository**
 ///
@@ -24,9 +24,11 @@ final userManagementRepositoryProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef UserManagementRepositoryRef
     = AutoDisposeProviderRef<UserManagementRepository>;
-String _$usersByRoleHash() => r'ab13231eb7202e004ad01afae3deb51b8e79ab3d';
+String _$usersByRoleHash() => r'6ff116dc9f46757f6dab8051c4cf5afc27389558';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -162,6 +164,8 @@ class UsersByRoleProvider extends AutoDisposeStreamProvider<List<UserModel>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin UsersByRoleRef on AutoDisposeStreamProviderRef<List<UserModel>> {
   /// The parameter `searchTerm` of this provider.
   String get searchTerm;
@@ -176,4 +180,4 @@ class _UsersByRoleProviderElement
   String get searchTerm => (origin as UsersByRoleProvider).searchTerm;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

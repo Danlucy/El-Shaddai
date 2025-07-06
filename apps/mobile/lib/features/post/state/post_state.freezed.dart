@@ -24,8 +24,12 @@ mixin _$PostState {
   String? get description => throw _privateConstructorUsedError;
   List<int>? get image => throw _privateConstructorUsedError;
 
+  /// Serializes this PostState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PostState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PostStateCopyWith<PostState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -48,6 +52,8 @@ class _$PostStateCopyWithImpl<$Res, $Val extends PostState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PostState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -91,6 +97,8 @@ class __$$PostStateImplCopyWithImpl<$Res>
       _$PostStateImpl _value, $Res Function(_$PostStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PostState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -155,12 +163,14 @@ class _$PostStateImpl extends _PostState {
             const DeepCollectionEquality().equals(other._image, _image));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, title, description,
       const DeepCollectionEquality().hash(_image));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PostState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PostStateImplCopyWith<_$PostStateImpl> get copyWith =>
@@ -190,8 +200,11 @@ abstract class _PostState extends PostState {
   String? get description;
   @override
   List<int>? get image;
+
+  /// Create a copy of PostState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PostStateImplCopyWith<_$PostStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

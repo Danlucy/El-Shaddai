@@ -23,8 +23,12 @@ mixin _$RecurrenceConfigurationModel {
   @JsonKey(name: 'repeat_interval')
   int get recurrenceInterval => throw _privateConstructorUsedError;
 
+  /// Serializes this RecurrenceConfigurationModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of RecurrenceConfigurationModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $RecurrenceConfigurationModelCopyWith<RecurrenceConfigurationModel>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -55,6 +59,8 @@ class _$RecurrenceConfigurationModelCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of RecurrenceConfigurationModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -110,6 +116,8 @@ class __$$RecurrenceConfigurationModelImplCopyWithImpl<$Res>
       $Res Function(_$RecurrenceConfigurationModelImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of RecurrenceConfigurationModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -179,12 +187,14 @@ class _$RecurrenceConfigurationModelImpl extends _RecurrenceConfigurationModel {
                 other.recurrenceInterval == recurrenceInterval));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType, recurrenceFrequency, weeklyDays, type, recurrenceInterval);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of RecurrenceConfigurationModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$RecurrenceConfigurationModelImplCopyWith<
@@ -221,8 +231,11 @@ abstract class _RecurrenceConfigurationModel
   @override
   @JsonKey(name: 'repeat_interval')
   int get recurrenceInterval;
+
+  /// Create a copy of RecurrenceConfigurationModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$RecurrenceConfigurationModelImplCopyWith<
           _$RecurrenceConfigurationModelImpl>
       get copyWith => throw _privateConstructorUsedError;

@@ -23,8 +23,12 @@ mixin _$ParticipantState {
   String? get userId => throw _privateConstructorUsedError;
   String? get bookingId => throw _privateConstructorUsedError;
 
+  /// Serializes this ParticipantState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ParticipantState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ParticipantStateCopyWith<ParticipantState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -48,6 +52,8 @@ class _$ParticipantStateCopyWithImpl<$Res, $Val extends ParticipantState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ParticipantState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -86,6 +92,8 @@ class __$$ParticipantStateImplCopyWithImpl<$Res>
       $Res Function(_$ParticipantStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ParticipantState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -133,11 +141,13 @@ class _$ParticipantStateImpl extends _ParticipantState {
                 other.bookingId == bookingId));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, userId, bookingId);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ParticipantState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ParticipantStateImplCopyWith<_$ParticipantStateImpl> get copyWith =>
@@ -164,8 +174,11 @@ abstract class _ParticipantState extends ParticipantState {
   String? get userId;
   @override
   String? get bookingId;
+
+  /// Create a copy of ParticipantState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ParticipantStateImplCopyWith<_$ParticipantStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -22,7 +22,7 @@ void main() async {
   final ValueNotifier<bool> hasConnectivity =
       ValueNotifier<bool>(await Backend.checkConnectivity());
 
-  Timer.periodic(const Duration(seconds: 5), (timer) async {
+  Timer.periodic(const Duration(seconds: 30), (timer) async {
     final connectivity = await Backend.checkConnectivity();
     if (hasConnectivity.value != connectivity) {
       hasConnectivity.value = connectivity;
