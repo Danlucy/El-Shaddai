@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,7 +34,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
     double appointmentHeight = 70; // Default: Equal space
 
     if (textScaleFactor == TextScaleFactor.oldMan) {
-      appointmentHeight = 100; // DailyCalendarComponent takes 30%
+      appointmentHeight = 110; // DailyCalendarComponent takes 30%
     } else if (textScaleFactor == TextScaleFactor.boomer) {
       appointmentHeight = 90; // DailyCalendarComponent takes 30%
     }
@@ -110,35 +111,40 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          AutoSizeText(
                             maxLines: 1,
+                            maxFontSize: 16,
+                            minFontSize: 12,
                             overflow: TextOverflow.ellipsis,
                             bookingModel.title,
                             style: const TextStyle(
-                              fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Text(
+                          AutoSizeText(
                             bookingModel.host,
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                            maxFontSize: 12,
+                            minFontSize: 8,
+                            style: const TextStyle(color: Colors.grey),
                           ),
                           Row(
                             children: [
-                              Text(
+                              AutoSizeText(
+                                maxFontSize: 14,
+                                minFontSize: 10,
                                 DateFormat('hh:mm a')
                                     .format(bookingModel.timeRange.start),
                                 style: const TextStyle(
-                                  fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                               const Icon(Icons.arrow_right_alt),
-                              Text(
+                              AutoSizeText(
+                                maxFontSize: 14,
+                                minFontSize: 10,
                                 DateFormat('hh:mm a')
                                     .format(bookingModel.timeRange.end),
                                 style: const TextStyle(
-                                  fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -156,11 +162,12 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                 return Container(
                   color: Theme.of(context).colorScheme.onPrimary,
                   child: Center(
-                    child: Text(
+                    child: AutoSizeText(
+                      maxFontSize: 24,
+                      minFontSize: 16,
                       DateFormat('MMMM yyyy').format(details.date),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.inverseSurface,
-                        fontSize: 20,
                       ),
                     ),
                   ),

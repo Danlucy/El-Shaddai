@@ -1,17 +1,9 @@
 import 'package:url_launcher/url_launcher.dart';
 
-launchURL(String link) async {
-  final Uri url = Uri.parse(link);
-  if (await canLaunchUrl(url)) {
-    await launchUrl(
-      url,
-      mode: LaunchMode.externalApplication,
-      webViewConfiguration: const WebViewConfiguration(
-        enableJavaScript: true,
-        enableDomStorage: true,
-      ),
-    );
-  } else {
+Future<void> launchURL(String link) async {
+  final Uri url = Uri.parse(Uri.encodeFull(link.trim()));
+
+  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
     throw 'Could not launch $url';
   }
 }

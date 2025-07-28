@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:fpdart/fpdart.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -27,6 +28,7 @@ class BookingRepository {
 
   CollectionReference get _book =>
       _firestore.collection(FirebaseConstants.bookingCollection);
+
   void deleteBooking(String bookingId) async {
     try {
       await _book.doc(bookingId).delete();
@@ -113,7 +115,7 @@ class BookingRepository {
 }
 
 @riverpod
-Stream<dynamic> bookingStream(BookingStreamRef ref, {String? bookingId}) {
+Stream<dynamic> bookingStream(Ref ref, {String? bookingId}) {
   final firestore = ref.watch(firestoreProvider);
 
   if (bookingId == null) {

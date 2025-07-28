@@ -13,21 +13,16 @@ import 'package:mobile/firebase_options.dart';
 
 import 'core/utility/backend_checker.dart';
 
+final ValueNotifier<bool> hasConnectivity = ValueNotifier(true);
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  final ValueNotifier<bool> hasConnectivity =
-      ValueNotifier<bool>(await Backend.checkConnectivity());
-
-  Timer.periodic(const Duration(seconds: 30), (timer) async {
-    final connectivity = await Backend.checkConnectivity();
-    if (hasConnectivity.value != connectivity) {
-      hasConnectivity.value = connectivity;
-    }
-  });
+  final isConnected = await Backend.checkInternetAccess();
+  hasConnectivity.value = isConnected;
 
   runApp(
     ValueListenableBuilder<bool>(
@@ -101,22 +96,28 @@ class _MyAppState extends ConsumerState<_MyMobileApp>
 
   void _checkConnectivityAndUpdateUser() async {
     try {
-      final hasConnection = await Backend.checkConnectivity();
-      if (hasConnection && mounted) {
-        ref
+      final hasInternet = await Backend.checkInternetAccess();
+      hasConnectivity.value = hasInternet;
+
+      if (!hasInternet || !mounted) return;
+
+      try {
+        final userModel = await ref
             .read(authControllerProvider.notifier)
             .getUserDataStream()
-            .first
-            .then((userModel) {
-          if (mounted) {
-            ref.read(userProvider.notifier).update((state) => userModel);
-          }
-        }).catchError((error) {
-          print('Error updating user data: $error');
-        });
+            .first;
+
+        if (mounted) {
+          ref.read(userProvider.notifier).update((state) => userModel);
+          print('User data updated successfully.');
+        }
+      } on FirebaseException catch (e) {
+        print('Firebase Error updating user data: ${e.code} - ${e.message}');
+      } catch (e) {
+        print('Generic Error updating user data: $e');
       }
     } catch (e) {
-      print('Connectivity check error: $e');
+      print('Connectivity check error during user data update: $e');
     }
   }
 

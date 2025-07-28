@@ -36,7 +36,7 @@ class ProfileController extends _$ProfileController {
 
     final userRef = FirebaseFirestore.instance
         .collection(FirebaseConstants.usersCollection)
-        .doc(user.uid);
+        .doc(uid ?? user.uid);
 
     await userRef.update({fieldName: newValue});
   }

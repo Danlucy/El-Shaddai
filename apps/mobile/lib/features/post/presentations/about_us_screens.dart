@@ -1,4 +1,4 @@
-
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -51,13 +51,13 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
         body: SafeArea(
           minimum: const EdgeInsets.all(10),
           child: Column(children: [
-            Text(
+            AutoSizeText(
               'The 247 app belongs to EL Shaddai Prayer Altar.\nThe physical address: 31A-2, Jalan Reko Sentral 1, Jalan Reko, Reko Sentral, 43000 Kajang, Selangor',
               textAlign: TextAlign.center,
+              minFontSize: 14,
+              maxFontSize: 16,
               style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.primary),
+                  fontWeight: FontWeight.w600, color: context.colors.primary),
             ),
             RichText(
               text: TextSpan(

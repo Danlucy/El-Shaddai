@@ -7,7 +7,7 @@ part of 'user_management_controller.dart';
 // **************************************************************************
 
 String _$userManagementControllerHash() =>
-    r'f84f8fb40aa4738663577dfee9a8a089058a796a';
+    r'bcbf1ec9a2e1ae89a5161264dbf184cabfb3172c';
 
 /// See also [UserManagementController].
 @ProviderFor(UserManagementController)

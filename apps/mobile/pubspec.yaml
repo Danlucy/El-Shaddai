@@ -64,7 +64,7 @@ dependencies:
   google_maps_flutter: ^2.9.0
   gap: ^3.0.1
   dart_jsonwebtoken: ^2.14.0
-  http: ^1.2.2
+  http: ^1.4.0
   cloud_functions: ^5.1.0
   webview_flutter: ^4.8.0
   dio: ^5.6.0
@@ -83,6 +83,7 @@ dependencies:
   sign_in_with_apple: ^7.0.1
   firebase_crashlytics: ^4.3.7
   melos: ^6.0.0
+  retry: ^3.1.2
 
 dev_dependencies:
   flutter_test:

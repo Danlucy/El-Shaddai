@@ -1,11 +1,17 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gap/gap.dart';
+import 'package:mobile/api/models/access_token_model/access_token_model.dart';
+import 'package:mobile/core/constants/constants.dart';
+import 'package:mobile/core/widgets/snack_bar.dart';
+import 'package:mobile/features/booking/presentations/booking_dialog.dart';
 
 import '../../../core/router/router.dart';
 import '../../../models/user_model/user_model.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
+import '../../booking/presentations/booking_venues_component/booking_zoom_component.dart';
 
 class GeneralDrawer extends ConsumerStatefulWidget {
   const GeneralDrawer({
@@ -65,20 +71,48 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
               onTap: () => const AboutUsRoute().push(context),
             ),
             const Spacer(),
-            // (ref.watch(accessTokenNotifierProvider).value == null)
-            //     ? const SizedBox()
-            //     : ListTile(
-            //         leading: const Icon(Icons.video_camera_front),
-            //         title: Text(
-            //           'Log out Zoom',
-            //           style: TextStyle(color: context.colors.error),
-            //         ),
-            //         onTap: () {
-            //           ref
-            //               .read(accessTokenNotifierProvider.notifier)
-            //               .clearAccessToken();
-            //         },
-            //       ),
+            //change7
+            (ref.watch(accessTokenNotifierProvider).value == null)
+                ? ListTile(
+                    onTap: () {
+                      try {
+                        const ZoomRoute(zoomLoginRoute).push(context);
+                      } catch (e, s) {
+                        showFailureSnackBar(
+                          context,
+                          e.toString() + s.toString(),
+                        );
+                      }
+                    },
+                    leading: Image.asset(
+                      'assets/logo/zoom_cam.png',
+                      width: 25,
+                      height: 25,
+                    ),
+                    title: Row(
+                      children: [
+                        Text('Sign In'),
+                        Gap(5),
+                        Image.asset(
+                          'assets/logo/zoom.png',
+                          width: 70,
+                          height: 30,
+                        )
+                      ],
+                    ),
+                  )
+                : ListTile(
+                    leading: const Icon(Icons.video_camera_front),
+                    title: Text(
+                      'Log out Zoom',
+                      style: TextStyle(color: context.colors.error),
+                    ),
+                    onTap: () {
+                      ref
+                          .read(accessTokenNotifierProvider.notifier)
+                          .clearAccessToken();
+                    },
+                  ),
             ListTile(
               leading: const Icon(Icons.transit_enterexit_sharp),
               title: Text(
