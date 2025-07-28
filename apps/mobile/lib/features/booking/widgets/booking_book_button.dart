@@ -33,7 +33,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
     final bookingFunction = ref.watch(bookingControllerProvider.notifier);
     return ElevatedButton(
       onPressed: () async {
-        String? web;
+        String? web = ref.read(bookingControllerProvider).location?.web;
         try {
           bookingFunction.isBookingDataInvalid(
             widget.formKey,
@@ -43,21 +43,25 @@ class _BookButtonState extends ConsumerState<BookButton> {
           if (ref.read(bookingVenueStateProvider) !=
               BookingVenueComponent.location) {
             // change3
-            // await apiRepository
-            //     .createMeeting(
-            //   bookingFunction.instantiateZoomMeetingModel(),
-            //   ref.watch(accessTokenNotifierProvider).value!.token,
-            // )
-            //     .then((value) {
-            //   web = value.data['join_url'];
-            // });
+            if (ref.read(bookingControllerProvider).location?.web == null) {
+              await apiRepository
+                  .createMeeting(
+                bookingFunction.instantiateZoomMeetingModel(),
+                ref.watch(accessTokenNotifierProvider).value!.token,
+              )
+                  .then((value) {
+                web = value.data['join_url'];
+              });
+            } else {
+              web = 'https://zoom.us/j/$web';
+            }
           }
 
           ref.read(bookingRepositoryProvider).createOrEditBooking(
-                bookingModel: bookingFunction.instantiateBookingModel(
-                    'https://us02web.zoom.us/j/3128833664?pwd=joy'),
+                // bookingModel: bookingFunction.instantiateBookingModel(
+                //     'https://us02web.zoom.us/j/3128833664?pwd=joy'),
                 //change4
-                // bookingModel: bookingFunction.instantiateBookingModel(web),
+                bookingModel: bookingFunction.instantiateBookingModel(web),
                 call: widget.errorCall,
                 bookingId: widget.bookingId,
                 recurrence:

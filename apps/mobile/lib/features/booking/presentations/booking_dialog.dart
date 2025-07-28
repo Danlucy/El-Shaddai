@@ -220,10 +220,6 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                         ),
                         if (widget.bookingModel?.id == null)
                           const RecurrenceComponent(),
-                        // if ((token.value == null &&
-                        //         ref.read(bookingVenueStateProvider) ==
-                        //             BookingVenueComponent.location) ||
-                        //     token.value != null)
 
                         //change6
                         BookButton(
@@ -258,13 +254,7 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
     bool isSignedIn = ref.watch(accessTokenNotifierProvider).value == null;
     switch (ref.read(bookingVenueStateProvider)) {
       case BookingVenueComponent.zoom:
-        if (isSignedIn) {
-          //change5
-          // return const ZoomSignInComponent();
-          return const BookingZoomComponent(key: ValueKey('zoom'));
-        } else {
-          return const BookingZoomComponent(key: ValueKey('zoom'));
-        }
+        return const BookingZoomComponent(key: ValueKey('zoom'));
 
       case BookingVenueComponent.location:
         return BookingLocationComponent(_googleController, builderContext,
@@ -283,33 +273,5 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
         }
       // Fallback
     }
-  }
-}
-
-class ZoomSignInComponent extends StatelessWidget {
-  const ZoomSignInComponent({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () async {
-        try {
-          const ZoomRoute(zoomLoginRoute).push(context);
-        } catch (e, s) {
-          showFailureSnackBar(
-            context,
-            e.toString() + s.toString(),
-          );
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Image.asset(
-          'assets/logo/zoom.png',
-          width: 150,
-          height: 30,
-        ),
-      ),
-    );
   }
 }

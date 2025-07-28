@@ -308,7 +308,10 @@ class _EditableTextFieldState extends ConsumerState<EditableTextField> {
               ? IconButton(
                   padding: EdgeInsets.zero,
                   iconSize: 16,
-                  onPressed: widget.onEdit,
+                  onPressed: () {
+                    _focusNode.requestFocus();
+                    widget.onEdit();
+                  },
                   icon: const Icon(Icons.edit),
                 )
               : null,
@@ -322,7 +325,6 @@ class _ProfileImage extends ConsumerStatefulWidget {
   final String? uid;
   final bool ableToEdit;
   const _ProfileImage({
-    super.key,
     required this.uid,
     required this.ableToEdit,
   });

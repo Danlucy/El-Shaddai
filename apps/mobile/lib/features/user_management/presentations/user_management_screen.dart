@@ -63,7 +63,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                             onTap: () {
                               ProfileRoute(user).push(context);
                             },
-                            title: Text(user.name),
+                            title: Text(user.lastName ?? user.name),
                             subtitle: Text(user.role.displayName),
                             trailing: _PopMenuButton(
                                 user: user, controller: controller),

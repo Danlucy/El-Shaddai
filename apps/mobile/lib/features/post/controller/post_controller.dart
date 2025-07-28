@@ -60,13 +60,13 @@ class PostController extends _$PostController {
 
     // ✅ Adaptive Resize Logic
     int targetWidth =
-        image.width > 500 ? 200 : image.width; // Resize if width > 500px
+        image.width > 500 ? 350 : image.width + 150; // Resize if width > 500px
     final img.Image resizedImage = img.copyResize(image, width: targetWidth);
 
     // ✅ Adjust Compression Quality
     final Uint8List compressedBytes = Uint8List.fromList(
       img.encodeJpg(resizedImage,
-          quality: 80), // 🔥 Increased to 75 for better quality
+          quality: 85), // 🔥 Increased to 75 for better quality
     );
 
     return compressedBytes;

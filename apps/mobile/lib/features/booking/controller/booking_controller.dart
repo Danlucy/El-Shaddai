@@ -213,7 +213,7 @@ class BookingController extends _$BookingController {
       createdAt: DateTime.now(),
       recurrenceState: state.recurrenceState,
       title: state.title!,
-      host: user!.name,
+      host: user!.lastName ?? user.name,
       userId: user.uid,
       id: FirebaseFirestore.instance.collection('dog').doc().id,
       location: LocationData(
