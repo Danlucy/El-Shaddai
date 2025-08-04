@@ -18,6 +18,7 @@ class ZoomMeetingModel with _$ZoomMeetingModel {
     )
     String? description,
     int? duration,
+    String? password,
     @RecurrenceConfigurationConverter()
     @JsonKey(name: 'recurrence')
     RecurrenceConfigurationModel? recurrenceConfiguration,
@@ -26,6 +27,8 @@ class ZoomMeetingModel with _$ZoomMeetingModel {
       defaultValue: 2,
     )
     required int type,
+    @JsonKey(name: 'default_password', defaultValue: false)
+    required bool defaultPassword,
   }) = _ZoomMeetingModel;
 
   factory ZoomMeetingModel.fromJson(Map<String, dynamic> json) =>

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mobile/core/utility/url_launcher.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
@@ -52,10 +53,27 @@ class BookingController extends _$BookingController {
     state = const BookingState();
   }
 
+  void switchVenueBasedOnCurrentState() {
+    print('dawdawd');
+    if (state.location?.web != null && state.location?.address != null) {
+      ref.read(bookingVenueStateProvider.notifier).setVenue(
+          BookingVenueComponent.hybrid); // ✅ Both web and address exist
+    } else if (state.location?.web == null && state.location?.address != null) {
+      ref
+          .read(bookingVenueStateProvider.notifier)
+          .setVenue(BookingVenueComponent.location); // ✅ Only address exists
+    } else if (state.location?.web != null && state.location?.address == null) {
+      ref
+          .read(bookingVenueStateProvider.notifier)
+          .setVenue(BookingVenueComponent.zoom); // ✅ Only web exists}
+    }
+  }
+
   void setState(
     BookingModel newState,
   ) {
     state = BookingState(
+      password: newState.password,
       bookingId: newState.id,
       description: newState.description,
       hostId: newState.userId,
@@ -74,6 +92,8 @@ class BookingController extends _$BookingController {
 
   void setLocation(LocationData location) =>
       state = state.copyWith(location: location);
+  void setPassword(String? password) =>
+      state = state.copyWith(password: password);
 
   void setRecurrenceFrequency(int frequency) =>
       state = state.copyWith(recurrenceFrequency: frequency);
@@ -134,6 +154,7 @@ class BookingController extends _$BookingController {
       state = state.copyWith(recurrenceState: recurrenceState);
 
   void setDateRange(DateTimeRange timeRange) {
+    print('Setting Date Range: $timeRange');
     final start = state.timeRange?.start;
     final end = state.timeRange?.end;
     state = state.copyWith(
@@ -205,7 +226,11 @@ class BookingController extends _$BookingController {
     }
   }
 
-  BookingModel instantiateBookingModel(String? web) {
+  BookingModel instantiateBookingModel(
+    String? web,
+  ) {
+    print('trackk');
+    print(web);
     final user = ref.read(userProvider);
     final currentVenue = ref.read(bookingVenueStateProvider);
     return BookingModel(
@@ -213,11 +238,14 @@ class BookingController extends _$BookingController {
       createdAt: DateTime.now(),
       recurrenceState: state.recurrenceState,
       title: state.title!,
+      password: state.password,
       host: user!.lastName ?? user.name,
       userId: user.uid,
       id: FirebaseFirestore.instance.collection('dog').doc().id,
       location: LocationData(
-        web: currentVenue == BookingVenueComponent.location ? null : web,
+        web: currentVenue == BookingVenueComponent.location
+            ? null
+            : state.location?.web,
         chords: currentVenue == BookingVenueComponent.zoom
             ? null
             : state.location?.chords,
@@ -247,6 +275,8 @@ class BookingController extends _$BookingController {
       topic: state.title,
       duration: state.timeRange!.duration.inMinutes,
       description: state.description,
+      defaultPassword: false,
+      password: state.password,
       startTime: state.timeRange!.start,
       type: state.recurrenceState == RecurrenceState.none ? 2 : 8,
       recurrenceConfiguration: state.recurrenceState == RecurrenceState.none

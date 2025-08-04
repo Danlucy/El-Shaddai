@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/utility/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../api/api_repository.dart';
 import '../../../api/models/access_token_model/access_token_model.dart';
@@ -12,14 +14,12 @@ class BookButton extends ConsumerStatefulWidget {
     super.key,
     required this.formKey,
     required this.errorCall,
-    this.bookingId,
     required this.isUpdating,
   });
 
   final GlobalKey<FormState> formKey;
   final void Function(String) errorCall;
   final bool isUpdating;
-  final String? bookingId;
 
   @override
   ConsumerState createState() => _BookButtonState();
@@ -31,6 +31,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
     ref.watch(accessTokenNotifierProvider);
     final apiRepository = ApiRepository();
     final bookingFunction = ref.watch(bookingControllerProvider.notifier);
+    final bookingReader = ref.watch(bookingControllerProvider);
     return ElevatedButton(
       onPressed: () async {
         String? web = ref.read(bookingControllerProvider).location?.web;
@@ -39,31 +40,34 @@ class _BookButtonState extends ConsumerState<BookButton> {
             widget.formKey,
           );
           bookingFunction.isTimeRangeInvalid(
-              context, widget.isUpdating, widget.bookingId);
+              context, widget.isUpdating, bookingReader.bookingId);
           if (ref.read(bookingVenueStateProvider) !=
               BookingVenueComponent.location) {
             // change3
-            if (ref.read(bookingControllerProvider).location?.web == null) {
+            if (parseZoomId(web).isEmpty) {
               await apiRepository
                   .createMeeting(
                 bookingFunction.instantiateZoomMeetingModel(),
                 ref.watch(accessTokenNotifierProvider).value!.token,
               )
                   .then((value) {
-                web = value.data['join_url'];
+                bookingFunction.setWeb(value.data['join_url']);
+                bookingFunction.setPassword(
+                  value.data['password'],
+                );
               });
-            } else {
-              web = 'https://zoom.us/j/$web';
-            }
+            } else {}
           }
 
           ref.read(bookingRepositoryProvider).createOrEditBooking(
                 // bookingModel: bookingFunction.instantiateBookingModel(
                 //     'https://us02web.zoom.us/j/3128833664?pwd=joy'),
                 //change4
-                bookingModel: bookingFunction.instantiateBookingModel(web),
+                bookingModel: bookingFunction.instantiateBookingModel(
+                  web,
+                ),
+                bookingId: bookingReader.bookingId,
                 call: widget.errorCall,
-                bookingId: widget.bookingId,
                 recurrence:
                     bookingFunction.instantiateRecurrenceConfigurationModel(),
               );

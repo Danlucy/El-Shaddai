@@ -1,4 +1,3 @@
-
 import 'package:constants/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +35,7 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
     return Scaffold(
         drawer: const GeneralDrawer(),
         appBar: AppBar(
-          title: const Text('Prayer Leaders'),
+          title: const Text('Watchy Leaders'),
         ),
         floatingActionButton: user?.role == UserRole.admin
             ? FloatingActionButton(

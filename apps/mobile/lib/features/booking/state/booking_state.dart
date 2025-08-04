@@ -32,6 +32,7 @@ class BookingState with _$BookingState {
     String? title,
     String? description,
     LocationData? location,
+    String? password,
     @Default(RecurrenceState.none) RecurrenceState recurrenceState,
     @Default(2) int recurrenceFrequency,
   }) = _BookingState;

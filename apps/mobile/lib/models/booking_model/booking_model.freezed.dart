@@ -32,6 +32,7 @@ mixin _$BookingModel {
   @LocationDataConverter()
   LocationData get location => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
+  String? get password => throw _privateConstructorUsedError;
   @RecurrenceConfigurationConverter()
   RecurrenceConfigurationModel? get recurrenceModel =>
       throw _privateConstructorUsedError;
@@ -62,6 +63,7 @@ abstract class $BookingModelCopyWith<$Res> {
       String id,
       @LocationDataConverter() LocationData location,
       String description,
+      String? password,
       @RecurrenceConfigurationConverter()
       RecurrenceConfigurationModel? recurrenceModel});
 
@@ -92,6 +94,7 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
     Object? id = null,
     Object? location = null,
     Object? description = null,
+    Object? password = freezed,
     Object? recurrenceModel = freezed,
   }) {
     return _then(_value.copyWith(
@@ -131,6 +134,10 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
+      password: freezed == password
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String?,
       recurrenceModel: freezed == recurrenceModel
           ? _value.recurrenceModel
           : recurrenceModel // ignore: cast_nullable_to_non_nullable
@@ -172,6 +179,7 @@ abstract class _$$BookingModelImplCopyWith<$Res>
       String id,
       @LocationDataConverter() LocationData location,
       String description,
+      String? password,
       @RecurrenceConfigurationConverter()
       RecurrenceConfigurationModel? recurrenceModel});
 
@@ -201,6 +209,7 @@ class __$$BookingModelImplCopyWithImpl<$Res>
     Object? id = null,
     Object? location = null,
     Object? description = null,
+    Object? password = freezed,
     Object? recurrenceModel = freezed,
   }) {
     return _then(_$BookingModelImpl(
@@ -240,6 +249,10 @@ class __$$BookingModelImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
+      password: freezed == password
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String?,
       recurrenceModel: freezed == recurrenceModel
           ? _value.recurrenceModel
           : recurrenceModel // ignore: cast_nullable_to_non_nullable
@@ -261,6 +274,7 @@ class _$BookingModelImpl extends _BookingModel {
       required this.id,
       @LocationDataConverter() required this.location,
       required this.description,
+      this.password,
       @RecurrenceConfigurationConverter() this.recurrenceModel})
       : super._();
 
@@ -289,12 +303,14 @@ class _$BookingModelImpl extends _BookingModel {
   @override
   final String description;
   @override
+  final String? password;
+  @override
   @RecurrenceConfigurationConverter()
   final RecurrenceConfigurationModel? recurrenceModel;
 
   @override
   String toString() {
-    return 'BookingModel(title: $title, recurrenceState: $recurrenceState, host: $host, createdAt: $createdAt, timeRange: $timeRange, userId: $userId, id: $id, location: $location, description: $description, recurrenceModel: $recurrenceModel)';
+    return 'BookingModel(title: $title, recurrenceState: $recurrenceState, host: $host, createdAt: $createdAt, timeRange: $timeRange, userId: $userId, id: $id, location: $location, description: $description, password: $password, recurrenceModel: $recurrenceModel)';
   }
 
   @override
@@ -316,14 +332,27 @@ class _$BookingModelImpl extends _BookingModel {
                 other.location == location) &&
             (identical(other.description, description) ||
                 other.description == description) &&
+            (identical(other.password, password) ||
+                other.password == password) &&
             (identical(other.recurrenceModel, recurrenceModel) ||
                 other.recurrenceModel == recurrenceModel));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, title, recurrenceState, host,
-      createdAt, timeRange, userId, id, location, description, recurrenceModel);
+  int get hashCode => Object.hash(
+      runtimeType,
+      title,
+      recurrenceState,
+      host,
+      createdAt,
+      timeRange,
+      userId,
+      id,
+      location,
+      description,
+      password,
+      recurrenceModel);
 
   /// Create a copy of BookingModel
   /// with the given fields replaced by the non-null parameter values.
@@ -354,6 +383,7 @@ abstract class _BookingModel extends BookingModel {
           required final String id,
           @LocationDataConverter() required final LocationData location,
           required final String description,
+          final String? password,
           @RecurrenceConfigurationConverter()
           final RecurrenceConfigurationModel? recurrenceModel}) =
       _$BookingModelImpl;
@@ -383,6 +413,8 @@ abstract class _BookingModel extends BookingModel {
   LocationData get location;
   @override
   String get description;
+  @override
+  String? get password;
   @override
   @RecurrenceConfigurationConverter()
   RecurrenceConfigurationModel? get recurrenceModel;

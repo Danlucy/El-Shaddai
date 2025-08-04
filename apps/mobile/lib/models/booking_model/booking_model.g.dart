@@ -20,6 +20,7 @@ _$BookingModelImpl _$$BookingModelImplFromJson(Map<String, dynamic> json) =>
       location: const LocationDataConverter()
           .fromJson(json['location'] as Map<String, dynamic>),
       description: json['description'] as String,
+      password: json['password'] as String?,
       recurrenceModel: _$JsonConverterFromJson<Map<String, dynamic>,
               RecurrenceConfigurationModel>(json['recurrenceModel'],
           const RecurrenceConfigurationConverter().fromJson),
@@ -37,6 +38,7 @@ Map<String, dynamic> _$$BookingModelImplToJson(_$BookingModelImpl instance) =>
       'id': instance.id,
       'location': const LocationDataConverter().toJson(instance.location),
       'description': instance.description,
+      'password': instance.password,
       'recurrenceModel': _$JsonConverterToJson<Map<String, dynamic>,
               RecurrenceConfigurationModel>(instance.recurrenceModel,
           const RecurrenceConfigurationConverter().toJson),

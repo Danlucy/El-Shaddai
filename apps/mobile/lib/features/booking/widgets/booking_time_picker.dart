@@ -23,47 +23,50 @@ class _BookingTimePickerComponentState
   Widget build(BuildContext context) {
     final eventReader = ref.watch(bookingControllerProvider);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: _TimePickerLabel(
-            time: eventReader.timeRange?.start,
-            defaultLabel: 'Start Time',
-            onTap: () => _showTimePickerDialog(
-              context,
-              onTimeSelected: (selectedTime) {
-                ref
-                    .read(bookingControllerProvider.notifier)
-                    .setStartTime(selectedTime, context);
-              },
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: _TimePickerLabel(
+              time: eventReader.timeRange?.start,
+              defaultLabel: 'Start Time',
+              onTap: () => _showTimePickerDialog(
+                context,
+                onTimeSelected: (selectedTime) {
+                  ref
+                      .read(bookingControllerProvider.notifier)
+                      .setStartTime(selectedTime, context);
+                },
+              ),
             ),
           ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 3),
-          child: Icon(Icons.access_time),
-        ),
-        const Icon(Icons.arrow_right_alt_outlined),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 3),
-          child: Icon(Icons.access_time_filled),
-        ),
-        Expanded(
-          child: _TimePickerLabel(
-            time: eventReader.timeRange?.end,
-            defaultLabel: 'End Time',
-            onTap: () => _showTimePickerDialog(
-              context,
-              onTimeSelected: (selectedTime) {
-                ref
-                    .read(bookingControllerProvider.notifier)
-                    .setEndTime(selectedTime, context);
-              },
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 3),
+            child: Icon(Icons.access_time),
+          ),
+          const Icon(Icons.arrow_right_alt_outlined),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 3),
+            child: Icon(Icons.access_time_filled),
+          ),
+          Expanded(
+            child: _TimePickerLabel(
+              time: eventReader.timeRange?.end,
+              defaultLabel: 'End Time',
+              onTap: () => _showTimePickerDialog(
+                context,
+                onTimeSelected: (selectedTime) {
+                  ref
+                      .read(bookingControllerProvider.notifier)
+                      .setEndTime(selectedTime, context);
+                },
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -1,11 +1,13 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/features/booking/controller/booking_controller.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../core/customs/custom_date_time_range.dart';
 import '../../../core/widgets/loader.dart';
 import '../../../models/booking_model/booking_model.dart';
+import '../../booking/presentations/booking_dialog.dart';
 import '../../booking/repository/booking_repository.dart';
 import '../controller/calendar_controller.dart';
 import '../widget/booking_details_dialog.dart';
@@ -25,7 +27,10 @@ class _DailyCalendarComponentState
     extends ConsumerState<DailyCalendarComponent> {
   @override
   Widget build(BuildContext context) {
+    ref.watch(bookingControllerProvider);
     final bookingStream = ref.watch(bookingStreamProvider());
+    final bookingFunction = ref.read(bookingControllerProvider.notifier);
+
     ref.listen(
       calendarDateNotifierProvider,
       (previous, next) {
@@ -35,6 +40,33 @@ class _DailyCalendarComponentState
     return bookingStream.when(
         data: (data) {
           return SfCalendar(
+            onLongPress: (CalendarLongPressDetails tapped) {
+              bookingFunction.clearState();
+
+              if (tapped.date != null) {
+                // ✅ Set the state BEFORE showing the dialog
+                bookingFunction.setStartTime(tapped.date!, context);
+                bookingFunction.setEndTime(
+                  tapped.date!.add(const Duration(minutes: 30)),
+                  context,
+                );
+                bookingFunction.setDateRange(
+                  DateTimeRange(start: tapped.date!, end: tapped.date!),
+                );
+
+                // Small delay to ensure state propagation
+              }
+
+              showDialog(
+                useRootNavigator: false,
+                context: context,
+                builder: (context) {
+                  return BookingDialog(
+                    context,
+                  );
+                },
+              );
+            },
             appointmentBuilder:
                 (BuildContext context, CalendarAppointmentDetails details) {
               // Extract the BookingModel from the appointment details
@@ -42,7 +74,6 @@ class _DailyCalendarComponentState
 
               return GestureDetector(
                 onTap: () {
-                  // Show dialog with the correct bookingModel
                   showDialog(
                     context: context,
                     builder: (context) {

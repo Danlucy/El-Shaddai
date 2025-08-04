@@ -28,6 +28,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
   Widget build(BuildContext context) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final textScaleFactor = TextScaleFactor.scaleFactor(textScale);
+    final today = DateTime.now();
 
     final user = ref.read(userProvider);
     // Determine flex proportions based on TextScaleFactor
@@ -65,6 +66,18 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
               appointmentBuilder:
                   (BuildContext context, CalendarAppointmentDetails details) {
                 BookingModel bookingModel = details.appointments.first;
+
+                // Get the appointment's date from the details
+                final appointmentDate = details.date;
+
+                // Check if the appointment date is before today
+                final isPastAppointment = appointmentDate.isBefore(DateTime(today.year, today.month, today.day));
+
+                // Choose the color based on whether it's a past appointment
+                final appointmentColor = isPastAppointment
+                    ? Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5) // Muted color for past dates
+                    : Theme.of(context).colorScheme.secondaryContainer;
+
                 return GestureDetector(
                   onLongPress: () {
                     if (bookingModel.userId != user?.uid &&
@@ -78,7 +91,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                               confirmText: 'Delete ',
                               cancelText: 'Cancel',
                               description:
-                                  'Are you sure you want to delete this booking? This action cannot be reversed',
+                              'Are you sure you want to delete this booking? This action cannot be reversed',
                               confirmAction: () {
                                 context.pop();
 
@@ -100,9 +113,9 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        color: appointmentColor,
                         borderRadius:
-                            const BorderRadius.all(Radius.circular(5))),
+                        const BorderRadius.all(Radius.circular(5))),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -196,17 +209,17 @@ _AppointmentDataSource _getCalendarDataSource(List<BookingModel> bookingModel) {
       DateTime currentStartTime = (i == 0)
           ? booking.timeRange.start
           : DateTime(appointmentDate.year, appointmentDate.month,
-              appointmentDate.day, 0, 0);
+          appointmentDate.day, 0, 0);
 
       // For the last day, set the end time to the original end time
       DateTime currentEndTime = (i == duration)
           ? booking.timeRange.end
           : DateTime(appointmentDate.year, appointmentDate.month,
-              appointmentDate.day, 23, 59);
+          appointmentDate.day, 23, 59);
 
       appointments.add(BookingModel(
           timeRange:
-              CustomDateTimeRange(start: currentStartTime, end: currentEndTime),
+          CustomDateTimeRange(start: currentStartTime, end: currentEndTime),
           description: booking.description,
           title: booking.title,
           recurrenceState: booking.recurrenceState,

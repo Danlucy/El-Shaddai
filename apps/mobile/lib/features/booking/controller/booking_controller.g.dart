@@ -22,7 +22,7 @@ final bookingVenueStateProvider = AutoDisposeNotifierProvider<BookingVenueState,
 );
 
 typedef _$BookingVenueState = AutoDisposeNotifier<BookingVenueComponent>;
-String _$bookingControllerHash() => r'049194b291506078f6b9914b309d0730edd322ac';
+String _$bookingControllerHash() => r'7b4a9b2bcc231b681ce38d0c649ae82ea2600cf1';
 
 /// See also [BookingController].
 @ProviderFor(BookingController)

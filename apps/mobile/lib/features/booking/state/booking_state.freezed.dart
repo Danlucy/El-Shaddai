@@ -26,6 +26,7 @@ mixin _$BookingState {
   String? get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   LocationData? get location => throw _privateConstructorUsedError;
+  String? get password => throw _privateConstructorUsedError;
   RecurrenceState get recurrenceState => throw _privateConstructorUsedError;
   int get recurrenceFrequency => throw _privateConstructorUsedError;
 
@@ -52,6 +53,7 @@ abstract class $BookingStateCopyWith<$Res> {
       String? title,
       String? description,
       LocationData? location,
+      String? password,
       RecurrenceState recurrenceState,
       int recurrenceFrequency});
 }
@@ -77,6 +79,7 @@ class _$BookingStateCopyWithImpl<$Res, $Val extends BookingState>
     Object? title = freezed,
     Object? description = freezed,
     Object? location = freezed,
+    Object? password = freezed,
     Object? recurrenceState = null,
     Object? recurrenceFrequency = null,
   }) {
@@ -105,6 +108,10 @@ class _$BookingStateCopyWithImpl<$Res, $Val extends BookingState>
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
               as LocationData?,
+      password: freezed == password
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String?,
       recurrenceState: null == recurrenceState
           ? _value.recurrenceState
           : recurrenceState // ignore: cast_nullable_to_non_nullable
@@ -132,6 +139,7 @@ abstract class _$$BookingStateImplCopyWith<$Res>
       String? title,
       String? description,
       LocationData? location,
+      String? password,
       RecurrenceState recurrenceState,
       int recurrenceFrequency});
 }
@@ -155,6 +163,7 @@ class __$$BookingStateImplCopyWithImpl<$Res>
     Object? title = freezed,
     Object? description = freezed,
     Object? location = freezed,
+    Object? password = freezed,
     Object? recurrenceState = null,
     Object? recurrenceFrequency = null,
   }) {
@@ -183,6 +192,10 @@ class __$$BookingStateImplCopyWithImpl<$Res>
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
               as LocationData?,
+      password: freezed == password
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String?,
       recurrenceState: null == recurrenceState
           ? _value.recurrenceState
           : recurrenceState // ignore: cast_nullable_to_non_nullable
@@ -207,6 +220,7 @@ class _$BookingStateImpl extends _BookingState {
       this.title,
       this.description,
       this.location,
+      this.password,
       this.recurrenceState = RecurrenceState.none,
       this.recurrenceFrequency = 2})
       : super._();
@@ -227,6 +241,8 @@ class _$BookingStateImpl extends _BookingState {
   @override
   final LocationData? location;
   @override
+  final String? password;
+  @override
   @JsonKey()
   final RecurrenceState recurrenceState;
   @override
@@ -235,7 +251,7 @@ class _$BookingStateImpl extends _BookingState {
 
   @override
   String toString() {
-    return 'BookingState(timeRange: $timeRange, bookingId: $bookingId, hostId: $hostId, title: $title, description: $description, location: $location, recurrenceState: $recurrenceState, recurrenceFrequency: $recurrenceFrequency)';
+    return 'BookingState(timeRange: $timeRange, bookingId: $bookingId, hostId: $hostId, title: $title, description: $description, location: $location, password: $password, recurrenceState: $recurrenceState, recurrenceFrequency: $recurrenceFrequency)';
   }
 
   @override
@@ -253,6 +269,8 @@ class _$BookingStateImpl extends _BookingState {
                 other.description == description) &&
             (identical(other.location, location) ||
                 other.location == location) &&
+            (identical(other.password, password) ||
+                other.password == password) &&
             (identical(other.recurrenceState, recurrenceState) ||
                 other.recurrenceState == recurrenceState) &&
             (identical(other.recurrenceFrequency, recurrenceFrequency) ||
@@ -261,8 +279,17 @@ class _$BookingStateImpl extends _BookingState {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, timeRange, bookingId, hostId,
-      title, description, location, recurrenceState, recurrenceFrequency);
+  int get hashCode => Object.hash(
+      runtimeType,
+      timeRange,
+      bookingId,
+      hostId,
+      title,
+      description,
+      location,
+      password,
+      recurrenceState,
+      recurrenceFrequency);
 
   /// Create a copy of BookingState
   /// with the given fields replaced by the non-null parameter values.
@@ -288,6 +315,7 @@ abstract class _BookingState extends BookingState {
       final String? title,
       final String? description,
       final LocationData? location,
+      final String? password,
       final RecurrenceState recurrenceState,
       final int recurrenceFrequency}) = _$BookingStateImpl;
   const _BookingState._() : super._();
@@ -307,6 +335,8 @@ abstract class _BookingState extends BookingState {
   String? get description;
   @override
   LocationData? get location;
+  @override
+  String? get password;
   @override
   RecurrenceState get recurrenceState;
   @override
