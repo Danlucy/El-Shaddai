@@ -22,6 +22,7 @@ class BookingModel with _$BookingModel {
       required String id,
       @LocationDataConverter() required LocationData location,
       required String description,
+      String? password,
       @RecurrenceConfigurationConverter()
       RecurrenceConfigurationModel? recurrenceModel}) = _BookingModel;
 

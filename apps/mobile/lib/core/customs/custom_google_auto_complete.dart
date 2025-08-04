@@ -147,15 +147,12 @@ class _GooglePlaceAutoCompleteTextFieldState
       _cancelToken = CancelToken();
     }
 
-    print("urlll $apiURL");
     try {
       String proxyURL = "https://cors-anywhere.herokuapp.com/";
       String url = kIsWeb ? proxyURL + apiURL : apiURL;
 
       /// Add the custom header to the options
-      final options = kIsWeb
-          ? Options(headers: {"x-requested-with": "XMLHttpRequest"})
-          : null;
+
       Response response = await _dio.get(url);
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
@@ -175,7 +172,7 @@ class _GooglePlaceAutoCompleteTextFieldState
 
       isSearched = false;
       alPredictions.clear();
-      if (subscriptionResponse.predictions!.length > 0 &&
+      if (subscriptionResponse.predictions!.isNotEmpty &&
           (widget.textEditingController.text.toString().trim()).isNotEmpty) {
         alPredictions.addAll(subscriptionResponse.predictions!);
       }

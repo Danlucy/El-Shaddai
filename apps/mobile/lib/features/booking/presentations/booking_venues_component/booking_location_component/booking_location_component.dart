@@ -41,12 +41,43 @@ class BookingLocationComponent extends ConsumerStatefulWidget {
 class _BookingLocationComponentState
     extends ConsumerState<BookingLocationComponent> {
   @override
+  void initState() {
+    super.initState();
+    _initControllerValue();
+
+    Future.microtask(() {
+      _initTarget();
+      _listenToAddressChanges();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         GoogleMapComponent(widget.googleController),
       ],
     );
+  }
+
+  void _initControllerValue() {
+    widget.googleController.text =
+        ref.read(bookingControllerProvider).location?.address ?? "";
+  }
+
+  void _initTarget() {
+    final chords = ref.read(bookingControllerProvider).location?.chords;
+    if (chords != null) {
+      ref.read(targetNotifierProvider.notifier).setTarget(chords);
+    }
+  }
+
+  void _listenToAddressChanges() {
+    widget.googleController.addListener(() {
+      ref
+          .read(bookingControllerProvider.notifier)
+          .setAddress(widget.googleController.text);
+    });
   }
 }
 

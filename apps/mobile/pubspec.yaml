@@ -84,6 +84,8 @@ dependencies:
   firebase_crashlytics: ^4.3.7
   melos: ^6.0.0
   retry: ^3.1.2
+  package_info_plus: ^8.3.0
+  showcaseview: ^4.0.1
 
 dev_dependencies:
   flutter_test:

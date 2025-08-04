@@ -42,6 +42,7 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(bookingControllerProvider);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final textScaleFactor = TextScaleFactor.scaleFactor(textScale);
     final user = ref.read(userProvider);

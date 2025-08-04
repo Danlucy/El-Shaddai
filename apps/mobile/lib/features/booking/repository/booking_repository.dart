@@ -46,6 +46,9 @@ class BookingRepository {
     RecurrenceConfigurationModel? recurrence,
   }) async {
     final model = bookingModel.copyWith(recurrenceModel: recurrence);
+    //
+    print(bookingId);
+    print(bookingModel);
     try {
       if (bookingId == null) {
         // 🔹 Create New Booking

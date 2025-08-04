@@ -37,7 +37,7 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            Text(isFeedPost ? 'Create Prayer Leader Post' : 'Create User Post',
+            Text(isFeedPost ? 'Create Watch Leader Post' : 'Create User Post',
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             const SizedBox(height: 16),

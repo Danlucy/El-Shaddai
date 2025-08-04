@@ -6,6 +6,7 @@ import 'package:mobile/api/models/access_token_model/access_token_model.dart';
 import 'package:mobile/core/constants/constants.dart';
 import 'package:mobile/core/widgets/snack_bar.dart';
 import 'package:mobile/features/booking/presentations/booking_dialog.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../core/router/router.dart';
 import '../../../models/user_model/user_model.dart';
@@ -25,6 +26,23 @@ class GeneralDrawer extends ConsumerStatefulWidget {
 class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
   final height = 600.0;
   final width = 280.0;
+
+  String _appVersion = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _appVersion =
+          'v${info.version}'; // Optionally: + ' (${info.buildNumber})'
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
@@ -50,7 +68,7 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                 onTap: () => const BookingListRoute().push(context)),
             ListTile(
               leading: const Icon(Icons.message),
-              title: const Text('Prayer Leaders'),
+              title: const Text('Watch Leaders'),
               onTap: () => const PrayerLeaderRoute().push(context),
             ),
             ListTile(
@@ -58,20 +76,20 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
               title: const Text('Profile'),
               onTap: () => ProfileRoute(user).push(context),
             ),
-            (user?.role == UserRole.admin)
-                ? ListTile(
-                    leading: const Icon(Icons.supervisor_account),
-                    title: const Text('User Management'),
-                    onTap: () => const UserManagementRoute().push(context),
-                  )
-                : const SizedBox(),
+            if (user?.role == UserRole.admin)
+              ListTile(
+                leading: const Icon(Icons.supervisor_account),
+                title: const Text('User Management'),
+                onTap: () => const UserManagementRoute().push(context),
+              ),
             ListTile(
               leading: const Icon(Icons.phone),
               title: const Text('About Us'),
               onTap: () => const AboutUsRoute().push(context),
             ),
             const Spacer(),
-            //change7
+
+            // Zoom sign in / out
             (ref.watch(accessTokenNotifierProvider).value == null)
                 ? ListTile(
                     onTap: () {
@@ -91,8 +109,8 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                     ),
                     title: Row(
                       children: [
-                        Text('Sign In'),
-                        Gap(5),
+                        const Text('Sign In'),
+                        const Gap(5),
                         Image.asset(
                           'assets/logo/zoom.png',
                           width: 70,
@@ -113,7 +131,14 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                           .clearAccessToken();
                     },
                   ),
+
             ListTile(
+              trailing: Text(
+                _appVersion,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
               leading: const Icon(Icons.transit_enterexit_sharp),
               title: Text(
                 'Log out',
@@ -121,20 +146,23 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
               ),
               onTap: () {
                 showDialog(
-                    barrierColor: Colors.black.withOpac(0.2),
-                    context: context,
-                    builder: (context) {
-                      return ConfirmButton(
-                        confirmText: 'Log out',
-                        confirmAction: () {
-                          ref.read(authControllerProvider.notifier).signOut();
-                        },
-                        description: 'Are you sure you want to log out?',
-                        cancelText: 'Cancel',
-                      );
-                    });
+                  barrierColor: Colors.black.withOpacity(0.2),
+                  context: context,
+                  builder: (context) {
+                    return ConfirmButton(
+                      confirmText: 'Log out',
+                      confirmAction: () {
+                        ref.read(authControllerProvider.notifier).signOut();
+                      },
+                      description: 'Are you sure you want to log out?',
+                      cancelText: 'Cancel',
+                    );
+                  },
+                );
               },
             ),
+
+            // 👇 App Version at bottom
           ],
         ),
       ),

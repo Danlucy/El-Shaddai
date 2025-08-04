@@ -8,6 +8,8 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/features/booking/presentations/booking_venues_component/booking_hybrid_component.dart';
+import 'package:mobile/features/booking/widgets/zoom_display_widget.dart';
 
 import '../../../core/router/router.dart';
 import '../../../core/utility/url_launcher.dart';
@@ -219,6 +221,24 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                         booking.location.meetingID(spaced: true),
                       ),
                     ),
+                    Spacer(),
+                    IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (BuildContext dialogContext) {
+                              return const AlertDialog(
+                                backgroundColor: Colors.transparent,
+                                contentPadding: EdgeInsets.zero,
+                                content: GlassmorphismPasswordDialog(
+                                  isDisplay: true,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        icon: Icon(Icons.key))
                   ],
                 ),
               const SizedBox(height: 16),

@@ -10,6 +10,7 @@ import 'package:mobile/core/router/no_internet_screen.dart';
 import 'package:mobile/core/router/router.dart';
 import 'package:mobile/features/auth/controller/auth_controller.dart';
 import 'package:mobile/firebase_options.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import 'core/utility/backend_checker.dart';
 
@@ -124,20 +125,22 @@ class _MyAppState extends ConsumerState<_MyMobileApp>
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(goRouterProvider);
-    return MaterialApp.router(
-      title: 'El Shaddai',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          appBarTheme: const AppBarTheme(titleSpacing: 0),
-          textTheme: textTheme,
-          useMaterial3: true,
-          colorScheme: MaterialTheme.darkScheme()),
-      darkTheme: ThemeData(
-          appBarTheme: const AppBarTheme(titleSpacing: 0),
-          textTheme: textTheme,
-          useMaterial3: true,
-          colorScheme: MaterialTheme.darkScheme()),
-      routerConfig: router,
-    );
+    return ShowCaseWidget(builder: (showcaseContext) {
+      return MaterialApp.router(
+        title: 'El Shaddai',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            appBarTheme: const AppBarTheme(titleSpacing: 0),
+            textTheme: textTheme,
+            useMaterial3: true,
+            colorScheme: MaterialTheme.darkScheme()),
+        darkTheme: ThemeData(
+            appBarTheme: const AppBarTheme(titleSpacing: 0),
+            textTheme: textTheme,
+            useMaterial3: true,
+            colorScheme: MaterialTheme.darkScheme()),
+        routerConfig: router,
+      );
+    });
   }
 }

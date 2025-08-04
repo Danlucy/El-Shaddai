@@ -7,9 +7,8 @@ import '../controller/booking_controller.dart';
 class BookingDateRangePickerComponent extends ConsumerStatefulWidget {
   const BookingDateRangePickerComponent({
     super.key,
-    this.initialSelectedRange,
   });
-  final PickerDateRange? initialSelectedRange;
+
   @override
   ConsumerState<BookingDateRangePickerComponent> createState() =>
       _BookingDateRangePickerComponentState();
@@ -17,12 +16,48 @@ class BookingDateRangePickerComponent extends ConsumerStatefulWidget {
 
 class _BookingDateRangePickerComponentState
     extends ConsumerState<BookingDateRangePickerComponent> {
-  final DateRangePickerController controller = DateRangePickerController();
+  final DateRangePickerController _controller = DateRangePickerController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final eventFunction = ref.read(bookingControllerProvider.notifier);
+    final bookingState = ref.watch(bookingControllerProvider);
+    final bookingFunction = ref.read(bookingControllerProvider.notifier);
+
+    // ✅ Sync controller with state - this is the approach that works
+    final timeRange = bookingState.timeRange;
+
+    if (timeRange != null) {
+      final newRange = PickerDateRange(timeRange.start, timeRange.end);
+
+      // Only update if the range is actually different
+      if (_controller.selectedRange?.startDate != newRange.startDate ||
+          _controller.selectedRange?.endDate != newRange.endDate) {
+        // Use post-frame callback to avoid modifying state during build
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _controller.selectedRange = newRange;
+          }
+        });
+      }
+    } else {
+      // Clear selection if no time range
+      if (_controller.selectedRange != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _controller.selectedRange = null;
+          }
+        });
+      }
+    }
+
     return SfDateRangePicker(
-      initialSelectedRange: widget.initialSelectedRange,
+      controller: _controller,
       enablePastDates: false,
       headerStyle: DateRangePickerHeaderStyle(
         textAlign: TextAlign.start,
@@ -30,37 +65,24 @@ class _BookingDateRangePickerComponentState
       ),
       monthCellStyle: DateRangePickerMonthCellStyle(
         blackoutDateTextStyle: TextStyle(
-          color: Colors.redAccent.withOpac(0.4),
+          color: Colors.redAccent.withOpacity(0.4),
         ),
         cellDecoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(5),
-          ),
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
           border: Border.all(color: Colors.white24),
         ),
       ),
-      monthViewSettings: const DateRangePickerMonthViewSettings(),
       view: DateRangePickerView.month,
-      onSelectionChanged: (d) {
-        final value = d.value;
+      onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+        final value = args.value;
 
-        try {
-          if (value is PickerDateRange) {
-            if (value.endDate != null) {
-              eventFunction.setDateRange(
-                  DateTimeRange(start: value.startDate!, end: value.endDate!));
-            } else {
-              eventFunction.setDateRange(DateTimeRange(
-                  start: value.startDate!, end: value.startDate!));
-            }
-          } else {
-            if (value is DateTimeRange) {
-              eventFunction.setDateRange(
-                  DateTimeRange(start: value.start, end: value.end));
-            }
-          }
-        } catch (e) {
-          throw e;
+        if (value is PickerDateRange) {
+          final start = value.startDate!;
+          final end = value.endDate ?? value.startDate!;
+
+          bookingFunction.setDateRange(
+            DateTimeRange(start: start, end: end),
+          );
         }
       },
       backgroundColor: context.colors.secondaryContainer,

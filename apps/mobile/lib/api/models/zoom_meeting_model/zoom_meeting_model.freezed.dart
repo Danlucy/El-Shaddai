@@ -24,6 +24,7 @@ mixin _$ZoomMeetingModel {
   @JsonKey(name: 'agenda')
   String? get description => throw _privateConstructorUsedError;
   int? get duration => throw _privateConstructorUsedError;
+  String? get password => throw _privateConstructorUsedError;
   @RecurrenceConfigurationConverter()
   @JsonKey(name: 'recurrence')
   RecurrenceConfigurationModel? get recurrenceConfiguration =>
@@ -32,6 +33,8 @@ mixin _$ZoomMeetingModel {
   DateTime get startTime => throw _privateConstructorUsedError;
   @JsonKey(defaultValue: 2)
   int get type => throw _privateConstructorUsedError;
+  @JsonKey(name: 'default_password', defaultValue: false)
+  bool get defaultPassword => throw _privateConstructorUsedError;
 
   /// Serializes this ZoomMeetingModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,11 +56,14 @@ abstract class $ZoomMeetingModelCopyWith<$Res> {
       {String? topic,
       @JsonKey(name: 'agenda') String? description,
       int? duration,
+      String? password,
       @RecurrenceConfigurationConverter()
       @JsonKey(name: 'recurrence')
       RecurrenceConfigurationModel? recurrenceConfiguration,
       @JsonKey(name: 'start_time') DateTime startTime,
-      @JsonKey(defaultValue: 2) int type});
+      @JsonKey(defaultValue: 2) int type,
+      @JsonKey(name: 'default_password', defaultValue: false)
+      bool defaultPassword});
 
   $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceConfiguration;
 }
@@ -80,9 +86,11 @@ class _$ZoomMeetingModelCopyWithImpl<$Res, $Val extends ZoomMeetingModel>
     Object? topic = freezed,
     Object? description = freezed,
     Object? duration = freezed,
+    Object? password = freezed,
     Object? recurrenceConfiguration = freezed,
     Object? startTime = null,
     Object? type = null,
+    Object? defaultPassword = null,
   }) {
     return _then(_value.copyWith(
       topic: freezed == topic
@@ -97,6 +105,10 @@ class _$ZoomMeetingModelCopyWithImpl<$Res, $Val extends ZoomMeetingModel>
           ? _value.duration
           : duration // ignore: cast_nullable_to_non_nullable
               as int?,
+      password: freezed == password
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String?,
       recurrenceConfiguration: freezed == recurrenceConfiguration
           ? _value.recurrenceConfiguration
           : recurrenceConfiguration // ignore: cast_nullable_to_non_nullable
@@ -109,6 +121,10 @@ class _$ZoomMeetingModelCopyWithImpl<$Res, $Val extends ZoomMeetingModel>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as int,
+      defaultPassword: null == defaultPassword
+          ? _value.defaultPassword
+          : defaultPassword // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -140,11 +156,14 @@ abstract class _$$ZoomMeetingModelImplCopyWith<$Res>
       {String? topic,
       @JsonKey(name: 'agenda') String? description,
       int? duration,
+      String? password,
       @RecurrenceConfigurationConverter()
       @JsonKey(name: 'recurrence')
       RecurrenceConfigurationModel? recurrenceConfiguration,
       @JsonKey(name: 'start_time') DateTime startTime,
-      @JsonKey(defaultValue: 2) int type});
+      @JsonKey(defaultValue: 2) int type,
+      @JsonKey(name: 'default_password', defaultValue: false)
+      bool defaultPassword});
 
   @override
   $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceConfiguration;
@@ -166,9 +185,11 @@ class __$$ZoomMeetingModelImplCopyWithImpl<$Res>
     Object? topic = freezed,
     Object? description = freezed,
     Object? duration = freezed,
+    Object? password = freezed,
     Object? recurrenceConfiguration = freezed,
     Object? startTime = null,
     Object? type = null,
+    Object? defaultPassword = null,
   }) {
     return _then(_$ZoomMeetingModelImpl(
       topic: freezed == topic
@@ -183,6 +204,10 @@ class __$$ZoomMeetingModelImplCopyWithImpl<$Res>
           ? _value.duration
           : duration // ignore: cast_nullable_to_non_nullable
               as int?,
+      password: freezed == password
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String?,
       recurrenceConfiguration: freezed == recurrenceConfiguration
           ? _value.recurrenceConfiguration
           : recurrenceConfiguration // ignore: cast_nullable_to_non_nullable
@@ -195,6 +220,10 @@ class __$$ZoomMeetingModelImplCopyWithImpl<$Res>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as int,
+      defaultPassword: null == defaultPassword
+          ? _value.defaultPassword
+          : defaultPassword // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -206,11 +235,14 @@ class _$ZoomMeetingModelImpl extends _ZoomMeetingModel {
       {this.topic,
       @JsonKey(name: 'agenda') this.description,
       this.duration,
+      this.password,
       @RecurrenceConfigurationConverter()
       @JsonKey(name: 'recurrence')
       this.recurrenceConfiguration,
       @JsonKey(name: 'start_time') required this.startTime,
-      @JsonKey(defaultValue: 2) required this.type})
+      @JsonKey(defaultValue: 2) required this.type,
+      @JsonKey(name: 'default_password', defaultValue: false)
+      required this.defaultPassword})
       : super._();
 
   factory _$ZoomMeetingModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -224,6 +256,8 @@ class _$ZoomMeetingModelImpl extends _ZoomMeetingModel {
   @override
   final int? duration;
   @override
+  final String? password;
+  @override
   @RecurrenceConfigurationConverter()
   @JsonKey(name: 'recurrence')
   final RecurrenceConfigurationModel? recurrenceConfiguration;
@@ -233,10 +267,13 @@ class _$ZoomMeetingModelImpl extends _ZoomMeetingModel {
   @override
   @JsonKey(defaultValue: 2)
   final int type;
+  @override
+  @JsonKey(name: 'default_password', defaultValue: false)
+  final bool defaultPassword;
 
   @override
   String toString() {
-    return 'ZoomMeetingModel(topic: $topic, description: $description, duration: $duration, recurrenceConfiguration: $recurrenceConfiguration, startTime: $startTime, type: $type)';
+    return 'ZoomMeetingModel(topic: $topic, description: $description, duration: $duration, password: $password, recurrenceConfiguration: $recurrenceConfiguration, startTime: $startTime, type: $type, defaultPassword: $defaultPassword)';
   }
 
   @override
@@ -249,18 +286,22 @@ class _$ZoomMeetingModelImpl extends _ZoomMeetingModel {
                 other.description == description) &&
             (identical(other.duration, duration) ||
                 other.duration == duration) &&
+            (identical(other.password, password) ||
+                other.password == password) &&
             (identical(
                     other.recurrenceConfiguration, recurrenceConfiguration) ||
                 other.recurrenceConfiguration == recurrenceConfiguration) &&
             (identical(other.startTime, startTime) ||
                 other.startTime == startTime) &&
-            (identical(other.type, type) || other.type == type));
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.defaultPassword, defaultPassword) ||
+                other.defaultPassword == defaultPassword));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, topic, description, duration,
-      recurrenceConfiguration, startTime, type);
+      password, recurrenceConfiguration, startTime, type, defaultPassword);
 
   /// Create a copy of ZoomMeetingModel
   /// with the given fields replaced by the non-null parameter values.
@@ -281,15 +322,17 @@ class _$ZoomMeetingModelImpl extends _ZoomMeetingModel {
 
 abstract class _ZoomMeetingModel extends ZoomMeetingModel {
   factory _ZoomMeetingModel(
-          {final String? topic,
-          @JsonKey(name: 'agenda') final String? description,
-          final int? duration,
-          @RecurrenceConfigurationConverter()
-          @JsonKey(name: 'recurrence')
-          final RecurrenceConfigurationModel? recurrenceConfiguration,
-          @JsonKey(name: 'start_time') required final DateTime startTime,
-          @JsonKey(defaultValue: 2) required final int type}) =
-      _$ZoomMeetingModelImpl;
+      {final String? topic,
+      @JsonKey(name: 'agenda') final String? description,
+      final int? duration,
+      final String? password,
+      @RecurrenceConfigurationConverter()
+      @JsonKey(name: 'recurrence')
+      final RecurrenceConfigurationModel? recurrenceConfiguration,
+      @JsonKey(name: 'start_time') required final DateTime startTime,
+      @JsonKey(defaultValue: 2) required final int type,
+      @JsonKey(name: 'default_password', defaultValue: false)
+      required final bool defaultPassword}) = _$ZoomMeetingModelImpl;
   _ZoomMeetingModel._() : super._();
 
   factory _ZoomMeetingModel.fromJson(Map<String, dynamic> json) =
@@ -303,6 +346,8 @@ abstract class _ZoomMeetingModel extends ZoomMeetingModel {
   @override
   int? get duration;
   @override
+  String? get password;
+  @override
   @RecurrenceConfigurationConverter()
   @JsonKey(name: 'recurrence')
   RecurrenceConfigurationModel? get recurrenceConfiguration;
@@ -312,6 +357,9 @@ abstract class _ZoomMeetingModel extends ZoomMeetingModel {
   @override
   @JsonKey(defaultValue: 2)
   int get type;
+  @override
+  @JsonKey(name: 'default_password', defaultValue: false)
+  bool get defaultPassword;
 
   /// Create a copy of ZoomMeetingModel
   /// with the given fields replaced by the non-null parameter values.
