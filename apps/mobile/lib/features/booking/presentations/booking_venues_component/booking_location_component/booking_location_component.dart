@@ -4,10 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:util/util.dart';
 import 'dart:async';
 
-import '../../../../../core/constants/constants.dart';
-import '../../../../../core/customs/custom_google_auto_complete.dart';
 import '../../../controller/booking_controller.dart';
 part 'booking_location_component.g.dart';
 
@@ -23,67 +22,9 @@ class TargetNotifier extends _$TargetNotifier {
   }
 }
 
-class BookingLocationComponent extends ConsumerStatefulWidget {
-  const BookingLocationComponent(
-    this.googleController,
-    this.context, {
-    super.key,
-  });
-
-  final TextEditingController googleController;
-  final BuildContext context;
-
-  @override
-  ConsumerState<BookingLocationComponent> createState() =>
-      _BookingLocationComponentState();
-}
-
-class _BookingLocationComponentState
-    extends ConsumerState<BookingLocationComponent> {
-  @override
-  void initState() {
-    super.initState();
-    _initControllerValue();
-
-    Future.microtask(() {
-      _initTarget();
-      _listenToAddressChanges();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GoogleMapComponent(widget.googleController),
-      ],
-    );
-  }
-
-  void _initControllerValue() {
-    widget.googleController.text =
-        ref.read(bookingControllerProvider).location?.address ?? "";
-  }
-
-  void _initTarget() {
-    final chords = ref.read(bookingControllerProvider).location?.chords;
-    if (chords != null) {
-      ref.read(targetNotifierProvider.notifier).setTarget(chords);
-    }
-  }
-
-  void _listenToAddressChanges() {
-    widget.googleController.addListener(() {
-      ref
-          .read(bookingControllerProvider.notifier)
-          .setAddress(widget.googleController.text);
-    });
-  }
-}
-
 class GoogleMapComponent extends ConsumerStatefulWidget {
-  const GoogleMapComponent(this.googleController, {super.key});
-  final TextEditingController googleController;
+  const GoogleMapComponent({super.key});
+
   @override
   ConsumerState createState() => _GoogleMapComponentState();
 }
@@ -91,8 +32,62 @@ class GoogleMapComponent extends ConsumerStatefulWidget {
 class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
   final FocusNode _autoCompleteFocusNode = FocusNode();
   final Completer<GoogleMapController> _mapController = Completer();
+  late final TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController();
+
+    // Use addPostFrameCallback to ensure the widget has been built and we can safely
+    // access the ref to get the initial booking state.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initController();
+      _setupListeners();
+    });
+  }
+
+  void _initController() {
+    final currentLocation =
+        ref.read(bookingControllerProvider).location?.address ?? '';
+    _textController.text = currentLocation;
+
+    final chords = ref.read(bookingControllerProvider).location?.chords;
+    if (chords != null) {
+      if (mounted) {
+        ref.read(targetNotifierProvider.notifier).setTarget(chords);
+      }
+    }
+  }
+
+  void _setupListeners() {
+    // We only set up the listener AFTER the controller has been initialized with the current state.
+    // This prevents the bug where the listener fires on the very first frame with an empty string.
+    _textController.addListener(() {
+      final newAddress = _textController.text.trim();
+      final currentAddressInState =
+          ref.read(bookingControllerProvider).location?.address;
+
+      // Only update the state if the new address is different from the current state
+      // This prevents redundant updates and the "revert to zoom" bug on initial focus.
+      if (newAddress != currentAddressInState) {
+        if (mounted) {
+          ref.read(bookingControllerProvider.notifier).setAddress(newAddress);
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoCompleteFocusNode.dispose();
+    _textController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Your existing build method...
     return Column(
       children: [
         GestureDetector(
@@ -111,16 +106,18 @@ class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
               final newTarget =
                   LatLng(double.parse(l.lat!), double.parse(l.lng!));
               ref.read(targetNotifierProvider.notifier).setTarget(newTarget);
+
+              // This is the correct place to update the address when a valid place is selected.
               ref
                   .read(bookingControllerProvider.notifier)
-                  .setAddress(widget.googleController.text);
-              // print(LatLng(double.parse(l.lat!), double.parse(l.lng!)));
+                  .setAddress(_textController.text);
+
               ref.read(bookingControllerProvider.notifier).setChords(newTarget);
               _updateCameraPosition(newTarget);
             },
             itemClick: (Prediction prediction) {
-              widget.googleController.text = prediction.description ?? "";
-              widget.googleController.selection = TextSelection.fromPosition(
+              _textController.text = prediction.description ?? "";
+              _textController.selection = TextSelection.fromPosition(
                   TextPosition(offset: prediction.description?.length ?? 0));
             },
             itemBuilder: (context, index, Prediction prediction) {
@@ -131,13 +128,11 @@ class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
                 child: Row(
                   children: [
                     const Icon(Icons.location_on),
-                    const SizedBox(
-                      width: 7,
-                    ),
+                    const SizedBox(width: 7),
                     Expanded(
                         child: Text(
                       prediction.description ?? "",
-                      style: TextStyle(fontSize: 12),
+                      style: const TextStyle(fontSize: 12),
                     ))
                   ],
                 ),
@@ -148,12 +143,10 @@ class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
                 focusedBorder: InputBorder.none,
                 border: InputBorder.none),
             googleAPIKey: googleAPI,
-            textEditingController: widget.googleController,
+            textEditingController: _textController,
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         SizedBox(
           width: 300,
           height: 250,
@@ -166,7 +159,7 @@ class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
                   child: GoogleMap(
                     onMapCreated: (GoogleMapController controller) {
                       _mapController.complete(controller);
-                      if (target != null) _updateCameraPosition(target);
+                      _updateCameraPosition(target);
                     },
                     initialCameraPosition: CameraPosition(
                       target: target,
@@ -181,7 +174,6 @@ class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
                   ),
                 );
               } else {
-                // Placeholder while the map is not initialized
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),

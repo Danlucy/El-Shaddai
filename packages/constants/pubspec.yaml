@@ -1,5 +1,5 @@
 name: constants
-description: Shared constants
+description: A package for shared constants.
 version: 1.0.0
 publish_to: 'none'
 
@@ -9,3 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  google_fonts: ^6.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0

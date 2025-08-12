@@ -39,7 +39,7 @@ class SignInButton extends ConsumerWidget {
                 width: 40,
               )
             : Padding(
-                padding: EdgeInsets.all(5),
+                padding: const EdgeInsets.all(5),
                 child: Image.asset(
                   'assets/logo/apple.png',
                   height: 40,

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:constants/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../core/constants/constants.dart';
 import '../core/router/router.dart';
 
 class CustomInterceptor extends Interceptor {
@@ -36,7 +36,6 @@ class CustomInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     // Do something with response data
-    print('Response received from ${response.requestOptions.uri}');
     handler.next(response);
   }
 
@@ -54,7 +53,10 @@ class CustomInterceptor extends Interceptor {
       try {
         const ZoomRoute(zoomLoginRoute).push(navigatorKey.currentContext!);
       } catch (e, s) {
-        print('Error getting authorization code: $e $s');
+        if (kDebugMode) {
+          print('Error during token refresh: $e');
+          print('Stack trace: $s');
+        }
       }
       // Retry the request.
       try {
@@ -120,7 +122,6 @@ class CustomInterceptor extends Interceptor {
       });
     } catch (e) {
       const ZoomRoute(zoomLoginRoute).push(navigatorKey.currentContext!);
-      print('Error refreshing tokens: $e');
 
       throw Exception('Failed to refresh token');
     }

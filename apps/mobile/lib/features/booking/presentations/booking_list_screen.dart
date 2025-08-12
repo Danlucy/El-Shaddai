@@ -1,19 +1,21 @@
+import 'dart:async'; // Import the dart:async library for the Timer
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:models/models.dart';
+import 'package:repositories/repositories.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:util/util.dart';
 
-import '../../../core/customs/custom_date_time_range.dart';
 import '../../../core/widgets/loader.dart';
-import '../../../models/booking_model/booking_model.dart';
-import '../../../models/user_model/user_model.dart';
+
 import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
 import '../../calendar/widget/booking_details_dialog.dart';
 import '../../home/widgets/general_drawer.dart';
-import '../repository/booking_repository.dart';
 import 'booking_screen.dart';
 
 class BookingListScreen extends ConsumerStatefulWidget {
@@ -24,6 +26,43 @@ class BookingListScreen extends ConsumerStatefulWidget {
 }
 
 class _BookingListScreenState extends ConsumerState<BookingListScreen> {
+  // Two timers to handle the synchronized refresh
+  Timer? _initialTimer;
+  Timer? _periodicTimer;
+
+  // A simple counter to force a rebuild
+
+  @override
+  void initState() {
+    super.initState();
+    // Calculate the delay until the start of the next minute
+    final now = DateTime.now();
+    final delay = Duration(
+        seconds: 60 - now.second, milliseconds: 1000 - now.millisecond);
+
+    // Start a one-time timer with the calculated delay
+    _initialTimer = Timer(delay, () {
+      if (mounted) {
+        // Trigger the first rebuild immediately
+        setState(() {});
+        // Now, start the periodic timer for every subsequent minute
+        _periodicTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+          if (mounted) {
+            setState(() {});
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // IMPORTANT: Cancel both timers when the widget is disposed
+    _initialTimer?.cancel();
+    _periodicTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
@@ -44,7 +83,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
       drawer: const GeneralDrawer(),
       appBar: AppBar(
         title: const Text(
-          'Prayer Watches',
+          'Prayer Watch List',
         ),
       ),
       body: bookingStream.when(
@@ -69,14 +108,38 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
 
                 // Get the appointment's date from the details
                 final appointmentDate = details.date;
+                final currentTime = DateTime.now();
+
+                // Check if the appointment is within 10 minutes of starting
+                final isUpcomingAppointment = currentTime.isAfter(bookingModel
+                        .timeRange.start
+                        .subtract(const Duration(minutes: 10))) &&
+                    currentTime.isBefore(bookingModel.timeRange.start);
+
+                // Check if the appointment is currently live
+                final isLiveAppointment =
+                    currentTime.isAfter(bookingModel.timeRange.start) &&
+                        currentTime.isBefore(bookingModel.timeRange.end);
 
                 // Check if the appointment date is before today
-                final isPastAppointment = appointmentDate.isBefore(DateTime(today.year, today.month, today.day));
+                final isPastAppointment = appointmentDate
+                    .isBefore(DateTime(today.year, today.month, today.day));
 
-                // Choose the color based on whether it's a past appointment
-                final appointmentColor = isPastAppointment
-                    ? Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5) // Muted color for past dates
-                    : Theme.of(context).colorScheme.secondaryContainer;
+                // Choose the color based on the state. The order is important.
+                final appointmentColor = isLiveAppointment
+                    ? context.colors.errorContainer.withOpac(0.4)
+                    // Live appointments are red
+                    : isUpcomingAppointment
+                        ? context.colors
+                            .tertiary // Upcoming appointments get a new color
+                        : isPastAppointment
+                            ? Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer
+                                .withOpac(0.5) // Muted for past dates
+                            : Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer; // Default color
 
                 return GestureDetector(
                   onLongPress: () {
@@ -91,7 +154,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                               confirmText: 'Delete ',
                               cancelText: 'Cancel',
                               description:
-                              'Are you sure you want to delete this booking? This action cannot be reversed',
+                                  'Are you sure you want to delete this booking? This action cannot be reversed',
                               confirmAction: () {
                                 context.pop();
 
@@ -115,7 +178,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                     decoration: BoxDecoration(
                         color: appointmentColor,
                         borderRadius:
-                        const BorderRadius.all(Radius.circular(5))),
+                            const BorderRadius.all(Radius.circular(5))),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -209,17 +272,17 @@ _AppointmentDataSource _getCalendarDataSource(List<BookingModel> bookingModel) {
       DateTime currentStartTime = (i == 0)
           ? booking.timeRange.start
           : DateTime(appointmentDate.year, appointmentDate.month,
-          appointmentDate.day, 0, 0);
+              appointmentDate.day, 0, 0);
 
       // For the last day, set the end time to the original end time
       DateTime currentEndTime = (i == duration)
           ? booking.timeRange.end
           : DateTime(appointmentDate.year, appointmentDate.month,
-          appointmentDate.day, 23, 59);
+              appointmentDate.day, 23, 59);
 
       appointments.add(BookingModel(
           timeRange:
-          CustomDateTimeRange(start: currentStartTime, end: currentEndTime),
+              CustomDateTimeRange(start: currentStartTime, end: currentEndTime),
           description: booking.description,
           title: booking.title,
           recurrenceState: booking.recurrenceState,

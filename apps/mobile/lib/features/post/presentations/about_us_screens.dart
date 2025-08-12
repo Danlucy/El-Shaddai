@@ -5,14 +5,15 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/widgets/glass_container.dart';
+import 'package:models/models.dart';
+import 'package:repositories/repositories.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../models/user_model/user_model.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../controller/post_controller.dart';
-import '../repository/post_repository.dart';
 import '../widget/add_post_dialog.dart';
 
 class AboutUsScreen extends ConsumerStatefulWidget {
@@ -31,6 +32,7 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
     return Scaffold(
         floatingActionButton: user?.role == UserRole.admin
             ? FloatingActionButton(
+                backgroundColor: Colors.transparent,
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -41,7 +43,7 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
                     },
                   );
                 },
-                child: const Icon(Icons.add),
+                child: const GlassContainer(child: Icon(Icons.add)),
               )
             : null,
         drawer: const GeneralDrawer(),

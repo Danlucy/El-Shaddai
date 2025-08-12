@@ -1,12 +1,12 @@
+import 'package:api/api.dart';
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../api/api_repository.dart';
-import '../../../api/models/access_token_model/access_token_model.dart';
 import '../../../api/pkce_utils.dart';
-import '../../../core/constants/constants.dart';
 import '../../../core/router/router.dart';
 import '../controller/zoom_auth_controller.dart';
 

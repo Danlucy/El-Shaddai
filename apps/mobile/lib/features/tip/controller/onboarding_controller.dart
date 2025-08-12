@@ -1,7 +1,6 @@
 // lib/providers/onboarding_controller.dart
 import 'package:mobile/features/tip/controller/tip_controller.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'onboarding_controller.g.dart';
 

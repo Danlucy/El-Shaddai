@@ -30,10 +30,10 @@ class EditableTextField extends ConsumerStatefulWidget {
   });
 
   @override
-  _EditableTextFieldState createState() => _EditableTextFieldState();
+  EditableTextFieldState createState() => EditableTextFieldState();
 }
 
-class _EditableTextFieldState extends ConsumerState<EditableTextField> {
+class EditableTextFieldState extends ConsumerState<EditableTextField> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
   String _initialText = '';
@@ -187,6 +187,7 @@ class ProfileImage extends ConsumerStatefulWidget {
   final String? uid;
   final bool ableToEdit;
   const ProfileImage({
+    super.key,
     required this.uid,
     required this.ableToEdit,
   });

@@ -1,15 +1,13 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:convert'; // For Base64 encoding
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:constants/constants.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../core/constants/firebase_constants.dart';
 import '../../auth/controller/auth_controller.dart';
 
 part 'profile_controller.g.dart';

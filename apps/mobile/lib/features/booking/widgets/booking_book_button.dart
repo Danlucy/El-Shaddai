@@ -1,13 +1,12 @@
+import 'package:api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/utility/url_launcher.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:repositories/repositories.dart';
 
 import '../../../api/api_repository.dart';
-import '../../../api/models/access_token_model/access_token_model.dart';
 import '../controller/booking_controller.dart';
-import '../repository/booking_repository.dart';
 
 class BookButton extends ConsumerStatefulWidget {
   const BookButton({
@@ -78,7 +77,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
         } catch (e) {
           widget.errorCall(
               e.toString().contains('Null check operator used on a null value')
-                  ? 'Booking Failed! Fill in all the Data. WTF $e'
+                  ? 'Booking Failed! Fill in all the Data. ? $e'
                   : e.toString());
         }
       },

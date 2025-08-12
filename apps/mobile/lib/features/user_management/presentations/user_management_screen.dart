@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:models/models.dart';
+import 'package:repositories/repositories.dart';
+import 'package:util/util.dart';
 
 import '../../../core/router/router.dart';
-import '../../../core/utility/date_time_range.dart';
-import '../../../core/widgets/snack_bar.dart';
-import '../../../models/user_model/user_model.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../controller/user_management_controller.dart';
-import '../repository/user_management_repository.dart';
 
 class UserManagementScreen extends ConsumerStatefulWidget {
   const UserManagementScreen({super.key});
@@ -27,58 +26,76 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(userManagementControllerProvider.notifier);
-    final users =
-        ref.watch(usersByRoleProvider(searchTerm: _searchController.text));
 
-    return Scaffold(
+    // Use a DefaultTabController to manage the TabBar and TabBarView state
+    return DefaultTabController(
+      length: UserRole.values.length, // Number of tabs equals number of roles
+      child: Scaffold(
         drawer: const GeneralDrawer(),
         appBar: AppBar(
           title: const Text('User Management'),
+          // The TabBar is now part of the AppBar
+          bottom: TabBar(
+            isScrollable: true,
+            tabs: UserRole.values.map((role) {
+              return Tab(text: role.displayName);
+            }).toList(),
+          ),
         ),
-        body: Center(
-          child: users.when(
-              data: (data) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: const InputDecoration(
-                          labelText: "Search Users",
-                          prefixIcon: Icon(Icons.search),
-                          border: OutlineInputBorder(),
-                        ),
-                        onSubmitted: (value) {
-                          setState(() {}); // Refresh state when search changes
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: data.length,
-                        itemBuilder: (context, index) {
-                          final user = data[index];
-                          return ListTile(
-                            onTap: () {
-                              ProfileRoute(user).push(context);
-                            },
-                            title: Text(user.lastName ?? user.name),
-                            subtitle: Text(user.role.displayName),
-                            trailing: _PopMenuButton(
-                                user: user, controller: controller),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              },
-              error: (x, s) {
-                throw x;
-              },
-              loading: () => const CircularProgressIndicator()),
-        ));
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  labelText: "Search Users",
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+                onSubmitted: (value) {
+                  setState(() {}); // Refresh state when search changes
+                },
+              ),
+            ),
+            // The TabBarView displays the content for each tab
+            Expanded(
+              child: TabBarView(
+                children: UserRole.values.map((role) {
+                  // For each role, we create a new list of users
+                  final users = ref.watch(usersByRoleProvider(
+                      role: role, searchTerm: _searchController.text));
+
+                  // FIX: Corrected syntax to use the .when() method on the stream
+                  return users.when(
+                      data: (data) {
+                        return ListView.builder(
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            final user = data[index];
+                            return ListTile(
+                              onTap: () {
+                                ProfileRoute(user).push(context);
+                              },
+                              title: Text(user.lastName ?? user.name),
+                              subtitle: Text(user.role.displayName),
+                              trailing: _PopMenuButton(
+                                  user: user, controller: controller),
+                            );
+                          },
+                        );
+                      },
+                      error: (x, s) {
+                        return const Center(child: Text('Error loading users'));
+                      },
+                      loading: () => const CircularProgressIndicator());
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

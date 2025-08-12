@@ -1,12 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fpdart/fpdart.dart';
-
-import '../../../core/widgets/snack_bar.dart';
-import '../../../models/user_model/user_model.dart';
-import '../repository/auth_repository.dart';
+import 'package:models/models.dart';
+import 'package:util/util.dart';
+import 'package:repositories/repositories.dart';
 
 final userProvider = StateProvider<UserModel?>((ref) {
   return null; // Initialize with null
@@ -49,7 +48,6 @@ class AuthController extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     _authRepository.deleteUserAccount(context, _ref);
-    print('tacadwd');
   }
 
   void signOut() async {
@@ -66,7 +64,9 @@ class AuthController extends StateNotifier<bool> {
 
     state = false;
     user.fold((l) {
-      print('Error signing in with Google: ${l.message}');
+      if (kDebugMode) {
+        print('Error signing in with Google: ${l.message}');
+      }
       showFailureSnackBar(context, l.message);
     },
         (userModel) =>
@@ -89,8 +89,10 @@ class AuthController extends StateNotifier<bool> {
             auth.currentUser!.uid); // Yield the results of the fetch
         break; // If successful, break the loop
       } catch (e) {
-        print('Retrying after error: $e');
-        print('Waiting for connectivity...');
+        if (kDebugMode) {
+          print('Retrying after error: $e');
+          print('Waiting for connectivity...');
+        }
         // Wait for connectivity to be restored
         // final connectivityResult = await (Connectivity()..checkConnectivity());
         // if (connectivityResult == ConnectivityResult.none) {
