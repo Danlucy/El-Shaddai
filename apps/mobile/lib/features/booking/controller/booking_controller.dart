@@ -1,18 +1,14 @@
+import 'package:api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mobile/core/utility/url_launcher.dart';
+import 'package:models/models.dart';
+import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:util/util.dart';
 
-import '../../../api/models/recurrence_configuration_model/recurrence_configuration_model.dart';
-import '../../../api/models/zoom_meeting_model/zoom_meeting_model.dart';
-import '../../../core/customs/custom_date_time_range.dart';
-import '../../../core/utility/date_time_range.dart';
-import '../../../core/widgets/snack_bar.dart';
-import '../../../models/booking_model/booking_model.dart';
-import '../../../models/location_data.dart';
+
 import '../../auth/controller/auth_controller.dart';
-import '../repository/booking_repository.dart';
 import '../state/booking_state.dart';
 part 'booking_controller.g.dart';
 
@@ -54,7 +50,6 @@ class BookingController extends _$BookingController {
   }
 
   void switchVenueBasedOnCurrentState() {
-    print('dawdawd');
     if (state.location?.web != null && state.location?.address != null) {
       ref.read(bookingVenueStateProvider.notifier).setVenue(
           BookingVenueComponent.hybrid); // ✅ Both web and address exist
@@ -154,25 +149,24 @@ class BookingController extends _$BookingController {
       state = state.copyWith(recurrenceState: recurrenceState);
 
   void setDateRange(DateTimeRange timeRange) {
-    print('Setting Date Range: $timeRange');
+
+
     final start = state.timeRange?.start;
     final end = state.timeRange?.end;
     state = state.copyWith(
       timeRange: CustomDateTimeRange(
         start: DateTime(
-          timeRange.start.year,
-          timeRange.start.month,
-          timeRange.start.day,
-          start?.hour ?? 11,
-          start?.minute ?? 0,
-        ),
+            timeRange.start.year,
+            timeRange.start.month,
+            timeRange.start.day,
+            start?.hour ?? DateTime.now().hour,
+            start?.minute ?? (DateTime.now().minute / 5).ceil() * 5),
         end: DateTime(
-          timeRange.end.year,
-          timeRange.end.month,
-          timeRange.end.day,
-          end?.hour ?? 12,
-          end?.minute ?? 0,
-        ),
+            timeRange.end.year,
+            timeRange.end.month,
+            timeRange.end.day,
+            end?.hour ?? (DateTime.now().add(const Duration(hours: 1)).hour),
+            end?.minute ?? (DateTime.now().minute / 5).ceil() * 5),
       ),
     );
   }
@@ -229,8 +223,7 @@ class BookingController extends _$BookingController {
   BookingModel instantiateBookingModel(
     String? web,
   ) {
-    print('trackk');
-    print(web);
+
     final user = ref.read(userProvider);
     final currentVenue = ref.read(bookingVenueStateProvider);
     return BookingModel(

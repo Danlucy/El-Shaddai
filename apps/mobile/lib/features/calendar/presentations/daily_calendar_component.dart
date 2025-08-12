@@ -1,14 +1,15 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/features/auth/controller/auth_controller.dart';
 import 'package:mobile/features/booking/controller/booking_controller.dart';
+import 'package:models/models.dart';
+import 'package:repositories/repositories.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:util/util.dart';
 
-import '../../../core/customs/custom_date_time_range.dart';
 import '../../../core/widgets/loader.dart';
-import '../../../models/booking_model/booking_model.dart';
 import '../../booking/presentations/booking_dialog.dart';
-import '../../booking/repository/booking_repository.dart';
 import '../controller/calendar_controller.dart';
 import '../widget/booking_details_dialog.dart';
 
@@ -25,26 +26,125 @@ class DailyCalendarComponent extends ConsumerStatefulWidget {
 
 class _DailyCalendarComponentState
     extends ConsumerState<DailyCalendarComponent> {
+  // A simple counter to track the appointment index for alternating colors
+  int _appointmentCounter = 0;
+
+  // This helper method is now a static function or a top-level function
+  // to prevent it from being tightly coupled to the widget's state.
+  static _AppointmentDataSource _getCalendarDataSource(
+      List<BookingModel> bookingModels) {
+    List<BookingModel> appointments = <BookingModel>[];
+
+    for (BookingModel booking in bookingModels) {
+      int duration =
+          booking.timeRange.end.difference(booking.timeRange.start).inDays;
+
+      for (int i = 0; i <= duration; i++) {
+        DateTime currentDate = DateTime(
+          booking.timeRange.start.year,
+          booking.timeRange.start.month,
+          booking.timeRange.start.day + i,
+        );
+
+        DateTime startTime;
+        DateTime endTime;
+
+        if (i == 0) {
+          startTime = booking.timeRange.start;
+        } else {
+          startTime = DateTime(
+            currentDate.year,
+            currentDate.month,
+            currentDate.day,
+            0,
+            0,
+          );
+        }
+
+        if (i == duration) {
+          endTime = booking.timeRange.end;
+        } else {
+          endTime = DateTime(
+            currentDate.year,
+            currentDate.month,
+            currentDate.day,
+            23,
+            59,
+            59,
+          );
+        }
+
+        appointments.add(BookingModel(
+          timeRange: CustomDateTimeRange(
+            start: startTime,
+            end: endTime,
+          ),
+          description: booking.description,
+          title: booking.title,
+          recurrenceState: booking.recurrenceState,
+          location: booking.location,
+          createdAt: booking.createdAt,
+          host: booking.host,
+          userId: booking.userId,
+          id: booking.id,
+        ));
+      }
+    }
+    return _AppointmentDataSource(appointments);
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.watch(bookingControllerProvider);
     final bookingStream = ref.watch(bookingStreamProvider());
     final bookingFunction = ref.read(bookingControllerProvider.notifier);
-
+    // final selectedDate = ref.watch(calendarDateNotifierProvider);
+    final user = ref.watch(userProvider);
     ref.listen(
       calendarDateNotifierProvider,
       (previous, next) {
         widget.dailyCalendarController.displayDate = next;
+        widget.dailyCalendarController.selectedDate = next;
       },
     );
+
     return bookingStream.when(
         data: (data) {
-          return SfCalendar(
-            onLongPress: (CalendarLongPressDetails tapped) {
-              bookingFunction.clearState();
+          final dataSource = _getCalendarDataSource(data);
 
+          // IMPORTANT: Reset the counter for each frame build.
+          _appointmentCounter = 0;
+
+          return SfCalendar(
+            headerHeight: 0,
+            viewHeaderHeight: 0,
+            onViewChanged: (ViewChangedDetails details) {
+              // When user navigates in daily view, update the shared state
+              if (details.visibleDates.isNotEmpty) {
+                final visibleDate = details.visibleDates.first;
+                final currentSelected = ref.read(calendarDateNotifierProvider);
+
+                if (currentSelected.day != visibleDate.day ||
+                    currentSelected.month != visibleDate.month ||
+                    currentSelected.year != visibleDate.year) {
+                  // CORRECTED: Delay the provider modification until the next frame.
+                  // This prevents the error from being thrown.
+                  Future.microtask(() {
+                    ref
+                        .read(calendarDateNotifierProvider.notifier)
+                        .updateSelectedDate(visibleDate);
+                  });
+                }
+              }
+            },
+            onLongPress: (CalendarLongPressDetails tapped) {
+              if (user?.role == UserRole.observer ||
+                  user?.role == UserRole.intercessor) {
+                return;
+              } //cancel operation if obs or intercessor role
+
+              bookingFunction.clearState();
               if (tapped.date != null) {
-                // ✅ Set the state BEFORE showing the dialog
                 bookingFunction.setStartTime(tapped.date!, context);
                 bookingFunction.setEndTime(
                   tapped.date!.add(const Duration(minutes: 30)),
@@ -53,8 +153,6 @@ class _DailyCalendarComponentState
                 bookingFunction.setDateRange(
                   DateTimeRange(start: tapped.date!, end: tapped.date!),
                 );
-
-                // Small delay to ensure state propagation
               }
 
               showDialog(
@@ -69,8 +167,15 @@ class _DailyCalendarComponentState
             },
             appointmentBuilder:
                 (BuildContext context, CalendarAppointmentDetails details) {
-              // Extract the BookingModel from the appointment details
-              BookingModel bookingModel = details.appointments.first;
+              final appointment = details.appointments.first as BookingModel;
+
+              // Use the counter to determine the alternating color.
+              final backgroundColor = _appointmentCounter % 2 == 0
+                  ? context.colors.primaryContainer
+                  : context.colors.secondaryContainer;
+
+              // IMPORTANT: Increment the counter for the next appointment.
+              _appointmentCounter++;
 
               return GestureDetector(
                 onTap: () {
@@ -78,14 +183,13 @@ class _DailyCalendarComponentState
                     context: context,
                     builder: (context) {
                       return BookingDetailsDialog(
-                        bookingModel:
-                            bookingModel, // Pass the correct BookingModel
+                        bookingModel: appointment,
                       );
                     },
                   );
                 },
                 child: Container(
-                  color: context.colors.secondaryContainer,
+                  color: backgroundColor,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
@@ -94,7 +198,7 @@ class _DailyCalendarComponentState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          bookingModel.title,
+                          appointment.title,
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -106,7 +210,7 @@ class _DailyCalendarComponentState
                 ),
               );
             },
-            dataSource: _getCalendarDataSource(data),
+            dataSource: dataSource,
             controller: widget.dailyCalendarController,
             view: CalendarView.day,
             timeSlotViewSettings: const TimeSlotViewSettings(
@@ -127,73 +231,7 @@ class _DailyCalendarComponentState
   }
 }
 
-_AppointmentDataSource _getCalendarDataSource(
-    List<BookingModel> bookingModels) {
-  List<BookingModel> appointments = <BookingModel>[];
-
-  for (BookingModel booking in bookingModels) {
-    // Calculate the number of days between start and end dates
-    int duration =
-        booking.timeRange.end.difference(booking.timeRange.start).inDays;
-
-    for (int i = 0; i <= duration; i++) {
-      DateTime currentDate = DateTime(
-        booking.timeRange.start.year,
-        booking.timeRange.start.month,
-        booking.timeRange.start.day + i,
-      );
-
-      DateTime startTime;
-      DateTime endTime;
-
-      if (i == 0) {
-        // First day: Use original start time
-        startTime = booking.timeRange.start;
-      } else {
-        // Other days: Start at midnight
-        startTime = DateTime(
-          currentDate.year,
-          currentDate.month,
-          currentDate.day,
-          0,
-          0,
-        );
-      }
-
-      if (i == duration) {
-        // Last day: Use original end time
-        endTime = booking.timeRange.end;
-      } else {
-        // Other days: End at 23:59:59
-        endTime = DateTime(
-          currentDate.year,
-          currentDate.month,
-          currentDate.day,
-          23,
-          59,
-          59,
-        );
-      }
-
-      appointments.add(BookingModel(
-        timeRange: CustomDateTimeRange(
-          start: startTime,
-          end: endTime,
-        ),
-        description: booking.description,
-        title: booking.title,
-        recurrenceState: booking.recurrenceState,
-        location: booking.location,
-        createdAt: booking.createdAt,
-        host: booking.host,
-        userId: booking.userId,
-        id: booking.id,
-      ));
-    }
-  }
-
-  return _AppointmentDataSource(appointments);
-}
+// ... The rest of your code remains unchanged.
 
 class _AppointmentDataSource extends CalendarDataSource<BookingModel> {
   _AppointmentDataSource(List<BookingModel> source) {

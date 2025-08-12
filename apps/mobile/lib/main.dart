@@ -1,18 +1,18 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:constants/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/router/no_internet_screen.dart';
 import 'package:mobile/core/router/router.dart';
 import 'package:mobile/features/auth/controller/auth_controller.dart';
-import 'package:mobile/firebase_options.dart';
+import 'package:firebase/src/firebase_options.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:util/util.dart';
 
-import 'core/utility/backend_checker.dart';
 
 final ValueNotifier<bool> hasConnectivity = ValueNotifier(true);
 
@@ -110,15 +110,20 @@ class _MyAppState extends ConsumerState<_MyMobileApp>
 
         if (mounted) {
           ref.read(userProvider.notifier).update((state) => userModel);
-          print('User data updated successfully.');
         }
       } on FirebaseException catch (e) {
-        print('Firebase Error updating user data: ${e.code} - ${e.message}');
+        if (kDebugMode) {
+          print('Firebase Error updating user data: ${e.code} - ${e.message}');
+        }
       } catch (e) {
-        print('Generic Error updating user data: $e');
+        if (kDebugMode) {
+          print('Generic Error updating user data: $e');
+        }
       }
     } catch (e) {
-      print('Connectivity check error during user data update: $e');
+      if (kDebugMode) {
+        print('Connectivity check error during user data update: $e');
+      }
     }
   }
 

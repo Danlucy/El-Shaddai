@@ -1,11 +1,10 @@
-import 'dart:ui';
-
+import 'package:api/api.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/api/models/access_token_model/access_token_model.dart';
 import 'package:mobile/core/utility/url_launcher.dart';
+import 'package:mobile/core/widgets/glass_container.dart';
 import 'package:mobile/features/booking/controller/booking_controller.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -23,10 +22,10 @@ class ZoomDisplayComponent extends ConsumerStatefulWidget {
 
 class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
   late TextEditingController _zoomIdController;
-  bool _isDigitOnlyInput = true; // State for dynamic letter spacing
-  bool _hasTriggeredShowcase = false; // Track if showcase has been triggered
+  bool _isDigitOnlyInput = true;
+  bool _isInitialized = false;
+  bool _hasTriggeredShowcase = false;
 
-  // Create instance-specific GlobalKeys to avoid conflicts
   late final GlobalKey _zoomIconKey;
   late final GlobalKey _zoomTextFormFieldKey;
   late final GlobalKey _zoomKeyIconKey;
@@ -50,16 +49,20 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
     });
   }
 
-  void _checkAndTriggerShowcase(Set<String> seenTips) {
+  void _checkAndTriggerShowcase(
+      BookingVenueComponent currentVenue, Set<String> seenTips) {
     if (_hasTriggeredShowcase) return;
 
-    final currentVenue = ref.read(bookingVenueStateProvider);
     const tipId = 'zoom_input_tour_tip';
 
     if (currentVenue != BookingVenueComponent.zoom &&
-        currentVenue != BookingVenueComponent.hybrid) return;
+        currentVenue != BookingVenueComponent.hybrid) {
+      return;
+    }
 
-    if (seenTips.contains(tipId)) return;
+    if (seenTips.contains(tipId)) {
+      return;
+    }
 
     _hasTriggeredShowcase = true;
 
@@ -71,33 +74,35 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
           _zoomKeyIconKey,
         ]);
         ref.read(onboardingNotifierProvider.notifier).markTipAsSeen(tipId);
-      }
+      } else {}
     });
+  }
+
+  void _initializeController() {
+    if (_isInitialized) return;
+
+    final bookingState = ref.read(bookingControllerProvider);
+    final webValue = bookingState.location?.web;
+
+    final initialId = _parseIdForDisplay(webValue);
+
+    _zoomIdController.text = initialId;
+    _updateLetterSpacingState(initialId);
+    _isInitialized = true;
   }
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize GlobalKeys for this instance
     _zoomIconKey = GlobalKey();
     _zoomTextFormFieldKey = GlobalKey();
     _zoomKeyIconKey = GlobalKey();
 
-    // Initialize controller first
-    final initialId =
-        _parseIdForDisplay(ref.read(bookingControllerProvider).location?.web);
-    _zoomIdController = TextEditingController(text: initialId);
-    _updateLetterSpacingState(initialId); // Initialize spacing state
-    // Use addPostFrameCallback to safely access ref after widget is built
+    _zoomIdController = TextEditingController();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Initialize controller text after the first frame
-
-      _updateLetterSpacingState(initialId);
-
-      // Check if we should trigger the showcase
-      _checkAndTriggerShowcase(
-          ref.read(onboardingNotifierProvider).value ?? {});
+      _initializeController();
     });
   }
 
@@ -111,8 +116,8 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
   Widget build(BuildContext context) {
     final accessTokenAsync = ref.watch(accessTokenNotifierProvider);
     final currentVenue = ref.watch(bookingVenueStateProvider);
-    final onboardingState =
-        ref.watch(onboardingNotifierProvider); // ✅ this now reacts to updates
+    final onboardingState = ref.watch(onboardingNotifierProvider);
+    final bookingState = ref.watch(bookingControllerProvider);
 
     final bool isSignedIn = accessTokenAsync.when(
       data: (token) => token != null,
@@ -120,12 +125,16 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
       error: (_, __) => false,
     );
 
-    // ✅ Only run the showcase check once the onboarding tips are loaded
+    if (!_isInitialized && bookingState.location?.web != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _initializeController();
+      });
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (onboardingState is AsyncData<Set<String>>) {
-        _checkAndTriggerShowcase(
-            onboardingState.value); // pass the data explicitly
-      }
+      onboardingState.whenData((seenTips) {
+        _checkAndTriggerShowcase(currentVenue, seenTips);
+      });
     });
 
     return Container(
@@ -138,7 +147,6 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
-          // Step 1: Showcase the Zoom icon
           Showcase(
             key: _zoomIconKey,
             title: 'Tap on Zoom\'s icon to immediately open Zoom',
@@ -153,8 +161,6 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
               ),
             ),
           ),
-
-          // Step 2: Showcase the TextFormField
           Expanded(
             child: Showcase(
               key: _zoomTextFormFieldKey,
@@ -169,15 +175,17 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
                   _updateLetterSpacingState(trimmedInput);
 
                   String? webValueToStore;
-                  if (trimmedInput.startsWith('http://') ||
+                  if (trimmedInput.isEmpty) {
+                    webValueToStore = null;
+                  } else if (trimmedInput.startsWith('http://') ||
                       trimmedInput.startsWith('https://')) {
                     webValueToStore = trimmedInput;
-                  } else if (RegExp(r'^\d{10,11}$').hasMatch(trimmedInput)) {
+                  } else if (_isDigitOnlyInput) {
                     webValueToStore = buildExternalZoomUrl(trimmedInput);
-                  } else {
-                    webValueToStore = null;
+                    ref
+                        .read(bookingControllerProvider.notifier)
+                        .setWeb(webValueToStore);
                   }
-
                   ref
                       .read(bookingControllerProvider.notifier)
                       .setWeb(webValueToStore);
@@ -215,8 +223,6 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
               ),
             ),
           ),
-
-          // Step 3: Showcase the Key icon
           Showcase(
             key: _zoomKeyIconKey,
             title: 'Meeting Password',
@@ -228,10 +234,20 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
                   context: context,
                   barrierDismissible: true,
                   builder: (BuildContext dialogContext) {
-                    return const AlertDialog(
+                    return AlertDialog(
                       backgroundColor: Colors.transparent,
                       contentPadding: EdgeInsets.zero,
-                      content: GlassmorphismPasswordDialog(),
+                      content: GlassmorphismPasswordDialog(
+                        initialPassword:
+                            ref.read(bookingControllerProvider).password,
+                        onPasswordSubmitted: (newPassword) {
+                          Future.microtask(() {
+                            ref
+                                .read(bookingControllerProvider.notifier)
+                                .setPassword(newPassword);
+                          });
+                        },
+                      ),
                     );
                   },
                 );
@@ -245,50 +261,47 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
   }
 }
 
-// Your GlassmorphismPasswordDialog widget with minor improvements
-class GlassmorphismPasswordDialog extends ConsumerStatefulWidget {
+class GlassmorphismPasswordDialog extends StatefulWidget {
+  final String? initialPassword;
+  final Function(String? password)? onPasswordSubmitted;
   final bool isDisplay;
 
   const GlassmorphismPasswordDialog({
     super.key,
+    this.initialPassword,
+    this.onPasswordSubmitted,
     this.isDisplay = false,
   });
 
   @override
-  ConsumerState<GlassmorphismPasswordDialog> createState() =>
+  State<GlassmorphismPasswordDialog> createState() =>
       _GlassmorphismPasswordDialogState();
 }
 
 class _GlassmorphismPasswordDialogState
-    extends ConsumerState<GlassmorphismPasswordDialog> {
+    extends State<GlassmorphismPasswordDialog> {
   late TextEditingController _passwordController;
   late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
-    _passwordController = TextEditingController();
+    _passwordController =
+        TextEditingController(text: widget.initialPassword ?? '');
     _focusNode = FocusNode();
 
-    // Use addPostFrameCallback to safely access ref
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final initialPassword =
-          ref.read(bookingControllerProvider).password ?? '';
-      _passwordController.text = initialPassword;
-
-      if (!widget.isDisplay && mounted) {
+    if (!widget.isDisplay) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _focusNode.requestFocus();
-      }
-    });
+      });
+    }
   }
 
   @override
   void dispose() {
-    if (!widget.isDisplay) {
+    if (!widget.isDisplay && widget.onPasswordSubmitted != null) {
       final String passwordValue = _passwordController.text.trim();
-      ref
-          .read(bookingControllerProvider.notifier)
-          .setPassword(passwordValue.isEmpty ? null : passwordValue);
+      widget.onPasswordSubmitted!(passwordValue.isEmpty ? null : passwordValue);
     }
     _passwordController.dispose();
     _focusNode.dispose();
@@ -297,64 +310,68 @@ class _GlassmorphismPasswordDialogState
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20.0),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GestureDetector(
-                  onTap: widget.isDisplay
-                      ? () {
-                          final text = _passwordController.text.trim();
-                          if (text.isNotEmpty) {
-                            Clipboard.setData(ClipboardData(text: text));
-                          }
-                        }
-                      : null,
-                  child: AbsorbPointer(
-                    absorbing: widget.isDisplay,
-                    child: TextField(
-                      controller: _passwordController,
-                      focusNode: _focusNode,
-                      onSubmitted: (_) => Navigator.of(context).pop(),
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.visiblePassword,
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: widget.isDisplay
-                            ? 'No Password'
-                            : 'Enter Password (Optional)',
-                        hintStyle: const TextStyle(
-                          fontSize: 16,
-                          letterSpacing: 1,
-                          color: Colors.white70,
-                        ),
-                      ),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+    // Determine the text to display inside the TextField
+    String hintText;
+    if (widget.isDisplay) {
+      final passwordValue = _passwordController.text.trim();
+      if (passwordValue.isEmpty) {
+        hintText = 'No Password';
+      } else {
+        // In display mode, the text is a hint to show the value.
+        // It's a bit of a workaround since it's a TextField.
+        hintText = passwordValue;
+      }
+    } else {
+      hintText = 'Enter Password (Optional)';
+    }
+
+    return GlassContainer(
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: 100,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: GestureDetector(
+              onTap: widget.isDisplay
+                  ? () {
+                      final text = _passwordController.text.trim();
+                      if (text.isNotEmpty) {
+                        Clipboard.setData(ClipboardData(text: text));
+                      }
+                    }
+                  : null,
+              child: AbsorbPointer(
+                absorbing: widget.isDisplay,
+                child: TextField(
+                  controller: _passwordController,
+                  focusNode: _focusNode,
+                  onSubmitted: (value) {
+                    Navigator.of(context).pop();
+                  },
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.visiblePassword,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: hintText, // Use the determined hintText
+                    hintStyle: const TextStyle(
+                      fontSize: 16,
+                      letterSpacing: 1,
+                      color: Colors.white70,
                     ),
+                  ),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

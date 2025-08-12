@@ -1,7 +1,5 @@
+import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-import '../../../models/user_model/user_model.dart';
-import '../repository/user_management_repository.dart';
 
 part 'user_management_controller.g.dart';
 

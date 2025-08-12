@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:repositories/repositories.dart';
 
 import '../controller/post_controller.dart';
 
@@ -77,9 +78,8 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                         TextFormField(
                           onChanged: postController.setTitle,
                           controller: _titleController,
-                          decoration: InputDecoration(
-                              labelText: 'Name',
-                              border: const OutlineInputBorder()),
+                          decoration: const InputDecoration(
+                              labelText: 'Name', border: OutlineInputBorder()),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return 'This cannot be empty';

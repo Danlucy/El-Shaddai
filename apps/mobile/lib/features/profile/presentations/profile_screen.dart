@@ -4,8 +4,8 @@ import 'package:flutter/services.dart'; // Only one import needed
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/features/profile/widget/role_dsiplay.dart';
+import 'package:models/models.dart';
 
-import '../../../models/user_model/user_model.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
 import '../../home/widgets/general_drawer.dart';
@@ -84,18 +84,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(widget.userModel?.name ?? '',
-                          style: const TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      Padding(
-                          padding: EdgeInsets.symmetric(vertical: 5),
-                          child: RoleDisplayWidget(
-                            role: widget.userModel?.role,
-                          )),
                       ProfileImage(
                           uid: widget.userModel?.uid,
                           ableToEdit: user?.uid == widget.userModel?.uid ||
                               user?.role == UserRole.admin),
+                      Text(widget.userModel?.name ?? '',
+                          style: const TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold)),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: RoleDisplayWidget(
+                            role: widget.userModel?.role,
+                          )),
 
                       /// ✅ **Pass `userData` to all fields after loading**
                       ...getNullableStringFields().map((field) {

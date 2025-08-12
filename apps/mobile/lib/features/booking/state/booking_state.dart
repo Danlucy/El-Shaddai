@@ -1,24 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../../../core/customs/custom_date_time_range.dart';
-import '../../../core/utility/json_converters.dart';
-import '../../../models/location_data.dart';
+import 'package:models/models.dart';
+import 'package:util/util.dart';
 
 part 'booking_state.freezed.dart';
 part 'booking_state.g.dart';
-
-enum RecurrenceState {
-  none,
-  daily,
-  weekly;
-
-  static RecurrenceState? fromName(String name) {
-    for (RecurrenceState enumVariant in RecurrenceState.values) {
-      if (enumVariant.name == name) return enumVariant;
-    }
-    return null;
-  }
-}
 
 @freezed
 class BookingState with _$BookingState {

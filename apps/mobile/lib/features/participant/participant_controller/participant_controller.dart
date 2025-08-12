@@ -1,9 +1,9 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../auth/controller/auth_controller.dart';
-import '../participant_repository/participant_repository.dart';
 import '../state/participant_state.dart';
 
 part 'participant_controller.g.dart';
@@ -52,7 +52,9 @@ class ParticipantController extends _$ParticipantController {
             state.userId!,
           );
         } else {
-          print('Participant already exists in the booking');
+          if (kDebugMode) {
+            print('Participant already exists in the booking');
+          }
         }
       } catch (e) {
         throw 'Failed to add participant: $e';
@@ -80,7 +82,9 @@ class ParticipantController extends _$ParticipantController {
           );
           // await repository.isEmptyThenRemove(state.bookingId!);
         } else {
-          print('Participant does not exists in the booking');
+          if (kDebugMode) {
+            print('Participant does not exists in the booking');
+          }
         }
       } catch (e) {
         throw 'Failed to add participant: $e';

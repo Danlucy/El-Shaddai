@@ -3,9 +3,6 @@ import 'package:constants/constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/features/booking/controller/booking_controller.dart';
-import 'package:mobile/features/tip/controller/onboarding_controller.dart';
-
 import '../../auth/controller/auth_controller.dart';
 import '../widgets/general_drawer.dart';
 
@@ -47,51 +44,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const SizedBox(
               height: 20,
             ),
-            IconButton(
-              onPressed: () async {
-                try {
-                  // Also reset all tips to be sure
-                  await ref
-                      .read(onboardingNotifierProvider.notifier)
-                      .resetAllTips();
-
-                  // Force refresh the provider state
-                  ref.invalidate(onboardingNotifierProvider);
-
-                  // Wait a bit for the state to update
-                  await Future.delayed(const Duration(milliseconds: 100));
-
-                  // Debug: Check the state after reset
-                  final hasSeenTip = ref
-                      .read(onboardingNotifierProvider.notifier)
-                      .hasSeenTip('zoom_input_tour_tip');
-
-                  print(
-                      'DEBUG: Reset completed. Has seen zoom tip: $hasSeenTip');
-                  print(
-                      'DEBUG: Current venue state: ${ref.read(bookingVenueStateProvider)}');
-
-                  // Show confirmation
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Tips reset! Has seen zoom tip: $hasSeenTip\nSwitch to Zoom/Hybrid mode to see showcase.'),
-                        duration: const Duration(seconds: 3),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  print('DEBUG: Error resetting tips: $e');
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: $e')),
-                    );
-                  }
-                }
-              },
-              icon: const Icon(Icons.settings),
-            ),
+            // IconButton(
+            //   onPressed: () async {
+            //     try {
+            //       // Also reset all tips to be sure
+            //       await ref
+            //           .read(onboardingNotifierProvider.notifier)
+            //           .resetAllTips();
+            //
+            //       // Force refresh the provider state
+            //       ref.invalidate(onboardingNotifierProvider);
+            //
+            //       // Wait a bit for the state to update
+            //       await Future.delayed(const Duration(milliseconds: 100));
+            //
+            //       // Debug: Check the state after reset
+            //       final hasSeenTip = ref
+            //           .read(onboardingNotifierProvider.notifier)
+            //           .hasSeenTip('zoom_input_tour_tip');
+            //
+            //       print(
+            //           'DEBUG: Reset completed. Has seen zoom tip: $hasSeenTip');
+            //       print(
+            //           'DEBUG: Current venue state: ${ref.read(bookingVenueStateProvider)}');
+            //
+            //       // Show confirmation
+            //       if (context.mounted) {
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           SnackBar(
+            //             content: Text(
+            //                 'Tips reset! Has seen zoom tip: $hasSeenTip\nSwitch to Zoom/Hybrid mode to see showcase.'),
+            //             duration: const Duration(seconds: 3),
+            //           ),
+            //         );
+            //       }
+            //     } catch (e) {
+            //       print('DEBUG: Error resetting tips: $e');
+            //       if (context.mounted) {
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           SnackBar(content: Text('Error: $e')),
+            //         );
+            //       }
+            //     }
+            //   },
+            //   icon: const Icon(Icons.settings),
+            // ),
             Expanded(
               child: AutoSizeText(
                 minFontSize: 13,

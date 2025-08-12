@@ -4,28 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:models/models.dart';
+import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../core/constants/firebase_constants.dart';
-import '../../../models/post_model/post_model.dart';
 import '../../auth/controller/auth_controller.dart';
-import '../repository/post_repository.dart';
 import '../state/post_state.dart';
 
 part 'post_controller.g.dart';
-
-enum PostType {
-  feedPost(FirebaseConstants.feedCollection),
-  aboutPost(FirebaseConstants.aboutCollection);
-
-  final String collectionName;
-
-  const PostType(this.collectionName);
-
-  String collection() {
-    return collectionName;
-  }
-}
 
 @riverpod
 class PostController extends _$PostController {
@@ -42,7 +28,6 @@ class PostController extends _$PostController {
 
     if (imageFile != null) {
       final Uint8List compressedImage = await _compressImage(imageFile);
-      print(compressedImage);
 
       state = state.copyWith(
           image: compressedImage); // ✅ Updates state & triggers rebuild
@@ -76,7 +61,9 @@ class PostController extends _$PostController {
     try {
       ref.read(postRepositoryProvider).deletePost(postId, postType: postType);
     } catch (e) {
-      print('❌ Error deleting post: $e');
+      if (kDebugMode) {
+        print('❌ Error deleting post: $e');
+      }
     }
   }
 
@@ -95,7 +82,9 @@ class PostController extends _$PostController {
         ref.read(postRepositoryProvider).addPost(post, postType: postType);
       }
     } catch (e) {
-      print('❌ Error adding post: $e');
+      if (kDebugMode) {
+        print('❌ Error adding post: $e');
+      }
     }
   }
 

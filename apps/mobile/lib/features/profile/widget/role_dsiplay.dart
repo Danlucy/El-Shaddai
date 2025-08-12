@@ -2,8 +2,7 @@ import 'dart:ui';
 
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
-
-import 'package:mobile/models/user_model/user_model.dart';
+import 'package:models/models.dart';
 
 class RoleDisplayWidget extends StatelessWidget {
   final UserRole? role;

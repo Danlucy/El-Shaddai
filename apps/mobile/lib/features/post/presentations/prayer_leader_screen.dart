@@ -5,13 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/core/widgets/glass_container.dart';
+import 'package:models/models.dart';
+import 'package:repositories/repositories.dart';
 
-import '../../../models/user_model/user_model.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../controller/post_controller.dart';
-import '../repository/post_repository.dart';
 import '../widget/add_post_dialog.dart';
 
 class PrayerLeaderScreen extends ConsumerStatefulWidget {
@@ -35,10 +36,11 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
     return Scaffold(
         drawer: const GeneralDrawer(),
         appBar: AppBar(
-          title: const Text('Watchy Leaders'),
+          title: const Text('Watch Leaders'),
         ),
         floatingActionButton: user?.role == UserRole.admin
             ? FloatingActionButton(
+                backgroundColor: Colors.transparent,
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -49,7 +51,7 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
                     },
                   );
                 },
-                child: const Icon(Icons.add),
+                child: const GlassContainer(child: Icon(Icons.add)),
               )
             : null,
         body: Center(

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:api/api.dart';
+import 'package:constants/constants.dart';
 import 'package:dio/dio.dart';
-import '../core/constants/constants.dart';
 import 'api_interceptor.dart';
-import 'models/zoom_meeting_model/zoom_meeting_model.dart';
 
 class ApiRepository {
   String getEncodedString() {

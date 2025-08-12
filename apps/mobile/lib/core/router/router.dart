@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:models/models.dart';
 
 import '../../features/auth/controller/auth_controller.dart';
 import '../../features/auth/presentations/login_screen.dart';
@@ -12,7 +13,6 @@ import '../../features/post/presentations/about_us_screens.dart';
 import '../../features/post/presentations/prayer_leader_screen.dart';
 import '../../features/profile/presentations/profile_screen.dart';
 import '../../features/user_management/presentations/user_management_screen.dart';
-import '../../models/user_model/user_model.dart';
 import 'no_internet_screen.dart';
 
 part 'router.g.dart';

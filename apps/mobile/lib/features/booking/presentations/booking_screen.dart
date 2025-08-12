@@ -3,9 +3,10 @@ import 'package:constants/constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/widgets/glass_container.dart';
+import 'package:models/models.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-import '../../../models/user_model/user_model.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../calendar/presentations/daily_calendar_component.dart';
 import '../../calendar/presentations/monthly_calendar_component.dart';
@@ -51,18 +52,20 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
     int dailyFlex = 5; // Default: Equal space
 
     if (textScaleFactor == TextScaleFactor.oldMan) {
-      monthlyFlex = 5; // MonthlyCalendarComponent takes 70%
-      dailyFlex = 4; // DailyCalendarComponent takes 30%
+      monthlyFlex = 9; // MonthlyCalendarComponent takes 70%
+      dailyFlex = 11; // DailyCalendarComponent takes 30%
     } else if (textScaleFactor == TextScaleFactor.boomer) {
       monthlyFlex = 5; // MonthlyCalendarComponent takes 60%
-      dailyFlex = 5; // DailyCalendarComponent takes 40%
+      dailyFlex = 4; // DailyCalendarComponent takes 40%
     }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButton: (user?.role == UserRole.intercessor)
+      floatingActionButton: (user?.role == UserRole.intercessor ||
+              user?.role == UserRole.observer)
           ? null
           : FloatingActionButton(
+              backgroundColor: Colors.transparent,
               onPressed: () {
                 ref.read(bookingControllerProvider.notifier).clearState();
 
@@ -75,13 +78,15 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
                       );
                     });
               },
-              backgroundColor: context.colors.primaryContainer,
-              child: Icon(
-                Icons.add,
-                color: context.colors.secondary,
+              child: GlassContainer(
+                child: Icon(
+                  Icons.add,
+                  color: context.colors.secondary,
+                ),
               ),
             ),
       appBar: AppBar(
+        backgroundColor: context.colors.surface,
         title: const AutoSizeText(
           minFontSize: 10, // Minimum font size
           maxFontSize: 20,

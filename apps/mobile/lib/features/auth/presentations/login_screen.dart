@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: const Center(
           child: Text(
-            'El  Shaddai',
+            'EL Shaddai Prayer Altar',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
           ),
         ),
@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SignInButton(
               mode: 'Google',
             ),
-            Gap(20),
+            const Gap(20),
             if (Platform.isIOS)
               const SignInButton(
                 mode: 'Apple',
