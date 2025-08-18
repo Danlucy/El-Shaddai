@@ -13,11 +13,12 @@ import 'package:firebase/src/firebase_options.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:util/util.dart';
 
-
 final ValueNotifier<bool> hasConnectivity = ValueNotifier(true);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

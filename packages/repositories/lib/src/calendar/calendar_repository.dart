@@ -1,12 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase/firebase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final calendarRepositoryProvider = Provider((ref) {
-  return CalendarRepository(
-    firestore: ref.watch(firestoreProvider),
-  );
-});
+part 'calendar_repository.g.dart';
+
+@riverpod
+class CalendarDateNotifier extends _$CalendarDateNotifier {
+  @override
+  DateTime build() {
+    return DateTime.now(); // Initial state
+  }
+
+  void updateSelectedDate(DateTime date) {
+    state = date; // Update the state with the selected date
+  }
+}
 
 class CalendarRepository {
   final FirebaseFirestore _firestore;
