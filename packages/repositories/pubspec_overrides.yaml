@@ -1,0 +1,12 @@
+# melos_managed_dependency_overrides: api,constants,firebase,models,util
+dependency_overrides:
+  api:
+    path: ..\\api
+  constants:
+    path: ..\\constants
+  firebase:
+    path: ..\\firebase
+  models:
+    path: ..\\models
+  util:
+    path: ..\\util

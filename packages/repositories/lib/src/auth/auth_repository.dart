@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:constants/constants.dart';
 import 'package:firebase/firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
@@ -9,7 +12,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:models/models.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:util/util.dart';
-import 'dart:io';
 
 import '../user_management/user_management_repository.dart'; // <-- IMPORTANT: Ensure this is uncommented
 
@@ -41,19 +43,14 @@ class AuthRepository {
   Future<void> _initializeGoogleSignIn() async {
     try {
       await _googleSignIn.initialize(
-        clientId: Platform.isIOS
-            ? '835474148480-81mvj92hhksksbsqd5c9k717coa6vm92.apps.googleusercontent.com'
-            : null,
+        clientId:
+            kIsWeb || Platform.isMacOS || Platform.isWindows || Platform.isLinux
+                ? '.apps.googleusercontent.com'
+                : null,
       );
       _isGoogleSignInInitialized = true;
     } catch (e) {
       print('Failed to initialize Google Sign-In: $e');
-    }
-  }
-
-  Future<void> _ensureGoogleSignInInitialized() async {
-    if (!_isGoogleSignInInitialized) {
-      await _initializeGoogleSignIn();
     }
   }
 
@@ -89,46 +86,34 @@ class AuthRepository {
     }
 
     try {
-      AuthCredential credential;
+      AuthCredential? credential;
+
       if (user.providerData
           .any((info) => info.providerId == GoogleAuthProvider().providerId)) {
-        // Google re-authentication - using new v7 API
-        await _ensureGoogleSignInInitialized();
+        // Google re-authentication
         await _googleSignIn.signOut();
 
         try {
-          // Use the new authenticate method
-          final GoogleSignInAccount googleUser =
-              await _googleSignIn.authenticate(
-            scopeHint: ['email', 'profile'],
-          );
+          final account = await _googleSignIn
+              .authenticate(scopeHint: const ['email', 'profile']);
 
-          // Get authorization for Firebase
-          final authClient = _googleSignIn.authorizationClient;
-          final authorization =
-              await authClient.authorizationForScopes(['email', 'profile']);
-
-          if (authorization == null) {
-            return left(Failure('Failed to get Google authorization'));
+          final idToken = account.authentication.idToken;
+          if (idToken == null) {
+            return left(Failure('Missing Google ID token.'));
           }
 
-          // Get authentication tokens (now synchronous)
-          final googleAuth = googleUser.authentication;
+          final authz = await _googleSignIn.authorizationClient
+              .authorizationForScopes(const ['email', 'profile']);
 
-          credential = GoogleAuthProvider.credential(
-            accessToken: authorization.accessToken,
-            idToken: googleAuth.idToken,
+          final credential = GoogleAuthProvider.credential(
+            idToken: idToken,
+            accessToken: authz?.accessToken,
           );
 
           await user.reauthenticateWithCredential(credential);
-          print('User re-authenticated with Google successfully');
           return right(true);
-        } on GoogleSignInException catch (e) {
-          return left(
-              Failure('Google re-authentication failed: ${e.description}'));
         } catch (e) {
-          return left(
-              Failure('Google re-authentication failed: ${e.toString()}'));
+          return left(Failure('Google re-authentication failed: $e'));
         }
       } else if (user.providerData
           .any((info) => info.providerId == AppleAuthProvider().providerId)) {
@@ -213,75 +198,47 @@ class AuthRepository {
     }
   }
 
-  Future<void> signOutGoogleAccount() async {
-    try {
-      // Sign out from Google Sign-In (disconnect the account)
-      await _googleSignIn.signOut();
-      print('Google Sign-In account disconnected');
-    } catch (e) {
-      print('Error signing out from Google Sign-In: $e');
-    }
-    try {
-      await FirebaseAuth.instance.signOut();
-      print('Firebase Authentication user signed out');
-    } catch (e) {
-      print('Error signing out from Firebase Authentication: $e');
-    }
-  }
-
   FutureEither<UserModel> signInWithGoogle() async {
     try {
-      await _ensureGoogleSignInInitialized();
+      // 1) Start Google sign-in (scopes go here now)
+      final GoogleSignInAccount account = await _googleSignIn
+          .authenticate(scopeHint: const ['email', 'profile']);
 
-      // Use the new authenticate method
-      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate(
-        scopeHint: ['email', 'profile'],
-      );
-
-      // Get authorization for Firebase scopes
-      final authClient = _googleSignIn.authorizationClient;
-      final authorization =
-          await authClient.authorizationForScopes(['email', 'profile']);
-
-      if (authorization == null) {
-        return left(Failure('Failed to get Google authorization'));
+      // 2) Get ID token (accessToken moved elsewhere in v7)
+      final idToken = account.authentication.idToken;
+      if (idToken == null) {
+        return left(Failure('Google authentication failed: missing ID token.'));
       }
 
-      // Get authentication tokens (now synchronous)
-      final googleAuth = googleUser.authentication;
+      // 3) (Optional) Ask for an OAuth access token if you want one
+      final authz = await _googleSignIn.authorizationClient
+          .authorizationForScopes(const ['email', 'profile']);
+      final accessToken = authz?.accessToken;
 
-      if (googleAuth.idToken == null) {
-        return left(Failure('Google authentication failed - missing tokens'));
-      }
-
+      // 4) Use with Firebase
       final credential = GoogleAuthProvider.credential(
-        accessToken: authorization.accessToken,
-        idToken: googleAuth.idToken,
+        idToken: idToken,
+        accessToken: accessToken, // optional
       );
+      final userCred = await _auth.signInWithCredential(credential);
 
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
-      UserModel userModel;
-
-      if (userCredential.additionalUserInfo!.isNewUser) {
+      // 5) Create or fetch your app user
+      late final UserModel userModel;
+      if (userCred.additionalUserInfo?.isNewUser == true) {
         userModel = UserModel(
-          name: userCredential.user!.displayName ?? 'Nameless',
-          uid: userCredential.user!.uid,
+          name: userCred.user?.displayName ?? 'Nameless',
+          uid: userCred.user!.uid,
           role: UserRole.observer,
         );
-        await _users.doc(userCredential.user?.uid).set(userModel.toJson());
+        await _users.doc(userCred.user!.uid).set(userModel.toJson());
       } else {
-        userModel = await getUserData(userCredential.user!.uid).first;
+        userModel = await getUserData(userCred.user!.uid).first;
       }
-
       return right(userModel);
-    } on GoogleSignInException catch (e) {
-      return left(Failure('Google Sign-In failed: ${e.description}'));
     } on FirebaseException catch (e) {
-      return left(Failure(e.message ?? 'Firebase error occurred'));
+      return left(Failure(e.message ?? 'Firebase error.'));
     } catch (e) {
-      return left(Failure('An unexpected error occurred: ${e.toString()}'));
+      return left(Failure('Google sign-in failed: $e'));
     }
   }
 
@@ -294,6 +251,15 @@ class AuthRepository {
       );
     } catch (e) {
       throw 'USER NOT FOUND, check internet.';
+    }
+  }
+
+  Future<void> signOutGoogleAccount() async {
+    try {
+      await _googleSignIn.signOut();
+      await _auth.signOut();
+    } catch (e) {
+      print('Error during sign out: $e');
     }
   }
 }

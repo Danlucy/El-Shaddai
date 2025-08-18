@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
@@ -47,28 +49,31 @@ class AuthController extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     _authRepository.deleteUserAccount(context, _ref);
-    print('tacadwd');
   }
 
   void signOut() async {
     _authRepository.signOutGoogleAccount();
+    _ref.read(userProvider.notifier).state = null;
   }
 
   void signInWithGoogle(BuildContext context) async {
     state = true;
-    final user = await _authRepository.signInWithGoogle();
+    try {
+      final userResult = kIsWeb
+          ? await _signInWithGoogleWeb()
+          : await _authRepository.signInWithGoogle();
 
-    if (user.isLeft()) {
-      showFailureSnackBar(context, 'NO DATA');
-    }
+      state = false;
 
-    state = false;
-    user.fold((l) {
-      print('Error signing in with Google: ${l.message}');
-      showFailureSnackBar(context, l.message);
-    },
+      userResult.fold(
+        (l) => showFailureSnackBar(context, l.message),
         (userModel) =>
-            _ref.read(userProvider.notifier).update((state) => userModel));
+            _ref.read(userProvider.notifier).update((_) => userModel),
+      );
+    } catch (e) {
+      state = false;
+      showFailureSnackBar(context, "Google sign-in failed: $e");
+    }
   }
 
   Stream<UserModel?> getUserDataStream() async* {
@@ -87,8 +92,6 @@ class AuthController extends StateNotifier<bool> {
             auth.currentUser!.uid); // Yield the results of the fetch
         break; // If successful, break the loop
       } catch (e) {
-        print('Retrying after error: $e');
-        print('Waiting for connectivity...');
         // Wait for connectivity to be restored
         // final connectivityResult = await (Connectivity()..checkConnectivity());
         // if (connectivityResult == ConnectivityResult.none) {
@@ -104,6 +107,32 @@ class AuthController extends StateNotifier<bool> {
         // Wait a short duration before retrying (optional)
         await Future.delayed(const Duration(seconds: 5));
       }
+    }
+  }
+
+  FutureEither<UserModel> _signInWithGoogleWeb() async {
+    try {
+      final googleProvider = GoogleAuthProvider();
+      googleProvider.addScope('email');
+      googleProvider.addScope('profile');
+
+      final userCredential =
+          await FirebaseAuth.instance.signInWithPopup(googleProvider);
+
+      final user = userCredential.user;
+      if (user == null) {
+        return Left(Failure("No Google user returned"));
+      }
+
+      final userModel = UserModel(
+        uid: user.uid,
+        name: user.displayName ?? '',
+        role: UserRole.observer,
+      );
+
+      return Right(userModel); // ✅ wrap in Right
+    } catch (e) {
+      return Left(Failure("Google sign-in failed: $e")); // ✅ wrap in Left
     }
   }
 }

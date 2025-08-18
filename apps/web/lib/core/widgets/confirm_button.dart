@@ -1,3 +1,4 @@
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 
@@ -26,20 +27,20 @@ class ConfirmDialog extends StatelessWidget {
         width: 400,
         height: 220,
         borderRadius: 20,
-        blur: 15,
+        blur: 20,
         border: 2,
         linearGradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.surface.withOpacity(0.1),
-            Theme.of(context).colorScheme.surface.withOpacity(0.05),
+            Theme.of(context).colorScheme.surface.withOpac(0.3),
+            Theme.of(context).colorScheme.surface.withOpac(0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderGradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+            Theme.of(context).colorScheme.onSurface.withOpac(0.4),
+            Theme.of(context).colorScheme.onSurface.withOpac(0.8),
           ],
         ),
         child: Padding(
@@ -66,8 +67,9 @@ class ConfirmDialog extends StatelessWidget {
                   const SizedBox(width: 12),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                      foregroundColor: Theme.of(context).colorScheme.onError,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.errorContainer,
+                      foregroundColor: Colors.white,
                     ),
                     onPressed: confirmAction,
                     child: Text(confirmText),
