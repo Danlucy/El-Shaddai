@@ -104,3 +104,43 @@ class BookingDataSource extends CalendarDataSource {
     return meetingData;
   }
 }
+
+class AppointmentDataSource extends CalendarDataSource<BookingModel> {
+  AppointmentDataSource(List<BookingModel> source) {
+    appointments = source;
+  }
+  @override
+  DateTime getStartTime(int index) {
+    return appointments![index].timeRange.start as DateTime;
+  }
+
+  @override
+  DateTime getEndTime(int index) {
+    return appointments![index].timeRange.end as DateTime;
+  }
+
+  @override
+  String getDescription(int index) {
+    return appointments![index].description as String;
+  }
+
+  @override
+  String getTitle(int index) {
+    return appointments?[index].title as String;
+  }
+
+  @override
+  BookingModel convertAppointmentToObject(
+      BookingModel customData, Appointment appointment) {
+    return BookingModel(
+        timeRange: customData.timeRange,
+        description: customData.description,
+        title: customData.title,
+        recurrenceState: customData.recurrenceState,
+        location: customData.location,
+        createdAt: customData.createdAt,
+        host: customData.host,
+        userId: customData.userId,
+        id: customData.id);
+  }
+}

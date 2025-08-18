@@ -33,20 +33,28 @@ class Backend {
       return false;
     }
   }
-
-  /// Checks if Firebase Firestore is accessible (optional).
   static Future<bool> checkFirebaseAvailability() async {
     try {
+      // Use a smaller operation - just check if we can reach Firestore
       await FirebaseFirestore.instance
           .collection('healthCheck')
-          .doc('status')
-          .get()
-          .timeout(const Duration(seconds: 7));
+          .limit(1) // Only get 1 document to minimize data transfer
+          .get(const GetOptions(source: Source.server)) // Force server check
+          .timeout(const Duration(seconds: 5)); // Reduce timeout slightly
       return true;
     } on FirebaseException catch (e) {
       print('Firebase Check Failed: ${e.code} - ${e.message}');
-      // Don't treat permission errors as a connectivity issue
-      return !(e.code == 'permission-denied' || e.code == 'not-found');
+      // Handle specific cases
+      switch (e.code) {
+        case 'permission-denied':
+        case 'not-found':
+          return true; // Firebase is reachable, just access issues
+        case 'unavailable':
+        case 'deadline-exceeded':
+          return false; // Likely connectivity issues
+        default:
+          return false;
+      }
     } on TimeoutException {
       print('Firebase Check Timeout');
       return false;
@@ -55,7 +63,6 @@ class Backend {
       return false;
     }
   }
-
   /// Internal method to test HTTP connectivity using Google’s generate_204
   static Future<bool> _hasBasicInternet() async {
     try {
