@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:website/features/booking/presentations/booking_details_screen.dart';
+import 'package:website/features/booking/presentations/booking_list_screen.dart';
 import 'package:website/features/booking/presentations/booking_screen.dart';
 import 'package:website/features/home/presenations/home_screen.dart';
 import 'package:website/features/home/presenations/shell_screen.dart';
@@ -33,6 +34,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/booking',
                 builder: (context, state) => const BookingScreen(),
+              ),
+              GoRoute(
+                path: '/booking/list',
+                builder: (context, state) {
+                  return BookingListScreen();
+                },
               ),
               GoRoute(
                 path: '/booking/:id', // The path with the ID parameter

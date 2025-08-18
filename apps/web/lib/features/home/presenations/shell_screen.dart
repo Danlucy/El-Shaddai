@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
-import 'package:responsive_framework/responsive_framework.dart';
+import 'package:website/core/widgets/glass_button.dart';
+import 'package:website/features/auth/presentations/login_dialog.dart';
 
 import '../../auth/controller/auth_controller.dart';
 
@@ -17,30 +18,91 @@ class ScaffoldWithNavBar extends ConsumerWidget {
   void _onTap(int index) {
     navigationShell.goBranch(
       index,
-      initialLocation: index == navigationShell.currentIndex,
+      initialLocation: true,
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userName = ref.watch(userProvider)?.lastName ?? '';
+    final userName =
+        ref.watch(userProvider)?.lastName ?? ref.watch(userProvider)?.name;
     final int currentIndex = navigationShell.currentIndex;
-    final bool isSmallScreen =
-        ResponsiveBreakpoints.of(context).smallerThan(TABLET);
 
     return Scaffold(
-      // Use extendBodyBehindAppBar to allow the body to go behind the glass app bar
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // Must be transparent
+        key: ValueKey(userName),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        leading:
-            IconButton(onPressed: () {}, icon: const Icon(Icons.menu_sharp)),
-        title: Text('Welcome $userName'),
-        // Use flexibleSpace to place the glass container behind the AppBar content
+        // ✅ Replace plain IconButton with PopupMenuButton
+        leading: PopupMenuButton<String>(
+          icon: const Icon(Icons.menu_sharp),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            side: BorderSide(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+            ),
+          ),
+          color: Theme.of(context).colorScheme.surface.withOpacity(0.85),
+          position: PopupMenuPosition.under,
+          onSelected: (String value) {
+            context.go(value);
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            PopupMenuItem<String>(
+              value: '/',
+              child: ListTile(
+                leading: Icon(Icons.home,
+                    color: currentIndex == 0
+                        ? Theme.of(context).colorScheme.primary
+                        : null),
+                title: Text(
+                  'Home',
+                  style: TextStyle(
+                      color: currentIndex == 0
+                          ? Theme.of(context).colorScheme.primary
+                          : null),
+                ),
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: '/booking',
+              child: ListTile(
+                leading: Icon(Icons.calendar_today,
+                    color: currentIndex == 1
+                        ? Theme.of(context).colorScheme.primary
+                        : null),
+                title: Text(
+                  'Event Calendar',
+                  style: TextStyle(
+                      color: currentIndex == 1
+                          ? Theme.of(context).colorScheme.primary
+                          : null),
+                ),
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: '/booking/list',
+              child: ListTile(
+                leading: Icon(Icons.list,
+                    color: currentIndex == 2
+                        ? Theme.of(context).colorScheme.primary
+                        : null),
+                title: Text(
+                  'Booking List',
+                  style: TextStyle(
+                      color: currentIndex == 2
+                          ? Theme.of(context).colorScheme.primary
+                          : null),
+                ),
+              ),
+            ),
+          ],
+        ),
+        title: Text('Welcome ${userName ?? ''}'),
         flexibleSpace: GlassmorphicContainer(
           width: double.infinity,
-          height: 120, // Adjust height as needed
+          height: 120,
           borderRadius: 0,
           blur: 15,
           border: 0,
@@ -62,69 +124,36 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             ],
           ),
         ),
-        // Re-integrated responsive navigation actions
+        // ✅ Right side empty
         actions: [
-          if (isSmallScreen)
-            PopupMenuButton<int>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: _onTap,
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-                _buildPopupMenuItem(
-                    context, 'Home', Icons.home, 0, currentIndex),
-                _buildPopupMenuItem(
-                    context, 'Booking', Icons.calendar_today, 1, currentIndex),
-                // Add other menu items here
-              ],
-            )
-          else
-            Row(
-              children: [
-                _buildTextButton(context, 'Home', Icons.home, 0, currentIndex),
-                const SizedBox(width: 8),
-                _buildTextButton(
-                    context, 'Booking', Icons.calendar_today, 1, currentIndex),
-                // Add other text buttons here
-                const SizedBox(width: 16),
-              ],
+          Padding(
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 4),
+            child: GlassmorphicButton(
+              constraints: const BoxConstraints(maxWidth: 180),
+              text: '${userName == null ? 'Log In' : 'Log Out'}',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return GlassLoginDialog(
+                      onGoogleSignIn: () {
+                        print('Google Sign In Tapped');
+                        // Add your Google sign-in logic here
+                      },
+                      onAppleSignIn: () {
+                        print('Apple Sign In Tapped');
+                        // Add your Apple sign-in logic here
+                      },
+                    );
+                  },
+                );
+              },
+              icon: Icons.key,
             ),
+          )
         ],
       ),
       body: navigationShell,
-      // Conditionally add the footer only if the current index is 0 (Home screen)
-    );
-  }
-
-  // Helper method for desktop/tablet buttons
-  Widget _buildTextButton(BuildContext context, String label, IconData icon,
-      int index, int currentIndex) {
-    final bool isSelected = index == currentIndex;
-    final Color color = isSelected
-        ? Theme.of(context).colorScheme.primary
-        : Theme.of(context).colorScheme.onSurface;
-    return TextButton.icon(
-      onPressed: () => _onTap(index),
-      icon: Icon(icon, color: color),
-      label: Text(
-        label,
-        style: TextStyle(color: color),
-      ),
-    );
-  }
-
-  // Helper method for mobile menu items
-  PopupMenuItem<int> _buildPopupMenuItem(BuildContext context, String label,
-      IconData icon, int index, int currentIndex) {
-    final bool isSelected = index == currentIndex;
-    return PopupMenuItem<int>(
-      value: index,
-      child: ListTile(
-        leading: Icon(icon,
-            color: isSelected ? Theme.of(context).colorScheme.primary : null),
-        title: Text(label,
-            style: TextStyle(
-                color:
-                    isSelected ? Theme.of(context).colorScheme.primary : null)),
-      ),
     );
   }
 }

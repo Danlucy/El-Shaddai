@@ -12,7 +12,7 @@ import 'package:util/util.dart';
 import 'package:web/web.dart' as web;
 import 'package:website/core/utility/new_tab.dart';
 import 'package:website/features/auth/controller/auth_controller.dart';
-import 'package:website/features/booking/controller/booking_controller.dart';
+import 'package:website/features/booking/controller/data_source.dart';
 
 import '../../../core/widgets/loader.dart';
 
@@ -246,14 +246,6 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
                         onViewChanged: (ViewChangedDetails details) {
                           // CRITICAL FIX: Don't update provider from daily dialog view changes
                           // This was causing the date to revert to today when dialog opened
-                          print(
-                              'Daily dialog view changed - NOT updating provider');
-
-                          // Only log for debugging, don't update the provider
-                          if (details.visibleDates.isNotEmpty) {
-                            final visibleDate = details.visibleDates.first;
-                            print('Daily dialog showing: $visibleDate');
-                          }
                         },
                         onLongPress: (CalendarLongPressDetails tapped) {
                           // Your existing long press logic here
@@ -265,9 +257,8 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
 
                           // Use the counter to determine the alternating color
                           final backgroundColor = _appointmentCounter % 2 == 0
-                              ? context.colors.primaryContainer.withOpacity(0.8)
-                              : context.colors.secondaryContainer
-                                  .withOpacity(0.8);
+                              ? context.colors.primaryContainer.withOpac(0.8)
+                              : context.colors.secondaryContainer.withOpac(0.8);
 
                           // Increment the counter for the next appointment
                           _appointmentCounter++;
@@ -288,8 +279,7 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
                                   color: backgroundColor,
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color:
-                                        context.colors.primary.withOpacity(0.3),
+                                    color: context.colors.primary.withOpac(0.3),
                                     width: 1,
                                   ),
                                 ),
@@ -350,7 +340,7 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
                                                       value: 24),
                                                 ]).value.toDouble(),
                                             color: context.colors.secondary
-                                                .withOpacity(0.8),
+                                                .withOpac(0.8),
                                           ),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
@@ -451,7 +441,7 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
                       Condition.between(start: 801, end: 1200, value: 16),
                       Condition.between(start: 1201, end: 3000, value: 20),
                     ]).value.toDouble(),
-                    color: context.colors.secondary.withOpacity(0.7),
+                    color: context.colors.secondary.withOpac(0.7),
                     fontStyle: FontStyle.italic,
                   ),
                 ),

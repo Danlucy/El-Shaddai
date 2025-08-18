@@ -13,12 +13,22 @@ class GlassmorphicButton extends StatefulWidget {
   final String text;
   final IconData? icon;
   final VoidCallback onPressed;
+  final BoxConstraints? constraints;
+
+  /// Custom border radius (defaults to 12 if not provided)
+  final double borderRadius;
+
+  /// Optional custom background colors for the blur
+  final List<Color>? backgroundColors;
 
   const GlassmorphicButton({
     Key? key,
     required this.text,
     required this.onPressed,
     this.icon,
+    this.constraints,
+    this.borderRadius = 12,
+    this.backgroundColors,
   }) : super(key: key);
 
   @override
@@ -30,36 +40,40 @@ class _GlassmorphicButtonState extends State<GlassmorphicButton> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = widget.backgroundColors ??
+        [
+          Colors.white.withOpacity(_isHovered ? 0.2 : 0.1),
+          Colors.white.withOpacity(_isHovered ? 0.15 : 0.05),
+        ];
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GlassmorphicContainer(
+        constraints: widget.constraints,
         width: 300,
         height: 60,
-        borderRadius: 12,
+        borderRadius: widget.borderRadius,
         blur: 10,
         alignment: Alignment.center,
         border: 2,
         linearGradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withOpac(_isHovered ? 0.2 : 0.1),
-            Colors.white.withOpac(_isHovered ? 0.15 : 0.05),
-          ],
+          colors: colors,
           stops: const [0.1, 1],
         ),
         borderGradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white.withOpac(_isHovered ? 0.8 : 0.5),
-            Colors.white.withOpac(_isHovered ? 0.8 : 0.5),
+            Colors.white.withOpacity(_isHovered ? 0.8 : 0.5),
+            Colors.white.withOpacity(_isHovered ? 0.8 : 0.5),
           ],
         ),
         child: InkWell(
           onTap: widget.onPressed,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -90,7 +104,12 @@ class _GlassmorphicButtonState extends State<GlassmorphicButton> {
 }
 
 class DownloadButtons extends StatefulWidget {
-  const DownloadButtons({Key? key}) : super(key: key);
+  final double borderRadius; // 👈 new
+
+  const DownloadButtons({
+    Key? key,
+    this.borderRadius = 30, // 👈 default
+  }) : super(key: key);
 
   @override
   State<DownloadButtons> createState() => _DownloadButtonsState();
@@ -107,7 +126,7 @@ class _DownloadButtonsState extends State<DownloadButtons> {
       child: GlassmorphicContainer(
         width: 350,
         height: 60,
-        borderRadius: 30,
+        borderRadius: widget.borderRadius, // 👈 use param
         blur: 10,
         border: 1,
         alignment: Alignment.center,
@@ -136,14 +155,14 @@ class _DownloadButtonsState extends State<DownloadButtons> {
                 onEnter: (_) => setState(() => isHoveredGoogle = true),
                 onExit: (_) => setState(() => isHoveredGoogle = false),
                 child: InkWell(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    bottomLeft: Radius.circular(30),
-                  ),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(widget.borderRadius),
+                    bottomLeft: Radius.circular(widget.borderRadius),
+                  ), // 👈 use param
                   onTap: () => launchURL(googleAppURL),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    width: double.infinity, // fill the whole half
+                    width: double.infinity,
                     height: double.infinity,
                     decoration: BoxDecoration(
                       color: isHoveredGoogle
@@ -158,18 +177,15 @@ class _DownloadButtonsState extends State<DownloadButtons> {
                               ),
                             ]
                           : [],
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        bottomLeft: Radius.circular(30),
-                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(widget.borderRadius),
+                        bottomLeft: Radius.circular(widget.borderRadius),
+                      ), // 👈 use param
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset(
-                          'assets/logo/google_play.png',
-                          height: 24,
-                        ),
+                        Image.asset('assets/logo/google_play.png', height: 24),
                         const SizedBox(width: 8),
                         const Text(
                           'Google Play',
@@ -195,10 +211,10 @@ class _DownloadButtonsState extends State<DownloadButtons> {
                 onEnter: (_) => setState(() => isHoveredApple = true),
                 onExit: (_) => setState(() => isHoveredApple = false),
                 child: InkWell(
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(widget.borderRadius),
+                    bottomRight: Radius.circular(widget.borderRadius),
+                  ), // 👈 use param
                   onTap: () => launchURL(appleAppURL),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
@@ -217,18 +233,15 @@ class _DownloadButtonsState extends State<DownloadButtons> {
                               ),
                             ]
                           : [],
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(30),
-                        bottomRight: Radius.circular(30),
-                      ),
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(widget.borderRadius),
+                        bottomRight: Radius.circular(widget.borderRadius),
+                      ), // 👈 use param
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset(
-                          'assets/logo/apple_store.png',
-                          height: 24,
-                        ),
+                        Image.asset('assets/logo/apple_store.png', height: 24),
                         const SizedBox(width: 8),
                         const Text(
                           'App Store',
