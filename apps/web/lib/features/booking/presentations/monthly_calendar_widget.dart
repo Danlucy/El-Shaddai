@@ -69,7 +69,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
 
   // Centralized method to update calendar controller
   void _updateCalendarController(DateTime date) {
-    print('Updating calendar controller to: $date');
     _isUpdatingFromProvider = true;
 
     // Only update if the date is actually different to prevent unnecessary updates
@@ -199,12 +198,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
   @override
   Widget build(BuildContext context) {
     final selectedDate = ref.watch(calendarDateNotifierProvider);
-    final screenWidth = MediaQuery.of(context).size.width;
 
     // Handle date changes from provider
     if (_previousSelectedDate != selectedDate) {
-      print(
-          'Selected date changed from $_previousSelectedDate to $selectedDate');
       _previousSelectedDate = selectedDate;
       _gradientAnimationController.reset();
       _gradientAnimationController.forward();
@@ -221,8 +217,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
     ref.listen(
       calendarDateNotifierProvider,
       (previous, next) {
-        print(
-            'Provider listener: $previous -> $next, isUpdating: $_isUpdatingFromProvider');
         if (!_isUpdatingFromProvider && previous != next && mounted) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
@@ -340,7 +334,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.grey.withOpacity(0.3),
+                            color: Colors.grey.withOpac(0.3),
                             width: 1,
                           ),
                         ),
@@ -367,8 +361,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                             // IMPORTANT: Handle calendar's internal selection changes
                             onSelectionChanged:
                                 (CalendarSelectionDetails details) {
-                              print(
-                                  'Calendar selection changed to: ${details.date}, isUpdating: $_isUpdatingFromProvider');
                               if (details.date != null &&
                                   !_isUpdatingFromProvider) {
                                 final normalizedDate = DateTime(
@@ -377,8 +369,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                   details.date!.day,
                                 );
 
-                                print(
-                                    'Updating provider from calendar selection: $normalizedDate');
                                 // Use Future.microtask to delay provider update
                                 Future.microtask(() {
                                   ref
@@ -390,11 +380,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                             },
 
                             // Handle view changes (month navigation)
-                            onViewChanged: (ViewChangedDetails details) {
-                              print('View changed: ${details.visibleDates}');
-                              // IMPORTANT: Don't update selected date on view changes
-                              // This was causing the calendar to revert to today's date
-                            },
 
                             monthViewSettings: const MonthViewSettings(
                               appointmentDisplayCount: 0,
@@ -464,8 +449,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                   ),
                                   child: GestureDetector(
                                     onDoubleTap: () {
-                                      print('Double tap on: ${details.date}');
-
                                       final normalizedDate = DateTime(
                                         details.date.year,
                                         details.date.month,
@@ -487,8 +470,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                       });
                                     },
                                     onTap: () {
-                                      print('Tap on: ${details.date}');
-
                                       final normalizedDate = DateTime(
                                         details.date.year,
                                         details.date.month,

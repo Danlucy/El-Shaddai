@@ -54,8 +54,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.white.withOpacity(0.2),
-                    Colors.white.withOpacity(0.1),
+                    Colors.white.withOpac(0.2),
+                    Colors.white.withOpac(0.1),
                   ],
                   stops: const [0.1, 1],
                 ),
@@ -65,8 +65,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.white.withOpacity(0.5),
-                    Colors.white.withOpacity(0.5),
+                    Colors.white.withOpac(0.5),
+                    Colors.white.withOpac(0.5),
                   ],
                 ),
                 child: Padding(
@@ -97,7 +97,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 gradient: LinearGradient(
                   colors: [
-                    Colors.white.withOpacity(0.15),
+                    Colors.white.withOpac(0.15),
                     Colors.transparent,
                   ],
                   begin: Alignment.topCenter,

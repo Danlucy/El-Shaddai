@@ -1,3 +1,4 @@
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedBackground extends StatefulWidget {
@@ -66,9 +67,9 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
             center: Alignment.topLeft,
             radius: 2.0,
             colors: [
-              widget.surfaceColor.withOpacity(0.7),
+              widget.surfaceColor.withOpac(0.7),
               widget.surfaceColor,
-              widget.surfaceColor.withOpacity(0.9),
+              widget.surfaceColor.withOpac(0.9),
             ],
             stops: const [0.0, 0.6, 1.0],
           ),
@@ -80,16 +81,16 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
               end: Alignment.bottomLeft,
               colors: [
                 Colors.transparent,
-                widget.secondaryColor.withOpacity(0.03),
+                widget.secondaryColor.withOpac(0.03),
                 Colors.transparent,
-                widget.secondaryColor.withOpacity(0.05),
+                widget.secondaryColor.withOpac(0.05),
               ],
               stops: const [0.0, 0.3, 0.7, 1.0],
             ),
           ),
           child: CustomPaint(
             painter: BackgroundPatternPainter(
-              color: widget.secondaryColor.withOpacity(0.08),
+              color: widget.secondaryColor.withOpac(0.08),
               animationValue: _patternAnimation,
             ),
             child: widget.child,

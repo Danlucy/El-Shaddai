@@ -36,6 +36,7 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
   Widget build(BuildContext context) {
     final user =
         ProviderScope.containerOf(context, listen: false).read(userProvider);
+    final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
 
     return GlassmorphicContainer(
       width: double.infinity,
@@ -62,7 +63,7 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: ResponsiveRowColumn(
-          layout: ResponsiveBreakpoints.of(context).largerThan(TABLET)
+          layout: isDesktop
               ? ResponsiveRowColumnType.ROW
               : ResponsiveRowColumnType.COLUMN,
           rowCrossAxisAlignment: CrossAxisAlignment.start,
@@ -75,16 +76,61 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
             ),
             ResponsiveRowColumnItem(
               rowFlex: 1,
-              child: _ParticipantsAndActionsColumn(
-                booking: widget.booking,
-                user: user,
-              ),
+              child: isDesktop
+                  ? GlassmorphicContainer(
+                      width: double.infinity,
+                      height: double.infinity, // fill row height
+                      borderRadius: 20,
+                      blur: 15,
+                      border: 2,
+                      linearGradient: _glassBg(context),
+                      borderGradient: _glassBorder(),
+                      child: _ParticipantsAndActionsColumn(
+                        booking: widget.booking,
+                        user: user,
+                      ),
+                    )
+                  : IntrinsicHeight(
+                      // shrink wrap on mobile
+                      child: GlassmorphicContainer(
+                        width: double.infinity,
+                        height: double
+                            .infinity, // still required, but IntrinsicHeight will shrink it
+                        borderRadius: 20,
+                        blur: 15,
+                        border: 2,
+                        linearGradient: _glassBg(context),
+                        borderGradient: _glassBorder(),
+                        child: _ParticipantsAndActionsColumn(
+                          booking: widget.booking,
+                          user: user,
+                        ),
+                      ),
+                    ),
             ),
           ],
         ),
       ),
     );
   }
+
+  LinearGradient _glassBg(BuildContext context) => LinearGradient(
+        colors: [
+          Theme.of(context).colorScheme.surface.withOpacity(0.1),
+          Theme.of(context).colorScheme.surface.withOpacity(0.05),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+
+  LinearGradient _glassBorder() => LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.8),
+          Colors.white.withOpacity(0.1),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 }
 
 // Helper Widget for the main details column
@@ -212,7 +258,7 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
       borderRadius: 16,
       blur: 20,
       alignment: Alignment.center,
-      border: 2,
+      border: 0,
       // 🔥 your original gradients unchanged
       linearGradient: LinearGradient(
         begin: Alignment.topLeft,
@@ -279,19 +325,34 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
                       icon: const Icon(Icons.key),
                       onPressed: () => showDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Meeting Password'),
-                          content: SelectableText(booking.password!),
-                          actions: [
-                            TextButton(
-                              child: const Text('Copy & Close'),
-                              onPressed: () {
-                                Clipboard.setData(
-                                    ClipboardData(text: booking.password!));
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
+                        builder: (context) => Dialog(
+                          child: GlassmorphicContainer(
+                              linearGradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.white.withOpac(0.2),
+                                  Colors.white.withOpac(0.1),
+                                ],
+                                stops: const [0.1, 1.0],
+                              ),
+                              borderGradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.white.withOpac(0.5),
+                                  Colors.white.withOpac(0.5),
+                                ],
+                              ),
+                              width: 350,
+                              height: 60,
+                              borderRadius: 16, // 👈 use param
+                              blur: 10,
+                              border: 1,
+                              child: Center(
+                                child: SelectableText(
+                                    booking.password ?? 'No Password'),
+                              )),
                         ),
                       ),
                     ),
@@ -348,7 +409,8 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
 
                         // ✅ Join button at the bottom of the list
                         if (user?.uid != booking.userId &&
-                            user?.role != UserRole.observer)
+                            user?.role != UserRole.observer &&
+                            user != null)
                           joinButton(
                               user, isJoined, participationFunction, context),
                       ],

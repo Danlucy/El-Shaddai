@@ -49,9 +49,11 @@ class BookingDetailsScreen extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: Center(
-                        child: SizedBox(
-                          width: 1200,
-                          height: MediaQuery.sizeOf(context).height * 0.85,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 1200,
+                            maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+                          ),
                           child: BookingDetailsContent(booking: booking),
                         ),
                       ),
