@@ -42,8 +42,8 @@ class _GlassmorphicButtonState extends State<GlassmorphicButton> {
   Widget build(BuildContext context) {
     final colors = widget.backgroundColors ??
         [
-          Colors.white.withOpacity(_isHovered ? 0.2 : 0.1),
-          Colors.white.withOpacity(_isHovered ? 0.15 : 0.05),
+          Colors.white.withOpac(_isHovered ? 0.2 : 0.1),
+          Colors.white.withOpac(_isHovered ? 0.15 : 0.05),
         ];
 
     return MouseRegion(
@@ -67,8 +67,8 @@ class _GlassmorphicButtonState extends State<GlassmorphicButton> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white.withOpacity(_isHovered ? 0.8 : 0.5),
-            Colors.white.withOpacity(_isHovered ? 0.8 : 0.5),
+            Colors.white.withOpac(_isHovered ? 0.8 : 0.5),
+            Colors.white.withOpac(_isHovered ? 0.8 : 0.5),
           ],
         ),
         child: InkWell(

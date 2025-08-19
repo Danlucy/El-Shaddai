@@ -36,12 +36,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const BookingScreen(),
               ),
               GoRoute(
-                path: '/booking/list',
-                builder: (context, state) {
-                  return BookingListScreen();
-                },
-              ),
-              GoRoute(
                 path: '/booking/:id', // The path with the ID parameter
                 builder: (context, state) {
                   // Extract the 'id' parameter from the URL
@@ -52,6 +46,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/list',
+              builder: (context, state) {
+                return BookingListScreen();
+              },
+            ),
+          ])
         ],
       ),
     ],

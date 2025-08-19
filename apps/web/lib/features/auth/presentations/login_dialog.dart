@@ -1,3 +1,4 @@
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -34,16 +35,16 @@ class _GlassLoginDialogState extends ConsumerState<GlassLoginDialog> {
         border: 2,
         linearGradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.surface.withOpacity(0.1),
-            Theme.of(context).colorScheme.surface.withOpacity(0.05),
+            Theme.of(context).colorScheme.surface.withOpac(0.1),
+            Theme.of(context).colorScheme.surface.withOpac(0.05),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderGradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+            Theme.of(context).colorScheme.onSurface.withOpac(0.2),
+            Theme.of(context).colorScheme.onSurface.withOpac(0.2),
           ],
         ),
         child: Padding(

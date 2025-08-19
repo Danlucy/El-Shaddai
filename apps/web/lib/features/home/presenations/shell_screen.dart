@@ -16,10 +16,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
   void _onTap(int index) {
-    navigationShell.goBranch(
-      index,
-      initialLocation: true,
-    );
+    navigationShell.goBranch(index, initialLocation: true);
   }
 
   @override
@@ -27,6 +24,8 @@ class ScaffoldWithNavBar extends ConsumerWidget {
     final userName =
         ref.watch(userProvider)?.lastName ?? ref.watch(userProvider)?.name;
     final int currentIndex = navigationShell.currentIndex;
+    final String currentLocation =
+        navigationShell.shellRouteContext.routerState.uri.toString();
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -36,65 +35,62 @@ class ScaffoldWithNavBar extends ConsumerWidget {
         elevation: 0,
         // ✅ Replace plain IconButton with PopupMenuButton
         leading: PopupMenuButton<String>(
-          icon: const Icon(Icons.menu_sharp),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-            ),
-          ),
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.85),
-          position: PopupMenuPosition.under,
           onSelected: (String value) {
-            context.go(value);
+            // Use navigationShell instead of context.go()
+            switch (value) {
+              case '/':
+                navigationShell.goBranch(0);
+                break;
+              case '/booking':
+                navigationShell.goBranch(1);
+                break;
+              case '/list':
+                navigationShell.goBranch(2);
+                // This one can use context.go since it's in the same branch
+                break;
+            }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
             PopupMenuItem<String>(
               value: '/',
               child: ListTile(
                 leading: Icon(Icons.home,
-                    color: currentIndex == 0
+                    color: currentLocation == '/'
                         ? Theme.of(context).colorScheme.primary
                         : null),
-                title: Text(
-                  'Home',
-                  style: TextStyle(
-                      color: currentIndex == 0
-                          ? Theme.of(context).colorScheme.primary
-                          : null),
-                ),
+                title: Text('Home',
+                    style: TextStyle(
+                        color: currentLocation == '/'
+                            ? Theme.of(context).colorScheme.primary
+                            : null)),
               ),
             ),
             PopupMenuItem<String>(
               value: '/booking',
               child: ListTile(
                 leading: Icon(Icons.calendar_today,
-                    color: currentIndex == 1
+                    color: currentLocation == '/booking'
                         ? Theme.of(context).colorScheme.primary
                         : null),
-                title: Text(
-                  'Event Calendar',
-                  style: TextStyle(
-                      color: currentIndex == 1
-                          ? Theme.of(context).colorScheme.primary
-                          : null),
-                ),
+                title: Text('Event Calendar',
+                    style: TextStyle(
+                        color: currentLocation == '/booking'
+                            ? Theme.of(context).colorScheme.primary
+                            : null)),
               ),
             ),
             PopupMenuItem<String>(
-              value: '/booking/list',
+              value: '/list',
               child: ListTile(
                 leading: Icon(Icons.list,
-                    color: currentIndex == 2
+                    color: currentLocation == '/list'
                         ? Theme.of(context).colorScheme.primary
                         : null),
-                title: Text(
-                  'Booking List',
-                  style: TextStyle(
-                      color: currentIndex == 2
-                          ? Theme.of(context).colorScheme.primary
-                          : null),
-                ),
+                title: Text('Booking List',
+                    style: TextStyle(
+                        color: currentLocation == '/list'
+                            ? Theme.of(context).colorScheme.primary
+                            : null)),
               ),
             ),
           ],
@@ -130,7 +126,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 4),
             child: GlassmorphicButton(
               constraints: const BoxConstraints(maxWidth: 180),
-              text: '${userName == null ? 'Log In' : 'Log Out'}',
+              text: userName == null ? 'Log In' : 'Log Out',
               onPressed: () {
                 showDialog(
                   context: context,

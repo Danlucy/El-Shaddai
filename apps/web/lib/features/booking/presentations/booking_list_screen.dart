@@ -5,6 +5,7 @@ import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
@@ -57,7 +58,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
   Widget build(BuildContext context) {
     final bookingStream = ref.watch(bookingStreamProvider());
     final selectedBookingId = ref.watch(selectedBookingIDNotifierProvider);
-
+    final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: AnimatedBackground(
@@ -75,8 +76,8 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                 border: 2,
                 linearGradient: LinearGradient(
                   colors: [
-                    Theme.of(context).colorScheme.surface.withOpacity(0.1),
-                    Theme.of(context).colorScheme.surface.withOpacity(0.05),
+                    Theme.of(context).colorScheme.surface.withOpac(0.1),
+                    Theme.of(context).colorScheme.surface.withOpac(0.05),
                   ],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
@@ -85,8 +86,8 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                   colors: [
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                    Theme.of(context).colorScheme.onSurface.withOpac(0.2),
+                    Theme.of(context).colorScheme.onSurface.withOpac(0.2),
                     Colors.transparent
                   ],
                 ),
@@ -114,32 +115,34 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                         selectedBooking = bookings.first;
                       }
 
-                      return ResponsiveRowColumn(
-                        layout:
-                            ResponsiveBreakpoints.of(context).largerThan(TABLET)
-                                ? ResponsiveRowColumnType.ROW
-                                : ResponsiveRowColumnType.COLUMN,
-                        rowCrossAxisAlignment: CrossAxisAlignment.start,
-                        rowSpacing: 24,
-                        children: [
-                          // Left Column: Booking List
-                          ResponsiveRowColumnItem(
-                            rowFlex: 1,
-                            child: _BookingList(bookings: bookings),
-                          ),
-                          // Right Column: Booking Details
-                          ResponsiveRowColumnItem(
-                            rowFlex: 2,
-                            child: selectedBooking != null
-                                ? BookingDetailsContent(
-                                    booking: selectedBooking)
-                                : const Center(
-                                    child: Text(
-                                        'Select a booking to see details.'),
-                                  ),
-                          ),
-                        ],
-                      );
+                      if (isDesktop) {
+                        return ResponsiveRowColumn(
+                          layout: ResponsiveRowColumnType.ROW,
+                          rowCrossAxisAlignment: CrossAxisAlignment.start,
+                          rowSpacing: 24,
+                          children: [
+                            // Left Column: Booking List
+                            ResponsiveRowColumnItem(
+                              rowFlex: 1,
+                              child: _BookingList(bookings: bookings),
+                            ),
+                            // Right Column: Booking Details
+                            ResponsiveRowColumnItem(
+                              rowFlex: 2,
+                              child: selectedBooking != null
+                                  ? BookingDetailsContent(
+                                      booking: selectedBooking)
+                                  : const Center(
+                                      child: Text(
+                                          'Select a booking to see details.'),
+                                    ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        // On mobile, only show the list
+                        return _BookingList(bookings: bookings);
+                      }
                     },
                     loading: () => const Center(child: Loader()),
                     error: (e, s) =>
@@ -164,6 +167,7 @@ class _BookingList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final today = DateTime.now();
     final selectedBookingId = ref.watch(selectedBookingIDNotifierProvider);
+    final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,8 +204,8 @@ class _BookingList extends ConsumerWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.white.withOpacity(0.2),
-                    Colors.white.withOpacity(0.05),
+                    Colors.white.withOpac(0.2),
+                    Colors.white.withOpac(0.05),
                   ],
                   stops: const [0.1, 1],
                 ),
@@ -209,8 +213,8 @@ class _BookingList extends ConsumerWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.white.withOpacity(0.5),
-                    Colors.white.withOpacity(0.5),
+                    Colors.white.withOpac(0.5),
+                    Colors.white.withOpac(0.5),
                   ],
                 ),
                 width: double.infinity,
@@ -258,10 +262,7 @@ class _BookingList extends ConsumerWidget {
               final isSelected = booking.id == selectedBookingId;
 
               final Color color = isLive
-                  ? Theme.of(context)
-                      .colorScheme
-                      .errorContainer
-                      .withOpacity(0.4)
+                  ? Theme.of(context).colorScheme.errorContainer.withOpac(0.4)
                   : isUpcoming
                       ? Theme.of(context).colorScheme.tertiaryContainer
                       : isPast
@@ -273,38 +274,56 @@ class _BookingList extends ConsumerWidget {
 
               return GestureDetector(
                 onTap: () {
-                  ref
-                      .read(selectedBookingIDNotifierProvider.notifier)
-                      .updateID(booking.id);
+                  if (isDesktop) {
+                    ref
+                        .read(selectedBookingIDNotifierProvider.notifier)
+                        .updateID(booking.id);
+                  } else {
+                    context.go('/booking/${booking.id}');
+                  }
                 },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.symmetric(vertical: 4),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(12),
-                    border: isSelected
-                        ? Border.all(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2)
-                        : null,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AutoSizeText(
-                        booking.title,
-                        maxLines: 1,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      Text(
-                        '${DateFormat.jm().format(booking.timeRange.start)} - ${DateFormat.jm().format(booking.timeRange.end)}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
+                child: Material(
+                  elevation: isSelected && isDesktop ? 8 : 2,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white.withOpac((isSelected && isDesktop)
+                              ? 0.4
+                              : 0.15), // Light color for the glow
+                          spreadRadius: 1, // How much the box shadow expands
+                          blurRadius: 7, // How diffused the shadow is
+                          offset: const Offset(
+                              0, 4), // Shadow position (x, y) - slightly below
+                        ),
+                      ],
+                      color: color,
+                      borderRadius: BorderRadius.circular(12),
+                      border: isSelected
+                          ? Border.all(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 2)
+                          : null,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AutoSizeText(
+                          booking.title,
+                          maxLines: 1,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        Text(
+                          '${DateFormat.jm().format(booking.timeRange.start)} - ${DateFormat.jm().format(booking.timeRange.end)}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
