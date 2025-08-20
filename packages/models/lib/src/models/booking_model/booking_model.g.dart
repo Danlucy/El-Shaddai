@@ -6,8 +6,8 @@ part of 'booking_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$BookingModelImpl _$$BookingModelImplFromJson(Map<String, dynamic> json) =>
-    _$BookingModelImpl(
+_BookingModel _$BookingModelFromJson(Map<String, dynamic> json) =>
+    _BookingModel(
       title: json['title'] as String,
       recurrenceState:
           $enumDecode(_$RecurrenceStateEnumMap, json['recurrenceState']),
@@ -26,7 +26,7 @@ _$BookingModelImpl _$$BookingModelImplFromJson(Map<String, dynamic> json) =>
           const RecurrenceConfigurationConverter().fromJson),
     );
 
-Map<String, dynamic> _$$BookingModelImplToJson(_$BookingModelImpl instance) =>
+Map<String, dynamic> _$BookingModelToJson(_BookingModel instance) =>
     <String, dynamic>{
       'title': instance.title,
       'recurrenceState': _$RecurrenceStateEnumMap[instance.recurrenceState]!,

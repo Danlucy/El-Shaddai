@@ -6,8 +6,8 @@ part of 'booking_state.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$BookingStateImpl _$$BookingStateImplFromJson(Map<String, dynamic> json) =>
-    _$BookingStateImpl(
+_BookingState _$BookingStateFromJson(Map<String, dynamic> json) =>
+    _BookingState(
       timeRange:
           _$JsonConverterFromJson<Map<String, dynamic>, CustomDateTimeRange>(
               json['timeRange'], const CustomDateTimeRangeConverter().fromJson),
@@ -24,7 +24,7 @@ _$BookingStateImpl _$$BookingStateImplFromJson(Map<String, dynamic> json) =>
       recurrenceFrequency: (json['recurrenceFrequency'] as num?)?.toInt() ?? 2,
     );
 
-Map<String, dynamic> _$$BookingStateImplToJson(_$BookingStateImpl instance) =>
+Map<String, dynamic> _$BookingStateToJson(_BookingState instance) =>
     <String, dynamic>{
       'timeRange':
           _$JsonConverterToJson<Map<String, dynamic>, CustomDateTimeRange>(

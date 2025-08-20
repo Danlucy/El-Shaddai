@@ -6,174 +6,102 @@ part of 'participant_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$participantControllerHash() =>
-    r'7e96b7c3eb21172bc8b5cea2cdcb8f085944ec62';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$ParticipantController
-    extends BuildlessAutoDisposeNotifier<ParticipantState> {
-  late final String bookingId;
-
-  ParticipantState build(
-    String bookingId,
-  );
-}
-
-/// See also [ParticipantController].
 @ProviderFor(ParticipantController)
-const participantControllerProvider = ParticipantControllerFamily();
+const participantControllerProvider = ParticipantControllerFamily._();
 
-/// See also [ParticipantController].
-class ParticipantControllerFamily extends Family<ParticipantState> {
-  /// See also [ParticipantController].
-  const ParticipantControllerFamily();
-
-  /// See also [ParticipantController].
-  ParticipantControllerProvider call(
-    String bookingId,
-  ) {
-    return ParticipantControllerProvider(
-      bookingId,
-    );
-  }
-
-  @override
-  ParticipantControllerProvider getProviderOverride(
-    covariant ParticipantControllerProvider provider,
-  ) {
-    return call(
-      provider.bookingId,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'participantControllerProvider';
-}
-
-/// See also [ParticipantController].
-class ParticipantControllerProvider extends AutoDisposeNotifierProviderImpl<
-    ParticipantController, ParticipantState> {
-  /// See also [ParticipantController].
-  ParticipantControllerProvider(
-    String bookingId,
-  ) : this._internal(
-          () => ParticipantController()..bookingId = bookingId,
-          from: participantControllerProvider,
+final class ParticipantControllerProvider
+    extends $NotifierProvider<ParticipantController, ParticipantState> {
+  const ParticipantControllerProvider._(
+      {required ParticipantControllerFamily super.from,
+      required String super.argument})
+      : super(
+          retry: null,
           name: r'participantControllerProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$participantControllerHash,
-          dependencies: ParticipantControllerFamily._dependencies,
-          allTransitiveDependencies:
-              ParticipantControllerFamily._allTransitiveDependencies,
-          bookingId: bookingId,
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
         );
 
-  ParticipantControllerProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.bookingId,
-  }) : super.internal();
-
-  final String bookingId;
+  @override
+  String debugGetCreateSourceHash() => _$participantControllerHash();
 
   @override
-  ParticipantState runNotifierBuild(
-    covariant ParticipantController notifier,
-  ) {
-    return notifier.build(
-      bookingId,
-    );
+  String toString() {
+    return r'participantControllerProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  Override overrideWith(ParticipantController Function() create) {
-    return ProviderOverride(
+  ParticipantController create() => ParticipantController();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ParticipantState value) {
+    return $ProviderOverride(
       origin: this,
-      override: ParticipantControllerProvider._internal(
-        () => create()..bookingId = bookingId,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        bookingId: bookingId,
-      ),
+      providerOverride: $SyncValueProvider<ParticipantState>(value),
     );
-  }
-
-  @override
-  AutoDisposeNotifierProviderElement<ParticipantController, ParticipantState>
-      createElement() {
-    return _ParticipantControllerProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is ParticipantControllerProvider &&
-        other.bookingId == bookingId;
+    return other is ParticipantControllerProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, bookingId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin ParticipantControllerRef
-    on AutoDisposeNotifierProviderRef<ParticipantState> {
-  /// The parameter `bookingId` of this provider.
-  String get bookingId;
-}
+String _$participantControllerHash() =>
+    r'7e96b7c3eb21172bc8b5cea2cdcb8f085944ec62';
 
-class _ParticipantControllerProviderElement
-    extends AutoDisposeNotifierProviderElement<ParticipantController,
-        ParticipantState> with ParticipantControllerRef {
-  _ParticipantControllerProviderElement(super.provider);
+final class ParticipantControllerFamily extends $Family
+    with
+        $ClassFamilyOverride<ParticipantController, ParticipantState,
+            ParticipantState, ParticipantState, String> {
+  const ParticipantControllerFamily._()
+      : super(
+          retry: null,
+          name: r'participantControllerProvider',
+          dependencies: null,
+          $allTransitiveDependencies: null,
+          isAutoDispose: true,
+        );
+
+  ParticipantControllerProvider call(
+    String bookingId,
+  ) =>
+      ParticipantControllerProvider._(argument: bookingId, from: this);
 
   @override
-  String get bookingId => (origin as ParticipantControllerProvider).bookingId;
+  String toString() => r'participantControllerProvider';
 }
+
+abstract class _$ParticipantController extends $Notifier<ParticipantState> {
+  late final _$args = ref.$arg as String;
+  String get bookingId => _$args;
+
+  ParticipantState build(
+    String bookingId,
+  );
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(
+      _$args,
+    );
+    final ref = this.ref as $Ref<ParticipantState, ParticipantState>;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<ParticipantState, ParticipantState>,
+        ParticipantState,
+        Object?,
+        Object?>;
+    element.handleValue(ref, created);
+  }
+}
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

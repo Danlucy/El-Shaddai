@@ -6,155 +6,78 @@ part of 'booking_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bookingStreamHash() => r'9908978df0afcd8b4db74214ec562a9f262ed521';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// See also [bookingStream].
 @ProviderFor(bookingStream)
-const bookingStreamProvider = BookingStreamFamily();
+const bookingStreamProvider = BookingStreamFamily._();
 
-/// See also [bookingStream].
-class BookingStreamFamily extends Family<AsyncValue<dynamic>> {
-  /// See also [bookingStream].
-  const BookingStreamFamily();
-
-  /// See also [bookingStream].
-  BookingStreamProvider call({
-    String? bookingId,
-  }) {
-    return BookingStreamProvider(
-      bookingId: bookingId,
-    );
-  }
-
-  @override
-  BookingStreamProvider getProviderOverride(
-    covariant BookingStreamProvider provider,
-  ) {
-    return call(
-      bookingId: provider.bookingId,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'bookingStreamProvider';
-}
-
-/// See also [bookingStream].
-class BookingStreamProvider extends AutoDisposeStreamProvider<dynamic> {
-  /// See also [bookingStream].
-  BookingStreamProvider({
-    String? bookingId,
-  }) : this._internal(
-          (ref) => bookingStream(
-            ref as BookingStreamRef,
-            bookingId: bookingId,
-          ),
-          from: bookingStreamProvider,
+final class BookingStreamProvider
+    extends $FunctionalProvider<AsyncValue<dynamic>, dynamic, Stream<dynamic>>
+    with $FutureModifier<dynamic>, $StreamProvider<dynamic> {
+  const BookingStreamProvider._(
+      {required BookingStreamFamily super.from,
+      required String? super.argument})
+      : super(
+          retry: null,
           name: r'bookingStreamProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$bookingStreamHash,
-          dependencies: BookingStreamFamily._dependencies,
-          allTransitiveDependencies:
-              BookingStreamFamily._allTransitiveDependencies,
-          bookingId: bookingId,
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
         );
 
-  BookingStreamProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.bookingId,
-  }) : super.internal();
-
-  final String? bookingId;
+  @override
+  String debugGetCreateSourceHash() => _$bookingStreamHash();
 
   @override
-  Override overrideWith(
-    Stream<dynamic> Function(BookingStreamRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: BookingStreamProvider._internal(
-        (ref) => create(ref as BookingStreamRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        bookingId: bookingId,
-      ),
-    );
+  String toString() {
+    return r'bookingStreamProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  AutoDisposeStreamProviderElement<dynamic> createElement() {
-    return _BookingStreamProviderElement(this);
+  $StreamProviderElement<dynamic> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<dynamic> create(Ref ref) {
+    final argument = this.argument as String?;
+    return bookingStream(
+      ref,
+      bookingId: argument,
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is BookingStreamProvider && other.bookingId == bookingId;
+    return other is BookingStreamProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, bookingId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin BookingStreamRef on AutoDisposeStreamProviderRef<dynamic> {
-  /// The parameter `bookingId` of this provider.
-  String? get bookingId;
-}
+String _$bookingStreamHash() => r'9908978df0afcd8b4db74214ec562a9f262ed521';
 
-class _BookingStreamProviderElement
-    extends AutoDisposeStreamProviderElement<dynamic> with BookingStreamRef {
-  _BookingStreamProviderElement(super.provider);
+final class BookingStreamFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<dynamic>, String?> {
+  const BookingStreamFamily._()
+      : super(
+          retry: null,
+          name: r'bookingStreamProvider',
+          dependencies: null,
+          $allTransitiveDependencies: null,
+          isAutoDispose: true,
+        );
+
+  BookingStreamProvider call({
+    String? bookingId,
+  }) =>
+      BookingStreamProvider._(argument: bookingId, from: this);
 
   @override
-  String? get bookingId => (origin as BookingStreamProvider).bookingId;
+  String toString() => r'bookingStreamProvider';
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

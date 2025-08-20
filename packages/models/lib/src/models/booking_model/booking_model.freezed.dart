@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,315 +9,43 @@ part of 'booking_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-BookingModel _$BookingModelFromJson(Map<String, dynamic> json) {
-  return _BookingModel.fromJson(json);
-}
 
 /// @nodoc
 mixin _$BookingModel {
-  String get title => throw _privateConstructorUsedError;
+  String get title;
   @CustomDateTimeRangeConverter()
-  RecurrenceState get recurrenceState => throw _privateConstructorUsedError;
-  String get host => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  RecurrenceState get recurrenceState;
+  String get host;
+  DateTime get createdAt;
   @CustomDateTimeRangeConverter()
-  CustomDateTimeRange get timeRange => throw _privateConstructorUsedError;
-  String get userId => throw _privateConstructorUsedError;
-  String get id => throw _privateConstructorUsedError;
+  CustomDateTimeRange get timeRange;
+  String get userId;
+  String get id;
   @LocationDataConverter()
-  LocationData get location => throw _privateConstructorUsedError;
-  String get description => throw _privateConstructorUsedError;
-  String? get password => throw _privateConstructorUsedError;
+  LocationData get location;
+  String get description;
+  String? get password;
   @RecurrenceConfigurationConverter()
-  RecurrenceConfigurationModel? get recurrenceModel =>
-      throw _privateConstructorUsedError;
-
-  /// Serializes this BookingModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  RecurrenceConfigurationModel? get recurrenceModel;
 
   /// Create a copy of BookingModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
   $BookingModelCopyWith<BookingModel> get copyWith =>
-      throw _privateConstructorUsedError;
-}
+      _$BookingModelCopyWithImpl<BookingModel>(
+          this as BookingModel, _$identity);
 
-/// @nodoc
-abstract class $BookingModelCopyWith<$Res> {
-  factory $BookingModelCopyWith(
-          BookingModel value, $Res Function(BookingModel) then) =
-      _$BookingModelCopyWithImpl<$Res, BookingModel>;
-  @useResult
-  $Res call(
-      {String title,
-      @CustomDateTimeRangeConverter() RecurrenceState recurrenceState,
-      String host,
-      DateTime createdAt,
-      @CustomDateTimeRangeConverter() CustomDateTimeRange timeRange,
-      String userId,
-      String id,
-      @LocationDataConverter() LocationData location,
-      String description,
-      String? password,
-      @RecurrenceConfigurationConverter()
-      RecurrenceConfigurationModel? recurrenceModel});
-
-  $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceModel;
-}
-
-/// @nodoc
-class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
-    implements $BookingModelCopyWith<$Res> {
-  _$BookingModelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of BookingModel
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? recurrenceState = null,
-    Object? host = null,
-    Object? createdAt = null,
-    Object? timeRange = null,
-    Object? userId = null,
-    Object? id = null,
-    Object? location = null,
-    Object? description = null,
-    Object? password = freezed,
-    Object? recurrenceModel = freezed,
-  }) {
-    return _then(_value.copyWith(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      recurrenceState: null == recurrenceState
-          ? _value.recurrenceState
-          : recurrenceState // ignore: cast_nullable_to_non_nullable
-              as RecurrenceState,
-      host: null == host
-          ? _value.host
-          : host // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      timeRange: null == timeRange
-          ? _value.timeRange
-          : timeRange // ignore: cast_nullable_to_non_nullable
-              as CustomDateTimeRange,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      location: null == location
-          ? _value.location
-          : location // ignore: cast_nullable_to_non_nullable
-              as LocationData,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: freezed == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String?,
-      recurrenceModel: freezed == recurrenceModel
-          ? _value.recurrenceModel
-          : recurrenceModel // ignore: cast_nullable_to_non_nullable
-              as RecurrenceConfigurationModel?,
-    ) as $Val);
-  }
-
-  /// Create a copy of BookingModel
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceModel {
-    if (_value.recurrenceModel == null) {
-      return null;
-    }
-
-    return $RecurrenceConfigurationModelCopyWith<$Res>(_value.recurrenceModel!,
-        (value) {
-      return _then(_value.copyWith(recurrenceModel: value) as $Val);
-    });
-  }
-}
-
-/// @nodoc
-abstract class _$$BookingModelImplCopyWith<$Res>
-    implements $BookingModelCopyWith<$Res> {
-  factory _$$BookingModelImplCopyWith(
-          _$BookingModelImpl value, $Res Function(_$BookingModelImpl) then) =
-      __$$BookingModelImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String title,
-      @CustomDateTimeRangeConverter() RecurrenceState recurrenceState,
-      String host,
-      DateTime createdAt,
-      @CustomDateTimeRangeConverter() CustomDateTimeRange timeRange,
-      String userId,
-      String id,
-      @LocationDataConverter() LocationData location,
-      String description,
-      String? password,
-      @RecurrenceConfigurationConverter()
-      RecurrenceConfigurationModel? recurrenceModel});
-
-  @override
-  $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceModel;
-}
-
-/// @nodoc
-class __$$BookingModelImplCopyWithImpl<$Res>
-    extends _$BookingModelCopyWithImpl<$Res, _$BookingModelImpl>
-    implements _$$BookingModelImplCopyWith<$Res> {
-  __$$BookingModelImplCopyWithImpl(
-      _$BookingModelImpl _value, $Res Function(_$BookingModelImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of BookingModel
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? recurrenceState = null,
-    Object? host = null,
-    Object? createdAt = null,
-    Object? timeRange = null,
-    Object? userId = null,
-    Object? id = null,
-    Object? location = null,
-    Object? description = null,
-    Object? password = freezed,
-    Object? recurrenceModel = freezed,
-  }) {
-    return _then(_$BookingModelImpl(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      recurrenceState: null == recurrenceState
-          ? _value.recurrenceState
-          : recurrenceState // ignore: cast_nullable_to_non_nullable
-              as RecurrenceState,
-      host: null == host
-          ? _value.host
-          : host // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      timeRange: null == timeRange
-          ? _value.timeRange
-          : timeRange // ignore: cast_nullable_to_non_nullable
-              as CustomDateTimeRange,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      location: null == location
-          ? _value.location
-          : location // ignore: cast_nullable_to_non_nullable
-              as LocationData,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: freezed == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String?,
-      recurrenceModel: freezed == recurrenceModel
-          ? _value.recurrenceModel
-          : recurrenceModel // ignore: cast_nullable_to_non_nullable
-              as RecurrenceConfigurationModel?,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$BookingModelImpl extends _BookingModel {
-  const _$BookingModelImpl(
-      {required this.title,
-      @CustomDateTimeRangeConverter() required this.recurrenceState,
-      required this.host,
-      required this.createdAt,
-      @CustomDateTimeRangeConverter() required this.timeRange,
-      required this.userId,
-      required this.id,
-      @LocationDataConverter() required this.location,
-      required this.description,
-      this.password,
-      @RecurrenceConfigurationConverter() this.recurrenceModel})
-      : super._();
-
-  factory _$BookingModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$BookingModelImplFromJson(json);
-
-  @override
-  final String title;
-  @override
-  @CustomDateTimeRangeConverter()
-  final RecurrenceState recurrenceState;
-  @override
-  final String host;
-  @override
-  final DateTime createdAt;
-  @override
-  @CustomDateTimeRangeConverter()
-  final CustomDateTimeRange timeRange;
-  @override
-  final String userId;
-  @override
-  final String id;
-  @override
-  @LocationDataConverter()
-  final LocationData location;
-  @override
-  final String description;
-  @override
-  final String? password;
-  @override
-  @RecurrenceConfigurationConverter()
-  final RecurrenceConfigurationModel? recurrenceModel;
-
-  @override
-  String toString() {
-    return 'BookingModel(title: $title, recurrenceState: $recurrenceState, host: $host, createdAt: $createdAt, timeRange: $timeRange, userId: $userId, id: $id, location: $location, description: $description, password: $password, recurrenceModel: $recurrenceModel)';
-  }
+  /// Serializes this BookingModel to a JSON map.
+  Map<String, dynamic> toJson();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$BookingModelImpl &&
+            other is BookingModel &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.recurrenceState, recurrenceState) ||
                 other.recurrenceState == recurrenceState) &&
@@ -354,75 +82,573 @@ class _$BookingModelImpl extends _BookingModel {
       password,
       recurrenceModel);
 
-  /// Create a copy of BookingModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  @pragma('vm:prefer-inline')
-  _$$BookingModelImplCopyWith<_$BookingModelImpl> get copyWith =>
-      __$$BookingModelImplCopyWithImpl<_$BookingModelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$BookingModelImplToJson(
-      this,
-    );
+  String toString() {
+    return 'BookingModel(title: $title, recurrenceState: $recurrenceState, host: $host, createdAt: $createdAt, timeRange: $timeRange, userId: $userId, id: $id, location: $location, description: $description, password: $password, recurrenceModel: $recurrenceModel)';
   }
 }
 
-abstract class _BookingModel extends BookingModel {
-  const factory _BookingModel(
-          {required final String title,
-          @CustomDateTimeRangeConverter()
-          required final RecurrenceState recurrenceState,
-          required final String host,
-          required final DateTime createdAt,
-          @CustomDateTimeRangeConverter()
-          required final CustomDateTimeRange timeRange,
-          required final String userId,
-          required final String id,
-          @LocationDataConverter() required final LocationData location,
-          required final String description,
-          final String? password,
-          @RecurrenceConfigurationConverter()
-          final RecurrenceConfigurationModel? recurrenceModel}) =
-      _$BookingModelImpl;
-  const _BookingModel._() : super._();
+/// @nodoc
+abstract mixin class $BookingModelCopyWith<$Res> {
+  factory $BookingModelCopyWith(
+          BookingModel value, $Res Function(BookingModel) _then) =
+      _$BookingModelCopyWithImpl;
+  @useResult
+  $Res call(
+      {String title,
+      @CustomDateTimeRangeConverter() RecurrenceState recurrenceState,
+      String host,
+      DateTime createdAt,
+      @CustomDateTimeRangeConverter() CustomDateTimeRange timeRange,
+      String userId,
+      String id,
+      @LocationDataConverter() LocationData location,
+      String description,
+      String? password,
+      @RecurrenceConfigurationConverter()
+      RecurrenceConfigurationModel? recurrenceModel});
 
-  factory _BookingModel.fromJson(Map<String, dynamic> json) =
-      _$BookingModelImpl.fromJson;
+  $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceModel;
+}
+
+/// @nodoc
+class _$BookingModelCopyWithImpl<$Res> implements $BookingModelCopyWith<$Res> {
+  _$BookingModelCopyWithImpl(this._self, this._then);
+
+  final BookingModel _self;
+  final $Res Function(BookingModel) _then;
+
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? title = null,
+    Object? recurrenceState = null,
+    Object? host = null,
+    Object? createdAt = null,
+    Object? timeRange = null,
+    Object? userId = null,
+    Object? id = null,
+    Object? location = null,
+    Object? description = null,
+    Object? password = freezed,
+    Object? recurrenceModel = freezed,
+  }) {
+    return _then(_self.copyWith(
+      title: null == title
+          ? _self.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      recurrenceState: null == recurrenceState
+          ? _self.recurrenceState
+          : recurrenceState // ignore: cast_nullable_to_non_nullable
+              as RecurrenceState,
+      host: null == host
+          ? _self.host
+          : host // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _self.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      timeRange: null == timeRange
+          ? _self.timeRange
+          : timeRange // ignore: cast_nullable_to_non_nullable
+              as CustomDateTimeRange,
+      userId: null == userId
+          ? _self.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      id: null == id
+          ? _self.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      location: null == location
+          ? _self.location
+          : location // ignore: cast_nullable_to_non_nullable
+              as LocationData,
+      description: null == description
+          ? _self.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      password: freezed == password
+          ? _self.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String?,
+      recurrenceModel: freezed == recurrenceModel
+          ? _self.recurrenceModel
+          : recurrenceModel // ignore: cast_nullable_to_non_nullable
+              as RecurrenceConfigurationModel?,
+    ));
+  }
+
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceModel {
+    if (_self.recurrenceModel == null) {
+      return null;
+    }
+
+    return $RecurrenceConfigurationModelCopyWith<$Res>(_self.recurrenceModel!,
+        (value) {
+      return _then(_self.copyWith(recurrenceModel: value));
+    });
+  }
+}
+
+/// Adds pattern-matching-related methods to [BookingModel].
+extension BookingModelPatterns on BookingModel {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_BookingModel value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _BookingModel() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_BookingModel value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _BookingModel():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_BookingModel value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _BookingModel() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            String title,
+            @CustomDateTimeRangeConverter() RecurrenceState recurrenceState,
+            String host,
+            DateTime createdAt,
+            @CustomDateTimeRangeConverter() CustomDateTimeRange timeRange,
+            String userId,
+            String id,
+            @LocationDataConverter() LocationData location,
+            String description,
+            String? password,
+            @RecurrenceConfigurationConverter()
+            RecurrenceConfigurationModel? recurrenceModel)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _BookingModel() when $default != null:
+        return $default(
+            _that.title,
+            _that.recurrenceState,
+            _that.host,
+            _that.createdAt,
+            _that.timeRange,
+            _that.userId,
+            _that.id,
+            _that.location,
+            _that.description,
+            _that.password,
+            _that.recurrenceModel);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            String title,
+            @CustomDateTimeRangeConverter() RecurrenceState recurrenceState,
+            String host,
+            DateTime createdAt,
+            @CustomDateTimeRangeConverter() CustomDateTimeRange timeRange,
+            String userId,
+            String id,
+            @LocationDataConverter() LocationData location,
+            String description,
+            String? password,
+            @RecurrenceConfigurationConverter()
+            RecurrenceConfigurationModel? recurrenceModel)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _BookingModel():
+        return $default(
+            _that.title,
+            _that.recurrenceState,
+            _that.host,
+            _that.createdAt,
+            _that.timeRange,
+            _that.userId,
+            _that.id,
+            _that.location,
+            _that.description,
+            _that.password,
+            _that.recurrenceModel);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            String title,
+            @CustomDateTimeRangeConverter() RecurrenceState recurrenceState,
+            String host,
+            DateTime createdAt,
+            @CustomDateTimeRangeConverter() CustomDateTimeRange timeRange,
+            String userId,
+            String id,
+            @LocationDataConverter() LocationData location,
+            String description,
+            String? password,
+            @RecurrenceConfigurationConverter()
+            RecurrenceConfigurationModel? recurrenceModel)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _BookingModel() when $default != null:
+        return $default(
+            _that.title,
+            _that.recurrenceState,
+            _that.host,
+            _that.createdAt,
+            _that.timeRange,
+            _that.userId,
+            _that.id,
+            _that.location,
+            _that.description,
+            _that.password,
+            _that.recurrenceModel);
+      case _:
+        return null;
+    }
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _BookingModel extends BookingModel {
+  const _BookingModel(
+      {required this.title,
+      @CustomDateTimeRangeConverter() required this.recurrenceState,
+      required this.host,
+      required this.createdAt,
+      @CustomDateTimeRangeConverter() required this.timeRange,
+      required this.userId,
+      required this.id,
+      @LocationDataConverter() required this.location,
+      required this.description,
+      this.password,
+      @RecurrenceConfigurationConverter() this.recurrenceModel})
+      : super._();
+  factory _BookingModel.fromJson(Map<String, dynamic> json) =>
+      _$BookingModelFromJson(json);
 
   @override
-  String get title;
+  final String title;
   @override
   @CustomDateTimeRangeConverter()
-  RecurrenceState get recurrenceState;
+  final RecurrenceState recurrenceState;
   @override
-  String get host;
+  final String host;
   @override
-  DateTime get createdAt;
+  final DateTime createdAt;
   @override
   @CustomDateTimeRangeConverter()
-  CustomDateTimeRange get timeRange;
+  final CustomDateTimeRange timeRange;
   @override
-  String get userId;
+  final String userId;
   @override
-  String get id;
+  final String id;
   @override
   @LocationDataConverter()
-  LocationData get location;
+  final LocationData location;
   @override
-  String get description;
+  final String description;
   @override
-  String? get password;
+  final String? password;
   @override
   @RecurrenceConfigurationConverter()
-  RecurrenceConfigurationModel? get recurrenceModel;
+  final RecurrenceConfigurationModel? recurrenceModel;
 
   /// Create a copy of BookingModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$BookingModelImplCopyWith<_$BookingModelImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @pragma('vm:prefer-inline')
+  _$BookingModelCopyWith<_BookingModel> get copyWith =>
+      __$BookingModelCopyWithImpl<_BookingModel>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$BookingModelToJson(
+      this,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _BookingModel &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.recurrenceState, recurrenceState) ||
+                other.recurrenceState == recurrenceState) &&
+            (identical(other.host, host) || other.host == host) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.timeRange, timeRange) ||
+                other.timeRange == timeRange) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.location, location) ||
+                other.location == location) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.password, password) ||
+                other.password == password) &&
+            (identical(other.recurrenceModel, recurrenceModel) ||
+                other.recurrenceModel == recurrenceModel));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      title,
+      recurrenceState,
+      host,
+      createdAt,
+      timeRange,
+      userId,
+      id,
+      location,
+      description,
+      password,
+      recurrenceModel);
+
+  @override
+  String toString() {
+    return 'BookingModel(title: $title, recurrenceState: $recurrenceState, host: $host, createdAt: $createdAt, timeRange: $timeRange, userId: $userId, id: $id, location: $location, description: $description, password: $password, recurrenceModel: $recurrenceModel)';
+  }
 }
+
+/// @nodoc
+abstract mixin class _$BookingModelCopyWith<$Res>
+    implements $BookingModelCopyWith<$Res> {
+  factory _$BookingModelCopyWith(
+          _BookingModel value, $Res Function(_BookingModel) _then) =
+      __$BookingModelCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {String title,
+      @CustomDateTimeRangeConverter() RecurrenceState recurrenceState,
+      String host,
+      DateTime createdAt,
+      @CustomDateTimeRangeConverter() CustomDateTimeRange timeRange,
+      String userId,
+      String id,
+      @LocationDataConverter() LocationData location,
+      String description,
+      String? password,
+      @RecurrenceConfigurationConverter()
+      RecurrenceConfigurationModel? recurrenceModel});
+
+  @override
+  $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceModel;
+}
+
+/// @nodoc
+class __$BookingModelCopyWithImpl<$Res>
+    implements _$BookingModelCopyWith<$Res> {
+  __$BookingModelCopyWithImpl(this._self, this._then);
+
+  final _BookingModel _self;
+  final $Res Function(_BookingModel) _then;
+
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? title = null,
+    Object? recurrenceState = null,
+    Object? host = null,
+    Object? createdAt = null,
+    Object? timeRange = null,
+    Object? userId = null,
+    Object? id = null,
+    Object? location = null,
+    Object? description = null,
+    Object? password = freezed,
+    Object? recurrenceModel = freezed,
+  }) {
+    return _then(_BookingModel(
+      title: null == title
+          ? _self.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      recurrenceState: null == recurrenceState
+          ? _self.recurrenceState
+          : recurrenceState // ignore: cast_nullable_to_non_nullable
+              as RecurrenceState,
+      host: null == host
+          ? _self.host
+          : host // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _self.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      timeRange: null == timeRange
+          ? _self.timeRange
+          : timeRange // ignore: cast_nullable_to_non_nullable
+              as CustomDateTimeRange,
+      userId: null == userId
+          ? _self.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      id: null == id
+          ? _self.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      location: null == location
+          ? _self.location
+          : location // ignore: cast_nullable_to_non_nullable
+              as LocationData,
+      description: null == description
+          ? _self.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      password: freezed == password
+          ? _self.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String?,
+      recurrenceModel: freezed == recurrenceModel
+          ? _self.recurrenceModel
+          : recurrenceModel // ignore: cast_nullable_to_non_nullable
+              as RecurrenceConfigurationModel?,
+    ));
+  }
+
+  /// Create a copy of BookingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $RecurrenceConfigurationModelCopyWith<$Res>? get recurrenceModel {
+    if (_self.recurrenceModel == null) {
+      return null;
+    }
+
+    return $RecurrenceConfigurationModelCopyWith<$Res>(_self.recurrenceModel!,
+        (value) {
+      return _then(_self.copyWith(recurrenceModel: value));
+    });
+  }
+}
+
+// dart format on

@@ -1,4 +1,4 @@
-# melos_managed_dependency_overrides: constants,models,util
+# melos_managed_dependency_overrides: constants,models,util,analyzer,analyzer_plugin
 dependency_overrides:
   constants:
     path: ..\\constants
@@ -6,3 +6,5 @@ dependency_overrides:
     path: ..\\models
   util:
     path: ..\\util
+  analyzer: ^7.6.0
+  analyzer_plugin: 0.13.4

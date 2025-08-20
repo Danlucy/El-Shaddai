@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,106 +9,57 @@ part of 'post_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-PostModel _$PostModelFromJson(Map<String, dynamic> json) {
-  return _PostModel.fromJson(json);
-}
 
 /// @nodoc
 mixin _$PostModel {
-  String get id => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
-  String get content => throw _privateConstructorUsedError;
-  List<int>? get image => throw _privateConstructorUsedError;
-  String get userId => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
-
-  /// Serializes this PostModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  String get id;
+  String get title;
+  String get content;
+  List<int>? get image;
+  String get userId;
+  DateTime get createdAt;
 
   /// Create a copy of PostModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $PostModelCopyWith<PostModel> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PostModelCopyWith<$Res> {
-  factory $PostModelCopyWith(PostModel value, $Res Function(PostModel) then) =
-      _$PostModelCopyWithImpl<$Res, PostModel>;
-  @useResult
-  $Res call(
-      {String id,
-      String title,
-      String content,
-      List<int>? image,
-      String userId,
-      DateTime createdAt});
-}
-
-/// @nodoc
-class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
-    implements $PostModelCopyWith<$Res> {
-  _$PostModelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of PostModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
+  $PostModelCopyWith<PostModel> get copyWith =>
+      _$PostModelCopyWithImpl<PostModel>(this as PostModel, _$identity);
+
+  /// Serializes this PostModel to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? id = null,
-    Object? title = null,
-    Object? content = null,
-    Object? image = freezed,
-    Object? userId = null,
-    Object? createdAt = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      content: null == content
-          ? _value.content
-          : content // ignore: cast_nullable_to_non_nullable
-              as String,
-      image: freezed == image
-          ? _value.image
-          : image // ignore: cast_nullable_to_non_nullable
-              as List<int>?,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is PostModel &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.content, content) || other.content == content) &&
+            const DeepCollectionEquality().equals(other.image, image) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, title, content,
+      const DeepCollectionEquality().hash(image), userId, createdAt);
+
+  @override
+  String toString() {
+    return 'PostModel(id: $id, title: $title, content: $content, image: $image, userId: $userId, createdAt: $createdAt)';
   }
 }
 
 /// @nodoc
-abstract class _$$PostModelImplCopyWith<$Res>
-    implements $PostModelCopyWith<$Res> {
-  factory _$$PostModelImplCopyWith(
-          _$PostModelImpl value, $Res Function(_$PostModelImpl) then) =
-      __$$PostModelImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $PostModelCopyWith<$Res> {
+  factory $PostModelCopyWith(PostModel value, $Res Function(PostModel) _then) =
+      _$PostModelCopyWithImpl;
   @useResult
   $Res call(
       {String id,
@@ -120,12 +71,11 @@ abstract class _$$PostModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$PostModelImplCopyWithImpl<$Res>
-    extends _$PostModelCopyWithImpl<$Res, _$PostModelImpl>
-    implements _$$PostModelImplCopyWith<$Res> {
-  __$$PostModelImplCopyWithImpl(
-      _$PostModelImpl _value, $Res Function(_$PostModelImpl) _then)
-      : super(_value, _then);
+class _$PostModelCopyWithImpl<$Res> implements $PostModelCopyWith<$Res> {
+  _$PostModelCopyWithImpl(this._self, this._then);
+
+  final PostModel _self;
+  final $Res Function(PostModel) _then;
 
   /// Create a copy of PostModel
   /// with the given fields replaced by the non-null parameter values.
@@ -139,39 +89,205 @@ class __$$PostModelImplCopyWithImpl<$Res>
     Object? userId = null,
     Object? createdAt = null,
   }) {
-    return _then(_$PostModelImpl(
+    return _then(_self.copyWith(
       id: null == id
-          ? _value.id
+          ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
       title: null == title
-          ? _value.title
+          ? _self.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
       content: null == content
-          ? _value.content
+          ? _self.content
           : content // ignore: cast_nullable_to_non_nullable
               as String,
       image: freezed == image
-          ? _value._image
+          ? _self.image
           : image // ignore: cast_nullable_to_non_nullable
               as List<int>?,
       userId: null == userId
-          ? _value.userId
+          ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
       createdAt: null == createdAt
-          ? _value.createdAt
+          ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [PostModel].
+extension PostModelPatterns on PostModel {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_PostModel value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _PostModel() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_PostModel value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PostModel():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_PostModel value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PostModel() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String id, String title, String content, List<int>? image,
+            String userId, DateTime createdAt)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _PostModel() when $default != null:
+        return $default(_that.id, _that.title, _that.content, _that.image,
+            _that.userId, _that.createdAt);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String id, String title, String content, List<int>? image,
+            String userId, DateTime createdAt)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PostModel():
+        return $default(_that.id, _that.title, _that.content, _that.image,
+            _that.userId, _that.createdAt);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String id, String title, String content, List<int>? image,
+            String userId, DateTime createdAt)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PostModel() when $default != null:
+        return $default(_that.id, _that.title, _that.content, _that.image,
+            _that.userId, _that.createdAt);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$PostModelImpl extends _PostModel {
-  const _$PostModelImpl(
+class _PostModel extends PostModel {
+  const _PostModel(
       {required this.id,
       required this.title,
       required this.content,
@@ -180,9 +296,8 @@ class _$PostModelImpl extends _PostModel {
       required this.createdAt})
       : _image = image,
         super._();
-
-  factory _$PostModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PostModelImplFromJson(json);
+  factory _PostModel.fromJson(Map<String, dynamic> json) =>
+      _$PostModelFromJson(json);
 
   @override
   final String id;
@@ -205,16 +320,26 @@ class _$PostModelImpl extends _PostModel {
   @override
   final DateTime createdAt;
 
+  /// Create a copy of PostModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'PostModel(id: $id, title: $title, content: $content, image: $image, userId: $userId, createdAt: $createdAt)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$PostModelCopyWith<_PostModel> get copyWith =>
+      __$PostModelCopyWithImpl<_PostModel>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$PostModelToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$PostModelImpl &&
+            other is _PostModel &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.content, content) || other.content == content) &&
@@ -229,52 +354,75 @@ class _$PostModelImpl extends _PostModel {
   int get hashCode => Object.hash(runtimeType, id, title, content,
       const DeepCollectionEquality().hash(_image), userId, createdAt);
 
-  /// Create a copy of PostModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  @pragma('vm:prefer-inline')
-  _$$PostModelImplCopyWith<_$PostModelImpl> get copyWith =>
-      __$$PostModelImplCopyWithImpl<_$PostModelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PostModelImplToJson(
-      this,
-    );
+  String toString() {
+    return 'PostModel(id: $id, title: $title, content: $content, image: $image, userId: $userId, createdAt: $createdAt)';
   }
 }
 
-abstract class _PostModel extends PostModel {
-  const factory _PostModel(
-      {required final String id,
-      required final String title,
-      required final String content,
-      final List<int>? image,
-      required final String userId,
-      required final DateTime createdAt}) = _$PostModelImpl;
-  const _PostModel._() : super._();
+/// @nodoc
+abstract mixin class _$PostModelCopyWith<$Res>
+    implements $PostModelCopyWith<$Res> {
+  factory _$PostModelCopyWith(
+          _PostModel value, $Res Function(_PostModel) _then) =
+      __$PostModelCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String title,
+      String content,
+      List<int>? image,
+      String userId,
+      DateTime createdAt});
+}
 
-  factory _PostModel.fromJson(Map<String, dynamic> json) =
-      _$PostModelImpl.fromJson;
+/// @nodoc
+class __$PostModelCopyWithImpl<$Res> implements _$PostModelCopyWith<$Res> {
+  __$PostModelCopyWithImpl(this._self, this._then);
 
-  @override
-  String get id;
-  @override
-  String get title;
-  @override
-  String get content;
-  @override
-  List<int>? get image;
-  @override
-  String get userId;
-  @override
-  DateTime get createdAt;
+  final _PostModel _self;
+  final $Res Function(_PostModel) _then;
 
   /// Create a copy of PostModel
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PostModelImplCopyWith<_$PostModelImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? id = null,
+    Object? title = null,
+    Object? content = null,
+    Object? image = freezed,
+    Object? userId = null,
+    Object? createdAt = null,
+  }) {
+    return _then(_PostModel(
+      id: null == id
+          ? _self.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      title: null == title
+          ? _self.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _self.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+      image: freezed == image
+          ? _self._image
+          : image // ignore: cast_nullable_to_non_nullable
+              as List<int>?,
+      userId: null == userId
+          ? _self.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _self.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
+  }
 }
+
+// dart format on

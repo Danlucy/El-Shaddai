@@ -7,7 +7,8 @@ environment:
 
 dev_dependencies:
   melos: ^6.0.0
-
+dependency_overrides:
+  analyzer_plugin: 0.13.4
 
 # This is a sample, your assets and flutter section
 # should not be here, they belong in the app package.

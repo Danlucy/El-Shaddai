@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,93 +9,61 @@ part of 'post_state.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-PostState _$PostStateFromJson(Map<String, dynamic> json) {
-  return _PostState.fromJson(json);
-}
 
 /// @nodoc
 mixin _$PostState {
-  String? get title => throw _privateConstructorUsedError;
-  String? get description => throw _privateConstructorUsedError;
-  List<int>? get image => throw _privateConstructorUsedError;
-
-  /// Serializes this PostState to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  String? get title;
+  String? get description;
+  List<int>? get image;
 
   /// Create a copy of PostState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $PostStateCopyWith<PostState> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PostStateCopyWith<$Res> {
-  factory $PostStateCopyWith(PostState value, $Res Function(PostState) then) =
-      _$PostStateCopyWithImpl<$Res, PostState>;
-  @useResult
-  $Res call({String? title, String? description, List<int>? image});
-}
-
-/// @nodoc
-class _$PostStateCopyWithImpl<$Res, $Val extends PostState>
-    implements $PostStateCopyWith<$Res> {
-  _$PostStateCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of PostState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
+  $PostStateCopyWith<PostState> get copyWith =>
+      _$PostStateCopyWithImpl<PostState>(this as PostState, _$identity);
+
+  /// Serializes this PostState to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? title = freezed,
-    Object? description = freezed,
-    Object? image = freezed,
-  }) {
-    return _then(_value.copyWith(
-      title: freezed == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String?,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String?,
-      image: freezed == image
-          ? _value.image
-          : image // ignore: cast_nullable_to_non_nullable
-              as List<int>?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is PostState &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            const DeepCollectionEquality().equals(other.image, image));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, title, description,
+      const DeepCollectionEquality().hash(image));
+
+  @override
+  String toString() {
+    return 'PostState(title: $title, description: $description, image: $image)';
   }
 }
 
 /// @nodoc
-abstract class _$$PostStateImplCopyWith<$Res>
-    implements $PostStateCopyWith<$Res> {
-  factory _$$PostStateImplCopyWith(
-          _$PostStateImpl value, $Res Function(_$PostStateImpl) then) =
-      __$$PostStateImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $PostStateCopyWith<$Res> {
+  factory $PostStateCopyWith(PostState value, $Res Function(PostState) _then) =
+      _$PostStateCopyWithImpl;
   @useResult
   $Res call({String? title, String? description, List<int>? image});
 }
 
 /// @nodoc
-class __$$PostStateImplCopyWithImpl<$Res>
-    extends _$PostStateCopyWithImpl<$Res, _$PostStateImpl>
-    implements _$$PostStateImplCopyWith<$Res> {
-  __$$PostStateImplCopyWithImpl(
-      _$PostStateImpl _value, $Res Function(_$PostStateImpl) _then)
-      : super(_value, _then);
+class _$PostStateCopyWithImpl<$Res> implements $PostStateCopyWith<$Res> {
+  _$PostStateCopyWithImpl(this._self, this._then);
+
+  final PostState _self;
+  final $Res Function(PostState) _then;
 
   /// Create a copy of PostState
   /// with the given fields replaced by the non-null parameter values.
@@ -106,32 +74,191 @@ class __$$PostStateImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? image = freezed,
   }) {
-    return _then(_$PostStateImpl(
+    return _then(_self.copyWith(
       title: freezed == title
-          ? _value.title
+          ? _self.title
           : title // ignore: cast_nullable_to_non_nullable
               as String?,
       description: freezed == description
-          ? _value.description
+          ? _self.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
       image: freezed == image
-          ? _value._image
+          ? _self.image
           : image // ignore: cast_nullable_to_non_nullable
               as List<int>?,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [PostState].
+extension PostStatePatterns on PostState {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_PostState value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _PostState() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_PostState value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PostState():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_PostState value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PostState() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String? title, String? description, List<int>? image)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _PostState() when $default != null:
+        return $default(_that.title, _that.description, _that.image);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String? title, String? description, List<int>? image)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PostState():
+        return $default(_that.title, _that.description, _that.image);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String? title, String? description, List<int>? image)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PostState() when $default != null:
+        return $default(_that.title, _that.description, _that.image);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$PostStateImpl extends _PostState {
-  const _$PostStateImpl({this.title, this.description, final List<int>? image})
+class _PostState extends PostState {
+  const _PostState({this.title, this.description, final List<int>? image})
       : _image = image,
         super._();
-
-  factory _$PostStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PostStateImplFromJson(json);
+  factory _PostState.fromJson(Map<String, dynamic> json) =>
+      _$PostStateFromJson(json);
 
   @override
   final String? title;
@@ -147,16 +274,26 @@ class _$PostStateImpl extends _PostState {
     return EqualUnmodifiableListView(value);
   }
 
+  /// Create a copy of PostState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'PostState(title: $title, description: $description, image: $image)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$PostStateCopyWith<_PostState> get copyWith =>
+      __$PostStateCopyWithImpl<_PostState>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$PostStateToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$PostStateImpl &&
+            other is _PostState &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -168,43 +305,54 @@ class _$PostStateImpl extends _PostState {
   int get hashCode => Object.hash(runtimeType, title, description,
       const DeepCollectionEquality().hash(_image));
 
-  /// Create a copy of PostState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  @pragma('vm:prefer-inline')
-  _$$PostStateImplCopyWith<_$PostStateImpl> get copyWith =>
-      __$$PostStateImplCopyWithImpl<_$PostStateImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PostStateImplToJson(
-      this,
-    );
+  String toString() {
+    return 'PostState(title: $title, description: $description, image: $image)';
   }
 }
 
-abstract class _PostState extends PostState {
-  const factory _PostState(
-      {final String? title,
-      final String? description,
-      final List<int>? image}) = _$PostStateImpl;
-  const _PostState._() : super._();
+/// @nodoc
+abstract mixin class _$PostStateCopyWith<$Res>
+    implements $PostStateCopyWith<$Res> {
+  factory _$PostStateCopyWith(
+          _PostState value, $Res Function(_PostState) _then) =
+      __$PostStateCopyWithImpl;
+  @override
+  @useResult
+  $Res call({String? title, String? description, List<int>? image});
+}
 
-  factory _PostState.fromJson(Map<String, dynamic> json) =
-      _$PostStateImpl.fromJson;
+/// @nodoc
+class __$PostStateCopyWithImpl<$Res> implements _$PostStateCopyWith<$Res> {
+  __$PostStateCopyWithImpl(this._self, this._then);
 
-  @override
-  String? get title;
-  @override
-  String? get description;
-  @override
-  List<int>? get image;
+  final _PostState _self;
+  final $Res Function(_PostState) _then;
 
   /// Create a copy of PostState
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PostStateImplCopyWith<_$PostStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? title = freezed,
+    Object? description = freezed,
+    Object? image = freezed,
+  }) {
+    return _then(_PostState(
+      title: freezed == title
+          ? _self.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String?,
+      description: freezed == description
+          ? _self.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      image: freezed == image
+          ? _self._image
+          : image // ignore: cast_nullable_to_non_nullable
+              as List<int>?,
+    ));
+  }
 }
+
+// dart format on
