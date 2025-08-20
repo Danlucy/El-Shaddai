@@ -1,9 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-part 'post_model.g.dart';
+
 part 'post_model.freezed.dart';
+part 'post_model.g.dart';
 
 @freezed
-class PostModel with _$PostModel {
+sealed class PostModel with _$PostModel {
   const PostModel._();
   const factory PostModel({
     required String id,

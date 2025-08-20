@@ -1,11 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-part 'user_model.g.dart';
-part 'user_model.freezed.dart';
 
-@Freezed(toJson: true, fromJson: false)
-@JsonSerializable(explicitToJson: true)
-class UserModel with _$UserModel {
-  const UserModel._();
+part 'user_model.freezed.dart';
+part 'user_model.g.dart';
+
+@freezed
+sealed class UserModel with _$UserModel {
   const factory UserModel({
     required String name,
     required String uid,
@@ -23,7 +22,6 @@ class UserModel with _$UserModel {
     String? definitionOfGod,
     String? godsCalling,
     String? recommendation,
-    // @DateTimeRangeConverter() DateTime? birthday
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
