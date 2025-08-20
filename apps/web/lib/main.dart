@@ -28,7 +28,6 @@ void main() async {
     ValueListenableBuilder<bool>(
       valueListenable: hasConnectivity,
       builder: (context, isConnected, child) {
-        print(isConnected);
         return isConnected
             ? const ProviderScope(child: WebApp())
             : ConnectivityErrorScreen(); // Enhanced error screen
