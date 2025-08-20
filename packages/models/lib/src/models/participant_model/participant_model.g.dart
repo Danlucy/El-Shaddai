@@ -9,9 +9,10 @@ part of 'participant_model.dart';
 _ParticipantModel _$ParticipantModelFromJson(Map<String, dynamic> json) =>
     _ParticipantModel(
       bookingId: json['bookingId'] as String,
-      participantsId: (json['participantsId'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
+      participantsId:
+          (json['participantsId'] as List<dynamic>)
+              .map((e) => e as String)
+              .toList(),
     );
 
 Map<String, dynamic> _$ParticipantModelToJson(_ParticipantModel instance) =>
