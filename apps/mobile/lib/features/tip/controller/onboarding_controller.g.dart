@@ -12,15 +12,15 @@ const onboardingNotifierProvider = OnboardingNotifierProvider._();
 final class OnboardingNotifierProvider
     extends $AsyncNotifierProvider<OnboardingNotifier, Set<String>> {
   const OnboardingNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'onboardingNotifierProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'onboardingNotifierProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$onboardingNotifierHash();
@@ -40,11 +40,14 @@ abstract class _$OnboardingNotifier extends $AsyncNotifier<Set<String>> {
   void runBuild() {
     final created = build();
     final ref = this.ref as $Ref<AsyncValue<Set<String>>, Set<String>>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<Set<String>>, Set<String>>,
-        AsyncValue<Set<String>>,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<Set<String>>, Set<String>>,
+              AsyncValue<Set<String>>,
+              Object?,
+              Object?
+            >;
     element.handleValue(ref, created);
   }
 }

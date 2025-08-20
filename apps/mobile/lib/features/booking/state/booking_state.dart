@@ -6,7 +6,7 @@ part 'booking_state.freezed.dart';
 part 'booking_state.g.dart';
 
 @freezed
-class BookingState with _$BookingState {
+sealed class BookingState with _$BookingState {
   const BookingState._();
   @CustomDateTimeRangeConverter()
   @LocationDataConverter()

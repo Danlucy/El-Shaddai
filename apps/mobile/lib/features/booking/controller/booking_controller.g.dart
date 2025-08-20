@@ -12,15 +12,15 @@ const bookingVenueStateProvider = BookingVenueStateProvider._();
 final class BookingVenueStateProvider
     extends $NotifierProvider<BookingVenueState, BookingVenueComponent> {
   const BookingVenueStateProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'bookingVenueStateProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'bookingVenueStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$bookingVenueStateHash();
@@ -47,11 +47,14 @@ abstract class _$BookingVenueState extends $Notifier<BookingVenueComponent> {
   void runBuild() {
     final created = build();
     final ref = this.ref as $Ref<BookingVenueComponent, BookingVenueComponent>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<BookingVenueComponent, BookingVenueComponent>,
-        BookingVenueComponent,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<BookingVenueComponent, BookingVenueComponent>,
+              BookingVenueComponent,
+              Object?,
+              Object?
+            >;
     element.handleValue(ref, created);
   }
 }
@@ -62,15 +65,15 @@ const bookingControllerProvider = BookingControllerProvider._();
 final class BookingControllerProvider
     extends $NotifierProvider<BookingController, BookingState> {
   const BookingControllerProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'bookingControllerProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'bookingControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$bookingControllerHash();
@@ -88,7 +91,7 @@ final class BookingControllerProvider
   }
 }
 
-String _$bookingControllerHash() => r'8aabb1749e9d6b12eb4c1b6cc160e4cf66068ec4';
+String _$bookingControllerHash() => r'84d129c90bbbb82d003ca7b4f3fb00445eb8fb13';
 
 abstract class _$BookingController extends $Notifier<BookingState> {
   BookingState build();
@@ -97,11 +100,14 @@ abstract class _$BookingController extends $Notifier<BookingState> {
   void runBuild() {
     final created = build();
     final ref = this.ref as $Ref<BookingState, BookingState>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<BookingState, BookingState>,
-        BookingState,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<BookingState, BookingState>,
+              BookingState,
+              Object?,
+              Object?
+            >;
     element.handleValue(ref, created);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -8,24 +9,19 @@ import 'package:website/features/auth/presentations/login_dialog.dart';
 import '../../auth/controller/auth_controller.dart';
 
 class ScaffoldWithNavBar extends ConsumerWidget {
-  const ScaffoldWithNavBar({
-    required this.navigationShell,
-    super.key,
-  });
+  const ScaffoldWithNavBar({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
-
-  void _onTap(int index) {
-    navigationShell.goBranch(index, initialLocation: true);
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userName =
         ref.watch(userProvider)?.lastName ?? ref.watch(userProvider)?.name;
-    final int currentIndex = navigationShell.currentIndex;
-    final String currentLocation =
-        navigationShell.shellRouteContext.routerState.uri.toString();
+    final String currentLocation = navigationShell
+        .shellRouteContext
+        .routerState
+        .uri
+        .toString();
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -54,43 +50,58 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             PopupMenuItem<String>(
               value: '/',
               child: ListTile(
-                leading: Icon(Icons.home,
+                leading: Icon(
+                  Icons.home,
+                  color: currentLocation == '/'
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                title: Text(
+                  'Home',
+                  style: TextStyle(
                     color: currentLocation == '/'
                         ? Theme.of(context).colorScheme.primary
-                        : null),
-                title: Text('Home',
-                    style: TextStyle(
-                        color: currentLocation == '/'
-                            ? Theme.of(context).colorScheme.primary
-                            : null)),
+                        : null,
+                  ),
+                ),
               ),
             ),
             PopupMenuItem<String>(
               value: '/booking',
               child: ListTile(
-                leading: Icon(Icons.calendar_today,
+                leading: Icon(
+                  Icons.calendar_today,
+                  color: currentLocation == '/booking'
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                title: Text(
+                  'Event Calendar',
+                  style: TextStyle(
                     color: currentLocation == '/booking'
                         ? Theme.of(context).colorScheme.primary
-                        : null),
-                title: Text('Event Calendar',
-                    style: TextStyle(
-                        color: currentLocation == '/booking'
-                            ? Theme.of(context).colorScheme.primary
-                            : null)),
+                        : null,
+                  ),
+                ),
               ),
             ),
             PopupMenuItem<String>(
               value: '/list',
               child: ListTile(
-                leading: Icon(Icons.list,
+                leading: Icon(
+                  Icons.list,
+                  color: currentLocation == '/list'
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                title: Text(
+                  'Booking List',
+                  style: TextStyle(
                     color: currentLocation == '/list'
                         ? Theme.of(context).colorScheme.primary
-                        : null),
-                title: Text('Booking List',
-                    style: TextStyle(
-                        color: currentLocation == '/list'
-                            ? Theme.of(context).colorScheme.primary
-                            : null)),
+                        : null,
+                  ),
+                ),
               ),
             ),
           ],
@@ -106,8 +117,8 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.surface.withOpacity(0.1),
-              Theme.of(context).colorScheme.surface.withOpacity(0.05),
+              Theme.of(context).colorScheme.surface.withOpac(0.1),
+              Theme.of(context).colorScheme.surface.withOpac(0.05),
             ],
             stops: const [0.1, 1],
           ),
@@ -115,8 +126,8 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-              Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+              Theme.of(context).colorScheme.onSurface.withOpac(0.2),
+              Theme.of(context).colorScheme.onSurface.withOpac(0.2),
             ],
           ),
         ),
@@ -131,22 +142,13 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return GlassLoginDialog(
-                      onGoogleSignIn: () {
-                        print('Google Sign In Tapped');
-                        // Add your Google sign-in logic here
-                      },
-                      onAppleSignIn: () {
-                        print('Apple Sign In Tapped');
-                        // Add your Apple sign-in logic here
-                      },
-                    );
+                    return GlassLoginDialog();
                   },
                 );
               },
               icon: Icons.key,
             ),
-          )
+          ),
         ],
       ),
       body: navigationShell,

@@ -7,12 +7,12 @@ part of 'post_state.dart';
 // **************************************************************************
 
 _PostState _$PostStateFromJson(Map<String, dynamic> json) => _PostState(
-      title: json['title'] as String?,
-      description: json['description'] as String?,
-      image: (json['image'] as List<dynamic>?)
-          ?.map((e) => (e as num).toInt())
-          .toList(),
-    );
+  title: json['title'] as String?,
+  description: json['description'] as String?,
+  image: (json['image'] as List<dynamic>?)
+      ?.map((e) => (e as num).toInt())
+      .toList(),
+);
 
 Map<String, dynamic> _$PostStateToJson(_PostState instance) =>
     <String, dynamic>{

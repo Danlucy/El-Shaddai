@@ -33,6 +33,7 @@ class Backend {
       return false;
     }
   }
+
   static Future<bool> checkFirebaseAvailability() async {
     try {
       // Use a smaller operation - just check if we can reach Firestore
@@ -63,6 +64,7 @@ class Backend {
       return false;
     }
   }
+
   /// Internal method to test HTTP connectivity using Google’s generate_204
   static Future<bool> _hasBasicInternet() async {
     try {
