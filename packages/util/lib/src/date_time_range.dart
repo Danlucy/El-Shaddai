@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:time_range_picker/time_range_picker.dart';
 import 'package:util/src/customs/custom_date_time_range.dart';
 
 class DateTimeRangeConverter

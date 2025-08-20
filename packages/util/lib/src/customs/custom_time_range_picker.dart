@@ -765,7 +765,7 @@ class TimeRangePickerState extends State<TimeRangePicker>
   }
 
   Widget buildButtonBar({required MaterialLocalizations localizations}) =>
-      ButtonBar(
+      OverflowBar(
         children: <Widget>[
           TextButton(
             onPressed: _cancel,
@@ -837,13 +837,10 @@ class TimeRangePickerState extends State<TimeRangePicker>
   Widget buildHeader(bool landscape) {
     final ThemeData themeData = Theme.of(context);
 
-    Color backgroundColor;
     switch (themeData.brightness) {
       case Brightness.light:
-        backgroundColor = themeData.primaryColor;
         break;
       case Brightness.dark:
-        backgroundColor = themeData.colorScheme.surface;
         break;
     }
 

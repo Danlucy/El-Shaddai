@@ -3,18 +3,17 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'recurrence_configuration_model.freezed.dart';
 part 'recurrence_configuration_model.g.dart';
 
-@Freezed(fromJson: false, toJson: true)
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
-class RecurrenceConfigurationModel with _$RecurrenceConfigurationModel {
-  const RecurrenceConfigurationModel._();
-  factory RecurrenceConfigurationModel(
-          {@JsonKey(name: 'end_times') required int recurrenceFrequency,
-          int? weeklyDays,
-          required int type,
-          @JsonKey(name: 'repeat_interval') required int recurrenceInterval}) =
-      _RecurrenceConfigurationModel;
+@freezed
+sealed class RecurrenceConfigurationModel with _$RecurrenceConfigurationModel {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+  const factory RecurrenceConfigurationModel({
+    @JsonKey(name: 'end_times') required int recurrenceFrequency,
+    int? weeklyDays,
+    required int type,
+    @JsonKey(name: 'repeat_interval') required int recurrenceInterval,
+  }) = _RecurrenceConfigurationModel;
 
-  factory RecurrenceConfigurationModel.fromJson(Map<String, dynamic> json) =>
+  factory RecurrenceConfigurationModel.fromJson(Map<String, Object?> json) =>
       _$RecurrenceConfigurationModelFromJson(json);
 }
 
@@ -32,8 +31,10 @@ enum Weekday {
 
   // Optional: A method to get the enum from an integer
   static Weekday fromValue(int value) {
-    return Weekday.values.firstWhere((day) => day.value == value,
-        orElse: () => throw ArgumentError('Invalid weekday value: $value'));
+    return Weekday.values.firstWhere(
+      (day) => day.value == value,
+      orElse: () => throw ArgumentError('Invalid weekday value: $value'),
+    );
   }
 
   static int toValue(Weekday day) => day.value;
