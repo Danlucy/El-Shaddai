@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-part 'post_state.g.dart';
 
 part 'post_state.freezed.dart';
+part 'post_state.g.dart';
 
 @freezed
-class PostState with _$PostState {
+sealed class PostState with _$PostState {
   const PostState._();
 
   const factory PostState({

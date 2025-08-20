@@ -19,9 +19,7 @@ final ValueNotifier<bool> hasConnectivity = ValueNotifier(true);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final isConnected = await Backend.checkFirebaseAvailability();
   hasConnectivity.value = isConnected;
@@ -41,6 +39,8 @@ void main() async {
 
 // Enhanced connectivity error screen with retry functionality
 class ConnectivityErrorScreen extends StatefulWidget {
+  const ConnectivityErrorScreen({super.key});
+
   @override
   State<ConnectivityErrorScreen> createState() =>
       _ConnectivityErrorScreenState();
@@ -107,11 +107,7 @@ class _ConnectivityErrorScreenState extends State<ConnectivityErrorScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.cloud_off,
-                size: 80,
-                color: Colors.blue.shade300,
-              ),
+              Icon(Icons.cloud_off, size: 80, color: Colors.blue.shade300),
               const SizedBox(height: 24),
               Text(
                 'Unable to connect to Firebase',
@@ -124,10 +120,7 @@ class _ConnectivityErrorScreenState extends State<ConnectivityErrorScreen> {
               const SizedBox(height: 12),
               Text(
                 'Please check your internet connection and try again',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.blue.shade600,
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.blue.shade600),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -144,18 +137,17 @@ class _ConnectivityErrorScreenState extends State<ConnectivityErrorScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                 ),
               ),
               if (_retryCount > 0) ...[
                 const SizedBox(height: 16),
                 Text(
                   'Auto-retry in progress... (${_retryCount}/5)',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.blue.shade500,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.blue.shade500),
                 ),
               ],
             ],
@@ -200,8 +192,9 @@ class _MyAppState extends ConsumerState<_MyWebApp> with WidgetsBindingObserver {
 
   // New: Start periodic connectivity monitoring
   void _startPeriodicConnectivityCheck() {
-    _periodicConnectivityTimer =
-        Timer.periodic(const Duration(minutes: 2), (timer) {
+    _periodicConnectivityTimer = Timer.periodic(const Duration(minutes: 2), (
+      timer,
+    ) {
       if (_disposed) {
         timer.cancel();
         return;
@@ -279,7 +272,7 @@ class _MyAppState extends ConsumerState<_MyWebApp> with WidgetsBindingObserver {
             .first;
 
         if (mounted && !_disposed) {
-          ref.read(userProvider.notifier).update((state) => userModel);
+          ref.read(userProvider.notifier).setUser(userModel);
           print('User data updated successfully.');
         }
       } on FirebaseException catch (e) {
@@ -331,18 +324,23 @@ class _MyAppState extends ConsumerState<_MyWebApp> with WidgetsBindingObserver {
               maxWidth: 3000,
               backgroundColor: context.colors.surface,
               child: ResponsiveScaledBox(
-                width: ResponsiveValue<double>(context,
-                    defaultValue: 1200.0,
-                    conditionalValues: [
-                      Condition.between(start: 0, end: 450, value: 450),
-                      Condition.between(start: 451, end: 800, value: 800),
-                      Condition.between(start: 801, end: 1200, value: 1200),
-                      Condition.between(start: 1201, end: 1500, value: 1500),
-                      Condition.between(start: 1501, end: 2000, value: 2000),
-                      Condition.between(start: 2001, end: 3000, value: 3000),
-                    ]).value,
-                child: BouncingScrollWrapper.builder(context, child!,
-                    dragWithMouse: true),
+                width: ResponsiveValue<double>(
+                  context,
+                  defaultValue: 1200.0,
+                  conditionalValues: [
+                    Condition.between(start: 0, end: 450, value: 450),
+                    Condition.between(start: 451, end: 800, value: 800),
+                    Condition.between(start: 801, end: 1200, value: 1200),
+                    Condition.between(start: 1201, end: 1500, value: 1500),
+                    Condition.between(start: 1501, end: 2000, value: 2000),
+                    Condition.between(start: 2001, end: 3000, value: 3000),
+                  ],
+                ).value,
+                child: BouncingScrollWrapper.builder(
+                  context,
+                  child!,
+                  dragWithMouse: true,
+                ),
               ),
             ),
           ),
@@ -351,15 +349,17 @@ class _MyAppState extends ConsumerState<_MyWebApp> with WidgetsBindingObserver {
       title: 'El Shaddai',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          appBarTheme: const AppBarTheme(titleSpacing: 0),
-          textTheme: textTheme,
-          useMaterial3: true,
-          colorScheme: MaterialTheme.darkScheme()),
+        appBarTheme: const AppBarTheme(titleSpacing: 0),
+        textTheme: textTheme,
+        useMaterial3: true,
+        colorScheme: MaterialTheme.darkScheme(),
+      ),
       darkTheme: ThemeData(
-          appBarTheme: const AppBarTheme(titleSpacing: 0),
-          textTheme: textTheme,
-          useMaterial3: true,
-          colorScheme: MaterialTheme.darkScheme()),
+        appBarTheme: const AppBarTheme(titleSpacing: 0),
+        textTheme: textTheme,
+        useMaterial3: true,
+        colorScheme: MaterialTheme.darkScheme(),
+      ),
       routerConfig: router,
     );
   }

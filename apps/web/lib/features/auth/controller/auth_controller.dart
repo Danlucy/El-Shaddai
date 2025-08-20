@@ -8,70 +8,102 @@ import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
 
-final userProvider = StateProvider<UserModel?>((ref) {
-  return null; // Initialize with null
-});
-
-final authControllerProvider = StateNotifierProvider<AuthController, bool>(
-  (ref) => AuthController(
-      authRepository: ref.watch(authRepositoryProvider), ref: ref),
+final userProvider = NotifierProvider<UserNotifier, UserModel?>(
+  () => UserNotifier(),
 );
+
+// User notifier class
+class UserNotifier extends Notifier<UserModel?> {
+  @override
+  UserModel? build() {
+    return null; // Initialize with null
+  }
+
+  void setUser(UserModel? user) {
+    state = user;
+  }
+
+  void clearUser() {
+    state = null;
+  }
+}
+
+// Updated to use AsyncNotifierProvider
+final authControllerProvider = AsyncNotifierProvider<AuthController, void>(
+  () => AuthController(),
+);
+
 final authStateChangeProvider = StreamProvider((ref) {
   final authController = ref.watch(authControllerProvider.notifier);
   return authController.authStateChange;
 });
 
-class AuthController extends StateNotifier<bool> {
-  final AuthRepository _authRepository;
-  final Ref _ref;
-  AuthController({required AuthRepository authRepository, required Ref ref})
-      : _authRepository = authRepository,
-        _ref = ref,
-        super(false);
+// Updated to extend AsyncNotifier instead of StateNotifier
+class AuthController extends AsyncNotifier<void> {
+  late AuthRepository _authRepository;
+
+  @override
+  Future<void> build() async {
+    _authRepository = ref.watch(authRepositoryProvider);
+    // Initialize with void/empty state
+  }
+
   Stream<User?> get authStateChange => _authRepository.authStateChange;
 
-  void signInWithApple(BuildContext context) async {
-    state = true;
-    final user = await _authRepository.signInWithApple();
-    if (user.isLeft()) {
-      showFailureSnackBar(context, 'NO DATA');
+  Future<void> signInWithApple(BuildContext context) async {
+    state = const AsyncValue.loading();
+
+    try {
+      final user = await _authRepository.signInWithApple();
+
+      if (user.isLeft()) {
+        showFailureSnackBar(context, 'NO DATA');
+        state = const AsyncValue.error('NO DATA', StackTrace.empty);
+        return;
+      }
+
+      user.fold(
+        (l) {
+          showFailureSnackBar(context, l.message);
+          state = AsyncValue.error(l.message, StackTrace.empty);
+        },
+        (userModel) {
+          ref.read(userProvider.notifier).setUser(userModel);
+          state = const AsyncValue.data(null);
+        },
+      );
+    } catch (e, stackTrace) {
+      showFailureSnackBar(context, e.toString());
+      state = AsyncValue.error(e, stackTrace);
     }
-    state = false;
-    user.fold((l) {
-      showFailureSnackBar(context, l.message);
-    },
-        (userModel) =>
-            _ref.read(userProvider.notifier).update((state) => userModel));
   }
 
-  void deleteUser(
-    String uid,
-    BuildContext context,
-  ) async {
-    _authRepository.deleteUserAccount(context, _ref);
-  }
+  Future<void> deleteUser(String uid, BuildContext context) async {
+    state = const AsyncValue.loading();
 
-  void signOut() async {
-    _authRepository.signOutGoogleAccount();
-    _ref.read(userProvider.notifier).state = null;
+    try {
+      await _authRepository.deleteUserAccount(context, ref);
+      state = const AsyncValue.data(null);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
   }
 
   void signInWithGoogle(BuildContext context) async {
-    state = true;
+    state = const AsyncValue.loading();
     try {
       final userResult = kIsWeb
           ? await _signInWithGoogleWeb()
           : await _authRepository.signInWithGoogle();
 
-      state = false;
+      state = const AsyncValue.error('NO DATA', StackTrace.empty);
 
       userResult.fold(
         (l) => showFailureSnackBar(context, l.message),
-        (userModel) =>
-            _ref.read(userProvider.notifier).update((_) => userModel),
+        (userModel) => ref.read(userProvider.notifier).setUser(userModel),
       );
-    } catch (e) {
-      state = false;
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
       showFailureSnackBar(context, "Google sign-in failed: $e");
     }
   }
@@ -83,30 +115,33 @@ class AuthController extends StateNotifier<bool> {
       return;
     }
 
-    // Function to fetch user data with error handling
-
     // Retry logic with connectivity check
     while (true) {
       try {
         yield* _authRepository.getUserData(
-            auth.currentUser!.uid); // Yield the results of the fetch
+          auth.currentUser!.uid,
+        ); // Yield the results of the fetch
         break; // If successful, break the loop
       } catch (e) {
-        // Wait for connectivity to be restored
-        // final connectivityResult = await (Connectivity()..checkConnectivity());
-        // if (connectivityResult == ConnectivityResult.none) {
-        //   print('No internet connection. Waiting for connectivity...');
-        //   await for (final connectivityResult
-        //       in Connectivity().onConnectivityChanged) {
-        //     if (connectivityResult != ConnectivityResult.none) {
-        //       print('Internet connection restored!');
-        //       break; // Break the inner loop
-        //     }
-        //   }
-        // }
+        if (kDebugMode) {
+          print('Retrying after error: $e');
+          print('Waiting for connectivity...');
+        }
         // Wait a short duration before retrying (optional)
         await Future.delayed(const Duration(seconds: 5));
       }
+    }
+  }
+
+  Future<void> signOut() async {
+    state = const AsyncValue.loading();
+
+    try {
+      await _authRepository.signOutGoogleAccount();
+      ref.read(userProvider.notifier).clearUser();
+      state = const AsyncValue.data(null);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
     }
   }
 
@@ -116,8 +151,9 @@ class AuthController extends StateNotifier<bool> {
       googleProvider.addScope('email');
       googleProvider.addScope('profile');
 
-      final userCredential =
-          await FirebaseAuth.instance.signInWithPopup(googleProvider);
+      final userCredential = await FirebaseAuth.instance.signInWithPopup(
+        googleProvider,
+      );
 
       final user = userCredential.user;
       if (user == null) {

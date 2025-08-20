@@ -44,40 +44,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 @TypedGoRoute<HomeRoute>(
   path: '/',
   routes: <TypedGoRoute<GoRouteData>>[
-    TypedGoRoute<BookingRoute>(
-      path: 'booking',
-    ),
-    TypedGoRoute<ZoomRoute>(
-      path: 'zoom',
-    ),
-    TypedGoRoute<ProfileRoute>(
-      path: 'profile',
-    ),
-    TypedGoRoute<AboutUsRoute>(
-      path: 'contact-us',
-    ),
-    TypedGoRoute<BookingListRoute>(
-      path: 'booking-list',
-    ),
-    TypedGoRoute<PrayerLeaderRoute>(
-      path: 'intercessors-feed',
-    ),
-    TypedGoRoute<SettingsRoute>(
-      path: 'settings',
-    ),
-    TypedGoRoute<UserManagementRoute>(
-      path: 'user-management',
-    ),
+    TypedGoRoute<BookingRoute>(path: 'booking'),
+    TypedGoRoute<ZoomRoute>(path: 'zoom'),
+    TypedGoRoute<ProfileRoute>(path: 'profile'),
+    TypedGoRoute<AboutUsRoute>(path: 'contact-us'),
+    TypedGoRoute<BookingListRoute>(path: 'booking-list'),
+    TypedGoRoute<PrayerLeaderRoute>(path: 'intercessors-feed'),
+    TypedGoRoute<SettingsRoute>(path: 'settings'),
+    TypedGoRoute<UserManagementRoute>(path: 'user-management'),
   ],
 )
-class HomeRoute extends GoRouteData {
+class HomeRoute extends GoRouteData with _$HomeRoute {
   const HomeRoute();
 
   @override
   Widget build(BuildContext context, GoRouterState state) => const HomeScreen();
 }
 
-class AboutUsRoute extends GoRouteData {
+class AboutUsRoute extends GoRouteData with _$AboutUsRoute {
   const AboutUsRoute();
 
   @override
@@ -85,7 +69,7 @@ class AboutUsRoute extends GoRouteData {
       const AboutUsScreen();
 }
 
-class BookingRoute extends GoRouteData {
+class BookingRoute extends GoRouteData with _$BookingRoute {
   const BookingRoute();
 
   @override
@@ -93,16 +77,15 @@ class BookingRoute extends GoRouteData {
       const BookingScreen();
 }
 
-class ProfileRoute extends GoRouteData {
+class ProfileRoute extends GoRouteData with _$ProfileRoute {
   const ProfileRoute(this.$extra);
   final UserModel? $extra;
   @override
-  Widget build(BuildContext context, GoRouterState state) => ProfileScreen(
-        userModel: $extra,
-      );
+  Widget build(BuildContext context, GoRouterState state) =>
+      ProfileScreen(userModel: $extra);
 }
 
-class BookingListRoute extends GoRouteData {
+class BookingListRoute extends GoRouteData with _$BookingListRoute {
   const BookingListRoute();
 
   @override
@@ -110,7 +93,7 @@ class BookingListRoute extends GoRouteData {
       const BookingListScreen();
 }
 
-class PrayerLeaderRoute extends GoRouteData {
+class PrayerLeaderRoute extends GoRouteData with _$PrayerLeaderRoute {
   const PrayerLeaderRoute();
 
   @override
@@ -118,7 +101,7 @@ class PrayerLeaderRoute extends GoRouteData {
       const PrayerLeaderScreen();
 }
 
-class UserManagementRoute extends GoRouteData {
+class UserManagementRoute extends GoRouteData with _$UserManagementRoute {
   const UserManagementRoute();
 
   @override
@@ -126,7 +109,7 @@ class UserManagementRoute extends GoRouteData {
       const UserManagementScreen();
 }
 
-class SettingsRoute extends GoRouteData {
+class SettingsRoute extends GoRouteData with _$SettingsRoute {
   const SettingsRoute();
 
   @override
@@ -134,17 +117,15 @@ class SettingsRoute extends GoRouteData {
       const SettingsScreen();
 }
 
-class ZoomRoute extends GoRouteData {
-  const ZoomRoute(
-    this.url,
-  );
+class ZoomRoute extends GoRouteData with _$ZoomRoute {
+  const ZoomRoute(this.url);
   final String? url;
   @override
   Widget build(BuildContext context, GoRouterState state) => ZoomScreen(url);
 }
 
 @TypedGoRoute<LoginRoute>(path: '/login')
-class LoginRoute extends GoRouteData {
+class LoginRoute extends GoRouteData with _$LoginRoute {
   LoginRoute({this.from});
   final String? from;
 
@@ -155,7 +136,7 @@ class LoginRoute extends GoRouteData {
 }
 
 @TypedGoRoute<NoInternetRoute>(path: '/no-internet')
-class NoInternetRoute extends GoRouteData {
+class NoInternetRoute extends GoRouteData with _$NoInternetRoute {
   const NoInternetRoute();
 
   @override

@@ -12,15 +12,15 @@ const selectedBookingIDNotifierProvider = SelectedBookingIDNotifierProvider._();
 final class SelectedBookingIDNotifierProvider
     extends $NotifierProvider<SelectedBookingIDNotifier, String> {
   const SelectedBookingIDNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'selectedBookingIDNotifierProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedBookingIDNotifierProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$selectedBookingIDNotifierHash();
@@ -48,8 +48,14 @@ abstract class _$SelectedBookingIDNotifier extends $Notifier<String> {
   void runBuild() {
     final created = build();
     final ref = this.ref as $Ref<String, String>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<String, String>, String, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String, String>,
+              String,
+              Object?,
+              Object?
+            >;
     element.handleValue(ref, created);
   }
 }

@@ -6,14 +6,7 @@ import 'package:website/features/auth/controller/auth_controller.dart';
 import 'package:website/features/auth/widgets/login_button.dart';
 
 class GlassLoginDialog extends ConsumerStatefulWidget {
-  const GlassLoginDialog({
-    super.key,
-    required this.onGoogleSignIn,
-    required this.onAppleSignIn,
-  });
-
-  final VoidCallback onGoogleSignIn;
-  final VoidCallback onAppleSignIn;
+  const GlassLoginDialog({super.key});
 
   @override
   ConsumerState<GlassLoginDialog> createState() => _GlassLoginDialogState();

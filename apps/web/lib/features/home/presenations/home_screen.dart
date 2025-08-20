@@ -1,4 +1,5 @@
 import 'package:constants/constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gradient_animation_text/flutter_gradient_animation_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,32 +25,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    print('Screen size: ${screenSize.width} x ${screenSize.height}');
+    if (kDebugMode) {
+      print('Screen size: ${screenSize.width} x ${screenSize.height}');
+    }
     return Scaffold(
-        extendBodyBehindAppBar: true,
-        body: AnimatedBackground(
-          surfaceColor: context.colors.surface,
-          secondaryColor: context.colors.secondary,
-          child: SafeArea(
-            bottom: true,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 20),
-                  child: Center(
-                    // ✅ Wrap the layout in a ResponsiveScaler to enable auto-scaling.
-                    child: ResponsiveBreakpoints.of(context).largerThan(TABLET)
-                        ? _buildDesktopLayout(context)
-                        : _buildMobileLayout(context),
-                  ),
+      extendBodyBehindAppBar: true,
+      body: AnimatedBackground(
+        surfaceColor: context.colors.surface,
+        secondaryColor: context.colors.secondary,
+        child: SafeArea(
+          bottom: true,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 20,
                 ),
-                Spacer(),
-                FooterWidget(moreInfo: true)
-              ],
-            ),
+                child: Center(
+                  // ✅ Wrap the layout in a ResponsiveScaler to enable auto-scaling.
+                  child: ResponsiveBreakpoints.of(context).largerThan(TABLET)
+                      ? _buildDesktopLayout(context)
+                      : _buildMobileLayout(context),
+                ),
+              ),
+              Spacer(),
+              FooterWidget(moreInfo: true),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   /// Layout for DESKTOP and larger screens.
@@ -88,29 +94,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         GradientAnimationText(
-            duration: const Duration(seconds: 5),
-            text: Text(
-              'OR',
-              style: const TextStyle(
-                fontFamily: 'FunFont',
-                fontSize: 150,
-              ),
-            ),
-            colors: [
-              context.colors.primary,
-              context.colors.primary,
-              context.colors.primary,
-              context.colors.secondary,
-            ]),
+          duration: const Duration(seconds: 5),
+          text: Text(
+            'OR',
+            style: const TextStyle(fontFamily: 'FunFont', fontSize: 150),
+          ),
+          colors: [
+            context.colors.primary,
+            context.colors.primary,
+            context.colors.primary,
+            context.colors.secondary,
+          ],
+        ),
         Text(
           'Download Our App to Join Us',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 40,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
         ),
         Gap(20),
-        DownloadButtons()
+        DownloadButtons(),
       ],
     );
   }
@@ -139,16 +140,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Image.asset(
                   scale: 0.1,
                   'assets/logo/main_logo3.png',
-                  width: ResponsiveValue<double>(context,
-                      defaultValue: 250.0, // Much bigger now
-                      conditionalValues: [
-                        Condition.largerThan(name: MOBILE, value: 180.0)
-                      ]).value,
-                  height: ResponsiveValue<double>(context,
-                      defaultValue: 350.0, // Much bigger now
-                      conditionalValues: [
-                        Condition.largerThan(name: MOBILE, value: 220.0)
-                      ]).value,
+                  width: ResponsiveValue<double>(
+                    context,
+                    defaultValue: 250.0, // Much bigger now
+                    conditionalValues: [
+                      Condition.largerThan(name: MOBILE, value: 180.0),
+                    ],
+                  ).value,
+                  height: ResponsiveValue<double>(
+                    context,
+                    defaultValue: 350.0, // Much bigger now
+                    conditionalValues: [
+                      Condition.largerThan(name: MOBILE, value: 220.0),
+                    ],
+                  ).value,
                   fit: BoxFit
                       .contain, // ✅ Changed to contain so it scales properly
                 ),
@@ -165,26 +170,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         const Gap(16),
         GradientAnimationText(
-            duration: const Duration(seconds: 5),
-            text: Text(
-              'OR',
-              style: const TextStyle(fontFamily: 'FunFont', fontSize: 60),
-            ),
-            colors: [
-              context.colors.primary,
-              context.colors.primary,
-              context.colors.primary,
-              context.colors.secondary,
-            ]),
+          duration: const Duration(seconds: 5),
+          text: Text(
+            'OR',
+            style: const TextStyle(fontFamily: 'FunFont', fontSize: 60),
+          ),
+          colors: [
+            context.colors.primary,
+            context.colors.primary,
+            context.colors.primary,
+            context.colors.secondary,
+          ],
+        ),
         Text(
           'Download Our App to Join Us',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 40,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
         ),
         Gap(20),
-        DownloadButtons()
+        DownloadButtons(),
       ],
     );
   }
@@ -198,11 +201,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       text: TextSpan(
         style: TextStyle(
           // ✅ Use ResponsiveValue for font sizes for smooth scaling.
-          fontSize: ResponsiveValue<double>(context,
-              defaultValue: 16.0,
-              conditionalValues: [
-                Condition.largerThan(name: TABLET, value: 24.0)
-              ]).value,
+          fontSize: ResponsiveValue<double>(
+            context,
+            defaultValue: 16.0,
+            conditionalValues: [
+              Condition.largerThan(name: TABLET, value: 24.0),
+            ],
+          ).value,
           color: context.colors.secondary,
           fontWeight: FontWeight.w400,
           height: 1.3,
@@ -218,11 +223,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           TextSpan(
             text: 'El Shaddai 247 ${isMobile ? '\n' : ''}',
             style: TextStyle(
-              fontSize: ResponsiveValue<double>(context,
-                  defaultValue: 28.0,
-                  conditionalValues: [
-                    Condition.largerThan(name: TABLET, value: 32.0)
-                  ]).value,
+              fontSize: ResponsiveValue<double>(
+                context,
+                defaultValue: 28.0,
+                conditionalValues: [
+                  Condition.largerThan(name: TABLET, value: 32.0),
+                ],
+              ).value,
               fontWeight: FontWeight.bold,
               color: context.colors.primary,
               letterSpacing: 1.2,
@@ -231,11 +238,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           TextSpan(
             text: 'Prayer Altar\n',
             style: TextStyle(
-              fontSize: ResponsiveValue<double>(context,
-                  defaultValue: 24.0,
-                  conditionalValues: [
-                    Condition.largerThan(name: TABLET, value: 28.0)
-                  ]).value,
+              fontSize: ResponsiveValue<double>(
+                context,
+                defaultValue: 24.0,
+                conditionalValues: [
+                  Condition.largerThan(name: TABLET, value: 28.0),
+                ],
+              ).value,
               fontWeight: FontWeight.w600,
               color: context.colors.secondary,
               letterSpacing: 0.8,
@@ -246,21 +255,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             style: TextStyle(
               color: context.colors.secondary.withOpac(0.7),
               fontWeight: FontWeight.w300,
-              fontSize: ResponsiveValue<double>(context,
-                  defaultValue: 18.0,
-                  conditionalValues: [
-                    Condition.largerThan(name: TABLET, value: 20.0)
-                  ]).value,
+              fontSize: ResponsiveValue<double>(
+                context,
+                defaultValue: 18.0,
+                conditionalValues: [
+                  Condition.largerThan(name: TABLET, value: 20.0),
+                ],
+              ).value,
             ),
           ),
           TextSpan(
             text: 'Kingdom Of God.',
             style: TextStyle(
-              fontSize: ResponsiveValue<double>(context,
-                      defaultValue: 22.0,
-                      conditionalValues: [
-                        Condition.largerThan(name: TABLET, value: 26.0)
-                      ]).value! *
+              fontSize:
+                  ResponsiveValue<double>(
+                    context,
+                    defaultValue: 22.0,
+                    conditionalValues: [
+                      Condition.largerThan(name: TABLET, value: 26.0),
+                    ],
+                  ).value! *
                   0.9,
               fontWeight: FontWeight.bold,
               color: context.colors.secondary,
@@ -271,11 +285,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             text:
                 '\n\nJoin us in our prayers with the \n ${isMobile ? '247 Event Calendar' : ' '}',
             style: TextStyle(
-              fontSize: ResponsiveValue<double>(context,
-                  defaultValue: 16.0,
-                  conditionalValues: [
-                    Condition.largerThan(name: TABLET, value: 18.0)
-                  ]).value,
+              fontSize: ResponsiveValue<double>(
+                context,
+                defaultValue: 16.0,
+                conditionalValues: [
+                  Condition.largerThan(name: TABLET, value: 18.0),
+                ],
+              ).value,
               color: context.colors.secondary.withOpac(0.8),
               fontWeight: FontWeight.w400,
             ),

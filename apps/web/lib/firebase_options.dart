@@ -89,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'el-shadd.firebasestorage.app',
     measurementId: 'G-67C0E60LFC',
   );
+
 }

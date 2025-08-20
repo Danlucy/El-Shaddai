@@ -12,15 +12,15 @@ const targetNotifierProvider = TargetNotifierProvider._();
 final class TargetNotifierProvider
     extends $NotifierProvider<TargetNotifier, LatLng?> {
   const TargetNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'targetNotifierProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'targetNotifierProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$targetNotifierHash();
@@ -47,8 +47,14 @@ abstract class _$TargetNotifier extends $Notifier<LatLng?> {
   void runBuild() {
     final created = build();
     final ref = this.ref as $Ref<LatLng?, LatLng?>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<LatLng?, LatLng?>, LatLng?, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<LatLng?, LatLng?>,
+              LatLng?,
+              Object?,
+              Object?
+            >;
     element.handleValue(ref, created);
   }
 }

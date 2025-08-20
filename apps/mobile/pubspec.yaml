@@ -90,6 +90,7 @@ dependencies:
   retry: ^3.1.2
   package_info_plus: ^8.3.0
   showcaseview: ^4.0.1
+  glassmorphism: ^3.0.0
 
 dev_dependencies:
   flutter_test:

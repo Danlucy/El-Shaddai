@@ -1,0 +1,37 @@
+# Deploy to Firebase Hosting on merge to main
+name: Deploy to Firebase Hosting on merge
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Cache Flutter dependencies
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.gradle
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+
+      # Install Flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0' # set to your Flutter version
+
+      # Build Flutter web app
+      - run: cd apps/web && flutter build web --release --target=lib/main.dart --web-renderer html
+
+      # Deploy to Firebase Hosting
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EL_SHADD }}
+          channelId: live
+          projectId: el-shadd

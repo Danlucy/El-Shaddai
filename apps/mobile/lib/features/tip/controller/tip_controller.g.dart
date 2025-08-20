@@ -9,23 +9,26 @@ part of 'tip_controller.dart';
 @ProviderFor(sharedPreferences)
 const sharedPreferencesProvider = SharedPreferencesProvider._();
 
-final class SharedPreferencesProvider extends $FunctionalProvider<
-        AsyncValue<SharedPreferences>,
-        SharedPreferences,
-        FutureOr<SharedPreferences>>
+final class SharedPreferencesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SharedPreferences>,
+          SharedPreferences,
+          FutureOr<SharedPreferences>
+        >
     with
         $FutureModifier<SharedPreferences>,
         $FutureProvider<SharedPreferences> {
   const SharedPreferencesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'sharedPreferencesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sharedPreferencesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$sharedPreferencesHash();
@@ -33,8 +36,8 @@ final class SharedPreferencesProvider extends $FunctionalProvider<
   @$internal
   @override
   $FutureProviderElement<SharedPreferences> $createElement(
-          $ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<SharedPreferences> create(Ref ref) {
