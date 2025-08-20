@@ -6,17 +6,15 @@ part of 'participant_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ParticipantModelImpl _$$ParticipantModelImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ParticipantModelImpl(
+_ParticipantModel _$ParticipantModelFromJson(Map<String, dynamic> json) =>
+    _ParticipantModel(
       bookingId: json['bookingId'] as String,
       participantsId: (json['participantsId'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
     );
 
-Map<String, dynamic> _$$ParticipantModelImplToJson(
-        _$ParticipantModelImpl instance) =>
+Map<String, dynamic> _$ParticipantModelToJson(_ParticipantModel instance) =>
     <String, dynamic>{
       'bookingId': instance.bookingId,
       'participantsId': instance.participantsId,

@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:constants/constants.dart';
 import 'package:firebase/firebase.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:models/models.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 final participantRepositoryProvider = Provider((ref) {
   return ParticipantRepository(

@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,95 +9,61 @@ part of 'recurrence_configuration_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$RecurrenceConfigurationModel {
   @JsonKey(name: 'end_times')
-  int get recurrenceFrequency => throw _privateConstructorUsedError;
-  int? get weeklyDays => throw _privateConstructorUsedError;
-  int get type => throw _privateConstructorUsedError;
+  int get recurrenceFrequency;
+  int? get weeklyDays;
+  int get type;
   @JsonKey(name: 'repeat_interval')
-  int get recurrenceInterval => throw _privateConstructorUsedError;
-
-  /// Serializes this RecurrenceConfigurationModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  int get recurrenceInterval;
 
   /// Create a copy of RecurrenceConfigurationModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $RecurrenceConfigurationModelCopyWith<RecurrenceConfigurationModel>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $RecurrenceConfigurationModelCopyWith<$Res> {
-  factory $RecurrenceConfigurationModelCopyWith(
-          RecurrenceConfigurationModel value,
-          $Res Function(RecurrenceConfigurationModel) then) =
-      _$RecurrenceConfigurationModelCopyWithImpl<$Res,
-          RecurrenceConfigurationModel>;
-  @useResult
-  $Res call(
-      {@JsonKey(name: 'end_times') int recurrenceFrequency,
-      int? weeklyDays,
-      int type,
-      @JsonKey(name: 'repeat_interval') int recurrenceInterval});
-}
-
-/// @nodoc
-class _$RecurrenceConfigurationModelCopyWithImpl<$Res,
-        $Val extends RecurrenceConfigurationModel>
-    implements $RecurrenceConfigurationModelCopyWith<$Res> {
-  _$RecurrenceConfigurationModelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of RecurrenceConfigurationModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
+  $RecurrenceConfigurationModelCopyWith<RecurrenceConfigurationModel>
+      get copyWith => _$RecurrenceConfigurationModelCopyWithImpl<
+              RecurrenceConfigurationModel>(
+          this as RecurrenceConfigurationModel, _$identity);
+
+  /// Serializes this RecurrenceConfigurationModel to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? recurrenceFrequency = null,
-    Object? weeklyDays = freezed,
-    Object? type = null,
-    Object? recurrenceInterval = null,
-  }) {
-    return _then(_value.copyWith(
-      recurrenceFrequency: null == recurrenceFrequency
-          ? _value.recurrenceFrequency
-          : recurrenceFrequency // ignore: cast_nullable_to_non_nullable
-              as int,
-      weeklyDays: freezed == weeklyDays
-          ? _value.weeklyDays
-          : weeklyDays // ignore: cast_nullable_to_non_nullable
-              as int?,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as int,
-      recurrenceInterval: null == recurrenceInterval
-          ? _value.recurrenceInterval
-          : recurrenceInterval // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is RecurrenceConfigurationModel &&
+            (identical(other.recurrenceFrequency, recurrenceFrequency) ||
+                other.recurrenceFrequency == recurrenceFrequency) &&
+            (identical(other.weeklyDays, weeklyDays) ||
+                other.weeklyDays == weeklyDays) &&
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.recurrenceInterval, recurrenceInterval) ||
+                other.recurrenceInterval == recurrenceInterval));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, recurrenceFrequency, weeklyDays, type, recurrenceInterval);
+
+  @override
+  String toString() {
+    return 'RecurrenceConfigurationModel(recurrenceFrequency: $recurrenceFrequency, weeklyDays: $weeklyDays, type: $type, recurrenceInterval: $recurrenceInterval)';
   }
 }
 
 /// @nodoc
-abstract class _$$RecurrenceConfigurationModelImplCopyWith<$Res>
-    implements $RecurrenceConfigurationModelCopyWith<$Res> {
-  factory _$$RecurrenceConfigurationModelImplCopyWith(
-          _$RecurrenceConfigurationModelImpl value,
-          $Res Function(_$RecurrenceConfigurationModelImpl) then) =
-      __$$RecurrenceConfigurationModelImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $RecurrenceConfigurationModelCopyWith<$Res> {
+  factory $RecurrenceConfigurationModelCopyWith(
+          RecurrenceConfigurationModel value,
+          $Res Function(RecurrenceConfigurationModel) _then) =
+      _$RecurrenceConfigurationModelCopyWithImpl;
   @useResult
   $Res call(
       {@JsonKey(name: 'end_times') int recurrenceFrequency,
@@ -107,14 +73,12 @@ abstract class _$$RecurrenceConfigurationModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$RecurrenceConfigurationModelImplCopyWithImpl<$Res>
-    extends _$RecurrenceConfigurationModelCopyWithImpl<$Res,
-        _$RecurrenceConfigurationModelImpl>
-    implements _$$RecurrenceConfigurationModelImplCopyWith<$Res> {
-  __$$RecurrenceConfigurationModelImplCopyWithImpl(
-      _$RecurrenceConfigurationModelImpl _value,
-      $Res Function(_$RecurrenceConfigurationModelImpl) _then)
-      : super(_value, _then);
+class _$RecurrenceConfigurationModelCopyWithImpl<$Res>
+    implements $RecurrenceConfigurationModelCopyWith<$Res> {
+  _$RecurrenceConfigurationModelCopyWithImpl(this._self, this._then);
+
+  final RecurrenceConfigurationModel _self;
+  final $Res Function(RecurrenceConfigurationModel) _then;
 
   /// Create a copy of RecurrenceConfigurationModel
   /// with the given fields replaced by the non-null parameter values.
@@ -126,31 +90,206 @@ class __$$RecurrenceConfigurationModelImplCopyWithImpl<$Res>
     Object? type = null,
     Object? recurrenceInterval = null,
   }) {
-    return _then(_$RecurrenceConfigurationModelImpl(
+    return _then(_self.copyWith(
       recurrenceFrequency: null == recurrenceFrequency
-          ? _value.recurrenceFrequency
+          ? _self.recurrenceFrequency
           : recurrenceFrequency // ignore: cast_nullable_to_non_nullable
               as int,
       weeklyDays: freezed == weeklyDays
-          ? _value.weeklyDays
+          ? _self.weeklyDays
           : weeklyDays // ignore: cast_nullable_to_non_nullable
               as int?,
       type: null == type
-          ? _value.type
+          ? _self.type
           : type // ignore: cast_nullable_to_non_nullable
               as int,
       recurrenceInterval: null == recurrenceInterval
-          ? _value.recurrenceInterval
+          ? _self.recurrenceInterval
           : recurrenceInterval // ignore: cast_nullable_to_non_nullable
               as int,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [RecurrenceConfigurationModel].
+extension RecurrenceConfigurationModelPatterns on RecurrenceConfigurationModel {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_RecurrenceConfigurationModel value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _RecurrenceConfigurationModel() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_RecurrenceConfigurationModel value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _RecurrenceConfigurationModel():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_RecurrenceConfigurationModel value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _RecurrenceConfigurationModel() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            @JsonKey(name: 'end_times') int recurrenceFrequency,
+            int? weeklyDays,
+            int type,
+            @JsonKey(name: 'repeat_interval') int recurrenceInterval)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _RecurrenceConfigurationModel() when $default != null:
+        return $default(_that.recurrenceFrequency, _that.weeklyDays, _that.type,
+            _that.recurrenceInterval);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            @JsonKey(name: 'end_times') int recurrenceFrequency,
+            int? weeklyDays,
+            int type,
+            @JsonKey(name: 'repeat_interval') int recurrenceInterval)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _RecurrenceConfigurationModel():
+        return $default(_that.recurrenceFrequency, _that.weeklyDays, _that.type,
+            _that.recurrenceInterval);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            @JsonKey(name: 'end_times') int recurrenceFrequency,
+            int? weeklyDays,
+            int type,
+            @JsonKey(name: 'repeat_interval') int recurrenceInterval)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _RecurrenceConfigurationModel() when $default != null:
+        return $default(_that.recurrenceFrequency, _that.weeklyDays, _that.type,
+            _that.recurrenceInterval);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable(createFactory: false)
-class _$RecurrenceConfigurationModelImpl extends _RecurrenceConfigurationModel {
-  _$RecurrenceConfigurationModelImpl(
+class _RecurrenceConfigurationModel extends RecurrenceConfigurationModel {
+  _RecurrenceConfigurationModel(
       {@JsonKey(name: 'end_times') required this.recurrenceFrequency,
       this.weeklyDays,
       required this.type,
@@ -168,16 +307,27 @@ class _$RecurrenceConfigurationModelImpl extends _RecurrenceConfigurationModel {
   @JsonKey(name: 'repeat_interval')
   final int recurrenceInterval;
 
+  /// Create a copy of RecurrenceConfigurationModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'RecurrenceConfigurationModel(recurrenceFrequency: $recurrenceFrequency, weeklyDays: $weeklyDays, type: $type, recurrenceInterval: $recurrenceInterval)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$RecurrenceConfigurationModelCopyWith<_RecurrenceConfigurationModel>
+      get copyWith => __$RecurrenceConfigurationModelCopyWithImpl<
+          _RecurrenceConfigurationModel>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$RecurrenceConfigurationModelToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$RecurrenceConfigurationModelImpl &&
+            other is _RecurrenceConfigurationModel &&
             (identical(other.recurrenceFrequency, recurrenceFrequency) ||
                 other.recurrenceFrequency == recurrenceFrequency) &&
             (identical(other.weeklyDays, weeklyDays) ||
@@ -192,51 +342,65 @@ class _$RecurrenceConfigurationModelImpl extends _RecurrenceConfigurationModel {
   int get hashCode => Object.hash(
       runtimeType, recurrenceFrequency, weeklyDays, type, recurrenceInterval);
 
-  /// Create a copy of RecurrenceConfigurationModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  @pragma('vm:prefer-inline')
-  _$$RecurrenceConfigurationModelImplCopyWith<
-          _$RecurrenceConfigurationModelImpl>
-      get copyWith => __$$RecurrenceConfigurationModelImplCopyWithImpl<
-          _$RecurrenceConfigurationModelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$RecurrenceConfigurationModelImplToJson(
-      this,
-    );
+  String toString() {
+    return 'RecurrenceConfigurationModel(recurrenceFrequency: $recurrenceFrequency, weeklyDays: $weeklyDays, type: $type, recurrenceInterval: $recurrenceInterval)';
   }
 }
 
-abstract class _RecurrenceConfigurationModel
-    extends RecurrenceConfigurationModel {
-  factory _RecurrenceConfigurationModel(
-          {@JsonKey(name: 'end_times') required final int recurrenceFrequency,
-          final int? weeklyDays,
-          required final int type,
-          @JsonKey(name: 'repeat_interval')
-          required final int recurrenceInterval}) =
-      _$RecurrenceConfigurationModelImpl;
-  _RecurrenceConfigurationModel._() : super._();
+/// @nodoc
+abstract mixin class _$RecurrenceConfigurationModelCopyWith<$Res>
+    implements $RecurrenceConfigurationModelCopyWith<$Res> {
+  factory _$RecurrenceConfigurationModelCopyWith(
+          _RecurrenceConfigurationModel value,
+          $Res Function(_RecurrenceConfigurationModel) _then) =
+      __$RecurrenceConfigurationModelCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {@JsonKey(name: 'end_times') int recurrenceFrequency,
+      int? weeklyDays,
+      int type,
+      @JsonKey(name: 'repeat_interval') int recurrenceInterval});
+}
 
-  @override
-  @JsonKey(name: 'end_times')
-  int get recurrenceFrequency;
-  @override
-  int? get weeklyDays;
-  @override
-  int get type;
-  @override
-  @JsonKey(name: 'repeat_interval')
-  int get recurrenceInterval;
+/// @nodoc
+class __$RecurrenceConfigurationModelCopyWithImpl<$Res>
+    implements _$RecurrenceConfigurationModelCopyWith<$Res> {
+  __$RecurrenceConfigurationModelCopyWithImpl(this._self, this._then);
+
+  final _RecurrenceConfigurationModel _self;
+  final $Res Function(_RecurrenceConfigurationModel) _then;
 
   /// Create a copy of RecurrenceConfigurationModel
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$RecurrenceConfigurationModelImplCopyWith<
-          _$RecurrenceConfigurationModelImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? recurrenceFrequency = null,
+    Object? weeklyDays = freezed,
+    Object? type = null,
+    Object? recurrenceInterval = null,
+  }) {
+    return _then(_RecurrenceConfigurationModel(
+      recurrenceFrequency: null == recurrenceFrequency
+          ? _self.recurrenceFrequency
+          : recurrenceFrequency // ignore: cast_nullable_to_non_nullable
+              as int,
+      weeklyDays: freezed == weeklyDays
+          ? _self.weeklyDays
+          : weeklyDays // ignore: cast_nullable_to_non_nullable
+              as int?,
+      type: null == type
+          ? _self.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as int,
+      recurrenceInterval: null == recurrenceInterval
+          ? _self.recurrenceInterval
+          : recurrenceInterval // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
 }
+
+// dart format on

@@ -6,8 +6,7 @@ part of 'post_state.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$PostStateImpl _$$PostStateImplFromJson(Map<String, dynamic> json) =>
-    _$PostStateImpl(
+_PostState _$PostStateFromJson(Map<String, dynamic> json) => _PostState(
       title: json['title'] as String?,
       description: json['description'] as String?,
       image: (json['image'] as List<dynamic>?)
@@ -15,7 +14,7 @@ _$PostStateImpl _$$PostStateImplFromJson(Map<String, dynamic> json) =>
           .toList(),
     );
 
-Map<String, dynamic> _$$PostStateImplToJson(_$PostStateImpl instance) =>
+Map<String, dynamic> _$PostStateToJson(_PostState instance) =>
     <String, dynamic>{
       'title': instance.title,
       'description': instance.description,

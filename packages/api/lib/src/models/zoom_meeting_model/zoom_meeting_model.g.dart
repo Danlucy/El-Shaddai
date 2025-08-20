@@ -6,9 +6,8 @@ part of 'zoom_meeting_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ZoomMeetingModelImpl _$$ZoomMeetingModelImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ZoomMeetingModelImpl(
+_ZoomMeetingModel _$ZoomMeetingModelFromJson(Map<String, dynamic> json) =>
+    _ZoomMeetingModel(
       topic: json['topic'] as String?,
       description: json['agenda'] as String?,
       duration: (json['duration'] as num?)?.toInt(),
@@ -21,8 +20,7 @@ _$ZoomMeetingModelImpl _$$ZoomMeetingModelImplFromJson(
       defaultPassword: json['default_password'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$$ZoomMeetingModelImplToJson(
-        _$ZoomMeetingModelImpl instance) =>
+Map<String, dynamic> _$ZoomMeetingModelToJson(_ZoomMeetingModel instance) =>
     <String, dynamic>{
       'topic': instance.topic,
       'agenda': instance.description,
