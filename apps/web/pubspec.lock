@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "0.13.4"
   api:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "../../packages/api"
       relative: true

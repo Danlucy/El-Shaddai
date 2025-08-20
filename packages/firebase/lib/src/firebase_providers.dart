@@ -7,10 +7,11 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-final firestoreProvider = Provider((ref) => FirebaseFirestore.instance
-  ..settings = const Settings(
-    persistenceEnabled: true,
-  ));
+final firestoreProvider = Provider(
+  (ref) =>
+      FirebaseFirestore.instance
+        ..settings = const Settings(persistenceEnabled: true),
+);
 
 final authProvider = Provider((ref) => FirebaseAuth.instance);
 
@@ -21,10 +22,10 @@ final googleSignInProvider = Provider<GoogleSignIn>((ref) {
   // Safe to await somewhere during app boot; here we just fire-and-forget.
   g.initialize(
     clientId: kIsWeb
-        ? 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com'
+        ? '5347198504-mv7hsnnvvca4k7keda0410t262f95q8q.apps.googleusercontent.com'
         : (Platform.isIOS
-            ? 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com'
-            : null),
+              ? 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com'
+              : '5347198504-sp2j9q294dccctk61l2ea782r43oif7c.apps.googleusercontent.com'),
   );
   return g;
 });

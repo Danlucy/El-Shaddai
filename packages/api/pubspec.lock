@@ -202,7 +202,7 @@ packages:
     source: hosted
     version: "1.19.1"
   constants:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "../constants"
       relative: true
@@ -528,7 +528,7 @@ packages:
     source: hosted
     version: "0.7.1"
   json_annotation:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: json_annotation
       sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
@@ -616,7 +616,7 @@ packages:
     source: hosted
     version: "5.5.0"
   models:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "../models"
       relative: true

@@ -8,15 +8,15 @@ part 'access_token_model.freezed.dart';
 part 'access_token_model.g.dart';
 
 @freezed
-class AccessToken with _$AccessToken {
-  AccessToken({
-    required this.token,
-    required this.refreshToken,
-    required this.duration,
-  });
-  final String token;
-  final String refreshToken;
-  final DateTime duration;
+sealed class AccessToken with _$AccessToken {
+  const factory AccessToken({
+    required String token,
+    required String refreshToken,
+    required DateTime duration,
+  }) = _AccessToken;
+
+  factory AccessToken.fromJson(Map<String, dynamic> json) =>
+      _$AccessTokenFromJson(json);
 }
 
 @riverpod

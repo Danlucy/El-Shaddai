@@ -218,7 +218,7 @@ class _GooglePlaceAutoCompleteTextFieldState
             child: Material(
               child: GestureDetector(
                 onVerticalDragUpdate: (details) {
-                  Scrollable.of(scrollableContext)?.position.moveTo(
+                  Scrollable.of(scrollableContext).position.moveTo(
                         Scrollable.of(scrollableContext).position.pixels -
                             details.delta.dy,
                       );

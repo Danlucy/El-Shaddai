@@ -3,6 +3,23 @@
 part of 'access_token_model.dart';
 
 // **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_AccessToken _$AccessTokenFromJson(Map<String, dynamic> json) => _AccessToken(
+  token: json['token'] as String,
+  refreshToken: json['refreshToken'] as String,
+  duration: DateTime.parse(json['duration'] as String),
+);
+
+Map<String, dynamic> _$AccessTokenToJson(_AccessToken instance) =>
+    <String, dynamic>{
+      'token': instance.token,
+      'refreshToken': instance.refreshToken,
+      'duration': instance.duration.toIso8601String(),
+    };
+
+// **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
@@ -12,15 +29,15 @@ const accessTokenNotifierProvider = AccessTokenNotifierProvider._();
 final class AccessTokenNotifierProvider
     extends $AsyncNotifierProvider<AccessTokenNotifier, AccessToken?> {
   const AccessTokenNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'accessTokenNotifierProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'accessTokenNotifierProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$accessTokenNotifierHash();
@@ -40,11 +57,14 @@ abstract class _$AccessTokenNotifier extends $AsyncNotifier<AccessToken?> {
   void runBuild() {
     final created = build();
     final ref = this.ref as $Ref<AsyncValue<AccessToken?>, AccessToken?>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<AccessToken?>, AccessToken?>,
-        AsyncValue<AccessToken?>,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<AccessToken?>, AccessToken?>,
+              AsyncValue<AccessToken?>,
+              Object?,
+              Object?
+            >;
     element.handleValue(ref, created);
   }
 }
