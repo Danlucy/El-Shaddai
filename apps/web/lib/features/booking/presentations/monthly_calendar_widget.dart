@@ -268,7 +268,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                         height: 60,
                         width: double.infinity,
                         border: 1,
-                        blur: 10,
+                        blur: 5,
                         borderGradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
