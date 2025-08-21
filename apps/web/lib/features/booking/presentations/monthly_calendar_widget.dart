@@ -16,9 +16,7 @@ import 'package:website/features/booking/controller/data_source.dart';
 import 'package:website/features/booking/presentations/daily_booking_dialog.dart';
 
 class MonthlyCalendarComponent extends ConsumerStatefulWidget {
-  const MonthlyCalendarComponent({
-    super.key,
-  });
+  const MonthlyCalendarComponent({super.key});
 
   @override
   ConsumerState<MonthlyCalendarComponent> createState() =>
@@ -91,8 +89,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
   // Utility to get the grid position (row and column) of a date
   Point<int> _getGridPosition(DateTime date, DateTime displayDate) {
     final firstDayOfMonth = DateTime(displayDate.year, displayDate.month, 1);
-    final firstDayInView =
-        firstDayOfMonth.subtract(Duration(days: firstDayOfMonth.weekday % 7));
+    final firstDayInView = firstDayOfMonth.subtract(
+      Duration(days: firstDayOfMonth.weekday % 7),
+    );
 
     final dayDifference = date.difference(firstDayInView).inDays;
     final row = dayDifference ~/ 7;
@@ -102,25 +101,29 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
 
   // Calculate gradient direction and intensity for each cell with animation
   Map<String, dynamic> _getCellGradientInfo(
-      DateTime date,
-      DateTime selectedDate,
-      DateTime? previousSelectedDate,
-      double animationValue) {
-    Map<String, dynamic> currentGradientInfo =
-        _calculateGradientForDate(date, selectedDate);
+    DateTime date,
+    DateTime selectedDate,
+    DateTime? previousSelectedDate,
+    double animationValue,
+  ) {
+    Map<String, dynamic> currentGradientInfo = _calculateGradientForDate(
+      date,
+      selectedDate,
+    );
     Map<String, dynamic> previousGradientInfo = previousSelectedDate != null
         ? _calculateGradientForDate(date, previousSelectedDate)
         : {
             'distance': 10.0,
             'start': Alignment.center,
             'end': Alignment.center,
-            'intensity': 0.0
+            'intensity': 0.0,
           };
 
     final currentIntensity = currentGradientInfo['intensity'] as double;
     final previousIntensity = previousGradientInfo['intensity'] as double;
 
-    final interpolatedIntensity = previousIntensity +
+    final interpolatedIntensity =
+        previousIntensity +
         (currentIntensity - previousIntensity) * animationValue;
 
     return {
@@ -133,7 +136,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
 
   // Helper method to calculate gradient for a specific date using Manhattan distance
   Map<String, dynamic> _calculateGradientForDate(
-      DateTime date, DateTime targetDate) {
+    DateTime date,
+    DateTime targetDate,
+  ) {
     final displayDate = _calendarController.displayDate ?? targetDate;
 
     final targetPos = _getGridPosition(targetDate, displayDate);
@@ -149,7 +154,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
         'distance': 0.0,
         'start': Alignment.center,
         'end': Alignment.center,
-        'intensity': 0.0
+        'intensity': 0.0,
       };
     }
 
@@ -214,26 +219,27 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
     }
 
     // Listen to provider changes - but avoid circular updates
-    ref.listen(
-      calendarDateNotifierProvider,
-      (previous, next) {
-        if (!_isUpdatingFromProvider && previous != next && mounted) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              _updateCalendarController(next);
-            }
-          });
-        }
-      },
-    );
+    ref.listen(calendarDateNotifierProvider, (previous, next) {
+      if (!_isUpdatingFromProvider && previous != next && mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _updateCalendarController(next);
+          }
+        });
+      }
+    });
 
     // Web-optimized text scaling - simpler approach for web
-    final bool isLargeText =
-        ResponsiveValue(context, defaultValue: false, conditionalValues: [
-      Condition.smallerThan(name: MOBILE, value: false),
-      Condition.between(start: 450, end: 800, value: true),
-      Condition.largerThan(name: TABLET, value: true),
-    ]).value;
+    final bool isLargeText = ResponsiveValue(
+      context,
+      defaultValue: false,
+      conditionalValues: [
+        Condition.smallerThan(name: MOBILE, value: false),
+        Condition.between(start: 450, end: 800, value: true),
+        Condition.largerThan(name: TABLET, value: true),
+      ],
+    ).value;
+    final width = MediaQuery.sizeOf(context).width;
 
     // Extract date components
     final dayOfWeek = DateFormat('EEE').format(selectedDate);
@@ -244,7 +250,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
     return AnimatedBuilder(
       animation: _gradientAnimation,
       builder: (context, child) {
-        return ref.watch(bookingStreamProvider()).when(
+        return ref
+            .watch(bookingStreamProvider())
+            .when(
               data: (data) {
                 // Create a controller instance for checking booking status
                 MonthlyCalendarController controller =
@@ -281,7 +289,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                         borderRadius: 12,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                           child: RichText(
                             textAlign: TextAlign.center,
                             text: TextSpan(
@@ -292,8 +302,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                   style: TextStyle(
                                     fontSize: isLargeText ? 24 : 20,
                                     fontWeight: FontWeight.normal,
-                                    color:
-                                        context.colors.secondary.withOpac(0.8),
+                                    color: context.colors.secondary.withOpac(
+                                      0.8,
+                                    ),
                                   ),
                                 ),
                                 TextSpan(
@@ -317,8 +328,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                   style: TextStyle(
                                     fontSize: isLargeText ? 22 : 18,
                                     fontWeight: FontWeight.normal,
-                                    color:
-                                        context.colors.secondary.withOpac(0.8),
+                                    color: context.colors.secondary.withOpac(
+                                      0.8,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -342,16 +354,23 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                           borderRadius: BorderRadius.circular(12),
                           child: SfCalendar(
                             headerStyle: CalendarHeaderStyle(
-                                textStyle:
-                                    TextStyle(fontSize: isLargeText ? 24 : 20),
-                                backgroundColor: Colors.transparent),
-                            headerHeight:
-                                ResponsiveValue(context, conditionalValues: [
-                              Condition.smallerThan(name: MOBILE, value: 60),
-                              Condition.between(
-                                  start: 450, end: 800, value: 70),
-                              Condition.largerThan(name: TABLET, value: 80),
-                            ]).value.toDouble(),
+                              textStyle: TextStyle(
+                                fontSize: isLargeText ? 24 : 20,
+                              ),
+                              backgroundColor: Colors.transparent,
+                            ),
+                            headerHeight: ResponsiveValue(
+                              context,
+                              conditionalValues: [
+                                Condition.smallerThan(name: MOBILE, value: 60),
+                                Condition.between(
+                                  start: 450,
+                                  end: 800,
+                                  value: 70,
+                                ),
+                                Condition.largerThan(name: TABLET, value: 80),
+                              ],
+                            ).value.toDouble(),
                             viewNavigationMode: ViewNavigationMode.none,
                             showNavigationArrow: true,
                             dataSource: BookingDataSource(data),
@@ -359,8 +378,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                             initialSelectedDate: selectedDate,
 
                             // IMPORTANT: Handle calendar's internal selection changes
-                            onSelectionChanged:
-                                (CalendarSelectionDetails details) {
+                            onSelectionChanged: (CalendarSelectionDetails details) {
                               if (details.date != null &&
                                   !_isUpdatingFromProvider) {
                                 final normalizedDate = DateTime(
@@ -373,25 +391,25 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                 Future.microtask(() {
                                   ref
                                       .read(
-                                          calendarDateNotifierProvider.notifier)
+                                        calendarDateNotifierProvider.notifier,
+                                      )
                                       .updateSelectedDate(normalizedDate);
                                 });
                               }
                             },
 
                             // Handle view changes (month navigation)
-
                             monthViewSettings: const MonthViewSettings(
                               appointmentDisplayCount: 0,
                             ),
-                            monthCellBuilder: (BuildContext context,
-                                MonthCellDetails details) {
+                            monthCellBuilder: (BuildContext context, MonthCellDetails details) {
                               // Use _calendarController.displayDate with fallback
                               final currentDisplayDate =
                                   _calendarController.displayDate ??
-                                      selectedDate;
+                                  selectedDate;
 
-                              bool isCurrentMonth = details.date.month ==
+                              bool isCurrentMonth =
+                                  details.date.month ==
                                   currentDisplayDate.month;
 
                               // Normalize dates for comparison (ignore time component)
@@ -406,14 +424,16 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                 selectedDate.day,
                               );
 
-                              bool isSelectedDate = normalizedDetailDate ==
+                              bool isSelectedDate =
+                                  normalizedDetailDate ==
                                   normalizedSelectedDate;
 
                               final gradientInfo = _getCellGradientInfo(
-                                  details.date,
-                                  selectedDate,
-                                  _previousSelectedDate,
-                                  _gradientAnimation.value);
+                                details.date,
+                                selectedDate,
+                                _previousSelectedDate,
+                                _gradientAnimation.value,
+                              );
 
                               final intensity =
                                   gradientInfo['intensity'] as double;
@@ -422,15 +442,20 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                               final gradientEnd =
                                   gradientInfo['end'] as Alignment;
 
-                              List<BookingModel> bookings =
-                                  data.where((element) {
+                              List<BookingModel> bookings = data.where((
+                                element,
+                              ) {
                                 return isOverlapping(
-                                    details.date, element.timeRange);
+                                  details.date,
+                                  element.timeRange,
+                                );
                               }).toList();
                               bool isBooked = bookings.isNotEmpty;
 
                               bool fullyBooked = controller.isFullyBooked(
-                                  details.date, bookings);
+                                details.date,
+                                bookings,
+                              );
 
                               return MouseRegion(
                                 cursor: SystemMouseCursors.click,
@@ -444,31 +469,10 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                           )
                                         : Border.all(
                                             width: 0.3,
-                                            color:
-                                                Colors.grey.withOpacity(0.4)),
+                                            color: Colors.grey.withOpac(0.4),
+                                          ),
                                   ),
                                   child: GestureDetector(
-                                    onDoubleTap: () {
-                                      final normalizedDate = DateTime(
-                                        details.date.year,
-                                        details.date.month,
-                                        details.date.day,
-                                      );
-
-                                      // Use Future.microtask to delay provider update
-                                      Future.microtask(() {
-                                        ref
-                                            .read(calendarDateNotifierProvider
-                                                .notifier)
-                                            .updateSelectedDate(normalizedDate);
-
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) =>
-                                              const DailyBookingDialog(),
-                                        );
-                                      });
-                                    },
                                     onTap: () {
                                       final normalizedDate = DateTime(
                                         details.date.year,
@@ -478,46 +482,49 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
 
                                       // Use Future.microtask to delay provider update
                                       Future.microtask(() {
-                                        ref
-                                            .read(calendarDateNotifierProvider
-                                                .notifier)
-                                            .updateSelectedDate(normalizedDate);
+                                        print((selectedDate != normalizedDate));
+                                        if (selectedDate != normalizedDate) {
+                                          ref
+                                              .read(
+                                                calendarDateNotifierProvider
+                                                    .notifier,
+                                              )
+                                              .updateSelectedDate(
+                                                normalizedDate,
+                                              );
+                                          _updateCalendarController(
+                                            normalizedDate,
+                                          );
+                                        } else {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                const DailyBookingDialog(),
+                                          );
+                                        }
+                                        // ref
+                                        //     .read(
+                                        //       calendarDateNotifierProvider
+                                        //           .notifier,
+                                        //     )
+                                        //     .updateSelectedDate(normalizedDate);
                                       });
                                     },
                                     child: Center(
                                       child: Stack(
                                         children: [
                                           if (intensity > 0)
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  begin: gradientStart,
-                                                  end: gradientEnd,
-                                                  colors: [
-                                                    Colors.transparent,
-                                                    context.colors.secondary
-                                                        .withOpac(
-                                                            intensity * 0.25),
-                                                    context.colors.secondary
-                                                        .withOpac(
-                                                            intensity * 0.5),
-                                                    context.colors.secondary
-                                                        .withOpac(
-                                                            intensity * 0.8),
-                                                  ],
-                                                  stops: const [
-                                                    0.0,
-                                                    0.3,
-                                                    0.7,
-                                                    1.0
-                                                  ],
-                                                ),
-                                              ),
+                                            _MonthCalendarCellShadowDecoration(
+                                              gradientStart,
+                                              gradientEnd,
+                                              context,
+                                              intensity,
                                             ),
                                           Center(
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(4.0),
+                                              padding: const EdgeInsets.all(
+                                                4.0,
+                                              ),
                                               child: Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
@@ -527,30 +534,29 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                                     style: TextStyle(
                                                       fontSize: isSelectedDate
                                                           ? (isLargeText
-                                                              ? 22
-                                                              : 18)
+                                                                ? 22
+                                                                : 18)
                                                           : (isLargeText
-                                                              ? 20
-                                                              : 16),
-                                                      fontWeight: intensity >
-                                                                  0.15 ||
+                                                                ? 20
+                                                                : 16),
+                                                      fontWeight:
+                                                          intensity > 0.15 ||
                                                               isSelectedDate
                                                           ? FontWeight.w600
                                                           : FontWeight.normal,
                                                       color: !isCurrentMonth
                                                           ? Colors.grey
-                                                              .withOpacity(0.6)
+                                                                .withOpac(0.6)
                                                           : isSelectedDate
-                                                              ? context.colors
-                                                                  .secondary
-                                                              : intensity > 0.15
-                                                                  ? context
-                                                                      .colors
-                                                                      .secondary
-                                                                      .withOpac(
-                                                                          0.9)
-                                                                  : Colors
-                                                                      .white,
+                                                          ? context
+                                                                .colors
+                                                                .secondary
+                                                          : intensity > 0.15
+                                                          ? context
+                                                                .colors
+                                                                .secondary
+                                                                .withOpac(0.9)
+                                                          : Colors.white,
                                                     ),
                                                   ),
                                                   if (isBooked) ...[
@@ -561,12 +567,11 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                                           : 3.5,
                                                       backgroundColor:
                                                           fullyBooked
-                                                              ? Colors.red
-                                                                  .withOpacity(
-                                                                      0.9)
-                                                              : Colors.green
-                                                                  .withOpacity(
-                                                                      0.9),
+                                                          ? Colors.red.withOpac(
+                                                              0.9,
+                                                            )
+                                                          : Colors.green
+                                                                .withOpac(0.9),
                                                     ),
                                                   ],
                                                 ],
@@ -592,13 +597,14 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
               },
               error: (error, stack) {
                 return Container(
-                    constraints: const BoxConstraints(maxWidth: 1000),
-                    child: const Center(
-                      child: Text(
-                        'Error loading calendar',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ));
+                  constraints: const BoxConstraints(maxWidth: 1000),
+                  child: const Center(
+                    child: Text(
+                      'Error loading calendar',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                );
               },
               loading: () => Container(
                 constraints: const BoxConstraints(maxWidth: 1000),
@@ -606,6 +612,29 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
               ),
             );
       },
+    );
+  }
+
+  Container _MonthCalendarCellShadowDecoration(
+    Alignment gradientStart,
+    Alignment gradientEnd,
+    BuildContext context,
+    double intensity,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: gradientStart,
+          end: gradientEnd,
+          colors: [
+            Colors.transparent,
+            context.colors.secondary.withOpac(intensity * 0.25),
+            context.colors.secondary.withOpac(intensity * 0.5),
+            context.colors.secondary.withOpac(intensity * 0.8),
+          ],
+          stops: const [0.0, 0.3, 0.7, 1.0],
+        ),
+      ),
     );
   }
 }

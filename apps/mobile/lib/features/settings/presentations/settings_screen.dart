@@ -5,6 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/router/router.dart';
+import 'package:mobile/core/widgets/glass_list_tile.dart';
+import 'package:mobile/features/home/widgets/general_drawer.dart';
+import 'package:mobile/features/notifications/controller/notifications_controller.dart';
+import 'package:mobile/features/settings/state/settings_state.dart';
 import 'package:util/util.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -15,11 +19,56 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  final SettingsState _settings = SettingsState.instance;
+
+  bool _isLoading = true;
+  bool _notifications = false;
+  Future<void> _loadSettings() async {
+    await _settings.init(); // Initialize SharedPreferences
+
+    setState(() {
+      _notifications = _settings.getNotifications();
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _updateSetting(String settingName, bool value) async {
+    switch (settingName) {
+      case 'notifications':
+        if (value) {
+          // Request permission
+          bool granted = await NotificationsController.instance
+              .requestPermission();
+
+          // Only turn toggle on if permission granted
+          if (granted) {
+            setState(() => _notifications = true);
+            await _settings.setNotifications(true);
+          } else {
+            setState(() => _notifications = false); // show toggle as off
+            await _settings.setNotifications(false);
+          }
+        } else {
+          // User manually toggled off
+          setState(() => _notifications = false);
+          await _settings.setNotifications(false);
+        }
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // if (_isLoading) {
+    //   return const Scaffold(
+    //     backgroundColor: Color(0xFF0F1115),
+    //     body: Center(child: CircularProgressIndicator()),
+    //   );
+    // }
     return Scaffold(
+      drawer: const GeneralDrawer(),
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('Settings'),
         actions: [
           IconButton(
             icon: const Icon(Icons.close),
@@ -32,9 +81,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            ListTile(title: Text('Notification')),
+            GlassListTile(
+              leading: Icon(
+                Icons.notifications,
+                size: 20,
+                color: Colors.white.withOpac(0.9),
+              ),
+              title: const Text('Push Notifications'),
+              subtitle: const Text('Receive alerts and updates'),
+              isToggle: true,
+              toggleValue: _notifications,
+              onToggleChanged: (value) async {
+                if (value) {
+                  final granted = await NotificationsController.instance
+                      .requestPermission();
+                  setState(() => _notifications = granted);
+                  await SettingsState.instance.setNotifications(granted);
+                } else {
+                  setState(() => _notifications = false);
+                  await SettingsState.instance.setNotifications(false);
+                }
+              },
+            ),
             (ref.watch(accessTokenNotifierProvider).value == null)
-                ? ListTile(
+                ? GlassListTile(
                     onTap: () {
                       try {
                         const ZoomRoute(zoomLoginRoute).push(context);
@@ -62,11 +132,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ],
                     ),
                   )
-                : ListTile(
-                    leading: const Icon(Icons.video_camera_front),
-                    title: Text(
-                      'Log out Zoom',
-                      style: TextStyle(color: context.colors.error),
+                : GlassListTile(
+                    leading: Image.asset(
+                      'assets/logo/zoom_cam.png',
+                      width: 25,
+                      height: 25,
+                    ),
+                    title: Row(
+                      children: [
+                        Text(
+                          'Log Out',
+                          style: TextStyle(color: context.colors.error),
+                        ),
+                        const Gap(5),
+                        Image.asset(
+                          'assets/logo/zoom.png',
+                          width: 70,
+                          height: 30,
+                        ),
+                      ],
                     ),
                     onTap: () {
                       ref

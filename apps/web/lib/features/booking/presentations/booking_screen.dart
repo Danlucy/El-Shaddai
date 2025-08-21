@@ -35,11 +35,20 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                       Condition.between(start: 0, end: 450, value: 20),
                       const Condition.between(start: 801, end: 1000, value: 24),
                       const Condition.between(
-                          start: 1001, end: 1200, value: 28),
+                        start: 1001,
+                        end: 1200,
+                        value: 28,
+                      ),
                       const Condition.between(
-                          start: 1201, end: 1920, value: 30),
+                        start: 1201,
+                        end: 1920,
+                        value: 30,
+                      ),
                       const Condition.between(
-                          start: 1921, end: 3000, value: 34),
+                        start: 1921,
+                        end: 3000,
+                        value: 34,
+                      ),
                     ],
                   ).value,
                   fontWeight: FontWeight.bold,
@@ -76,9 +85,15 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                       context,
                       conditionalValues: [
                         const Condition.between(
-                            start: 0, end: 350, value: 12.0),
+                          start: 0,
+                          end: 350,
+                          value: 12.0,
+                        ),
                         const Condition.between(
-                            start: 351, end: 450, value: 16.0),
+                          start: 351,
+                          end: 450,
+                          value: 16.0,
+                        ),
                       ],
                     ).value,
                   ),
@@ -96,10 +111,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withOpac(0.15),
-                    Colors.transparent,
-                  ],
+                  colors: [Colors.white.withOpac(0.15), Colors.transparent],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -112,6 +124,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   }
 
   _buildDesktopLayout(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+
     return Align(
       alignment: Alignment.topCenter, // Center the content
       child: Stack(
@@ -129,11 +143,20 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                       Condition.between(start: 0, end: 450, value: 20),
                       const Condition.between(start: 801, end: 1000, value: 24),
                       const Condition.between(
-                          start: 1001, end: 1200, value: 28),
+                        start: 1001,
+                        end: 1200,
+                        value: 28,
+                      ),
                       const Condition.between(
-                          start: 1201, end: 1920, value: 30),
+                        start: 1201,
+                        end: 1920,
+                        value: 30,
+                      ),
                       const Condition.between(
-                          start: 1921, end: 3000, value: 34),
+                        start: 1921,
+                        end: 3000,
+                        value: 34,
+                      ),
                     ],
                   ).value,
                   fontWeight: FontWeight.bold,
@@ -141,23 +164,45 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                 ),
               ),
               GlassmorphicContainer(
+                constraints: BoxConstraints(
+                  maxWidth: width * 0.5,
+                  maxHeight: width * 0.5,
+                ),
                 width: ResponsiveValue<double>(
                   context,
                   defaultValue: 700.0,
                   conditionalValues: [
                     // 801-1920px (DESKTOP)
                     const Condition.between(
-                        start: 801, end: 1000, value: 700.0),
+                      start: 801,
+                      end: 1000,
+                      value: 700.0,
+                    ),
                     const Condition.between(
-                        start: 1001, end: 1200, value: 800.0),
+                      start: 1001,
+                      end: 1200,
+                      value: 800.0,
+                    ),
                     const Condition.between(
-                        start: 1201, end: 1500, value: 900.0),
+                      start: 1201,
+                      end: 1500,
+                      value: 900.0,
+                    ),
                     const Condition.between(
-                        start: 1501, end: 1920, value: 900.0),
+                      start: 1501,
+                      end: 1920,
+                      value: 900.0,
+                    ),
                     const Condition.between(
-                        start: 1921, end: 2500, value: 800.0),
+                      start: 1921,
+                      end: 2500,
+                      value: 800.0,
+                    ),
                     const Condition.between(
-                        start: 2501, end: 3000, value: 1200.0),
+                      start: 2501,
+                      end: 3000,
+                      value: 1200.0,
+                    ),
                   ],
                 ).value, // Fallback value
                 height: ResponsiveValue<double>(
@@ -165,18 +210,36 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   conditionalValues: [
                     // 801-1920px (DESKTOP)
                     const Condition.between(
-                        start: 801, end: 1000, value: 650.0),
+                      start: 801,
+                      end: 1000,
+                      value: 650.0,
+                    ),
                     const Condition.between(
-                        start: 1001, end: 1200, value: 700.0),
+                      start: 1001,
+                      end: 1200,
+                      value: 700.0,
+                    ),
                     const Condition.between(
-                        start: 1201, end: 1500, value: 750.0),
+                      start: 1201,
+                      end: 1500,
+                      value: 750.0,
+                    ),
                     const Condition.between(
-                        start: 1501, end: 1920, value: 750.0),
+                      start: 1501,
+                      end: 1920,
+                      value: 750.0,
+                    ),
                     // 1921+ (4K)
                     const Condition.between(
-                        start: 1921, end: 2500, value: 700.0),
+                      start: 1921,
+                      end: 2500,
+                      value: 700.0,
+                    ),
                     const Condition.between(
-                        start: 2501, end: 3000, value: 900.0),
+                      start: 2501,
+                      end: 3000,
+                      value: 900.0,
+                    ),
                   ],
                 ).value, // Fallback value
                 borderRadius: 20,
@@ -206,11 +269,20 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                       context,
                       conditionalValues: [
                         const Condition.between(
-                            start: 451, end: 800, value: 20.0), // TABLET
+                          start: 451,
+                          end: 800,
+                          value: 20.0,
+                        ), // TABLET
                         const Condition.between(
-                            start: 801, end: 1920, value: 24.0), // DESKTOP
+                          start: 801,
+                          end: 1920,
+                          value: 24.0,
+                        ), // DESKTOP
                         const Condition.between(
-                            start: 1921, end: 3000, value: 32.0), // 4K
+                          start: 1921,
+                          end: 3000,
+                          value: 32.0,
+                        ), // 4K
                       ],
                     ).value,
                   ),
@@ -228,10 +300,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withOpacity(0.15),
-                    Colors.transparent,
-                  ],
+                  colors: [Colors.white.withOpacity(0.15), Colors.transparent],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),

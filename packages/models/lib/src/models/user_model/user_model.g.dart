@@ -26,6 +26,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   definitionOfGod: json['definitionOfGod'] as String?,
   godsCalling: json['godsCalling'] as String?,
   recommendation: json['recommendation'] as String?,
+  fcmToken: json['fcmToken'] as String?,
 );
 
 Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
@@ -46,6 +47,7 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'definitionOfGod': instance.definitionOfGod,
       'godsCalling': instance.godsCalling,
       'recommendation': instance.recommendation,
+      'fcmToken': instance.fcmToken,
     };
 
 const _$UserRoleEnumMap = {

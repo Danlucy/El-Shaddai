@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:constants/constants.dart';
 import 'package:firebase/src/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/router/no_internet_screen.dart';
 import 'package:mobile/core/router/router.dart';
 import 'package:mobile/features/auth/controller/auth_controller.dart';
+import 'package:mobile/features/settings/state/settings_state.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:util/util.dart';
 
@@ -18,10 +20,14 @@ final ValueNotifier<bool> hasConnectivity = ValueNotifier(true);
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  await SettingsState.instance.init();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  print('FCM Token: $fcmToken');
   final isConnected = await Backend.checkInternetAccess();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   hasConnectivity.value = isConnected;
 
   runApp(
@@ -67,6 +73,14 @@ class _MyAppState extends ConsumerState<_MyMobileApp>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkConnectivityAndUpdateUser();
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint('Foreground message received: ${message.notification?.title}');
+      if (message.notification != null) {
+        // You can show a local notification here if desired
+        // Or update UI directly
+      }
     });
   }
 
@@ -151,4 +165,9 @@ class _MyAppState extends ConsumerState<_MyMobileApp>
       },
     );
   }
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  debugPrint('Background message: ${message.notification?.title}');
 }

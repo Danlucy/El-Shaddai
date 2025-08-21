@@ -1,15 +1,7 @@
-// lib/widgets/glass_list_tile.dart
-// Requires: glassmorphism: ^3.0.0 (or your existing version)
-// Drop this file anywhere in your project and import it.
-
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 
-/// A sleek iOS-style frosted ListTile using the `glassmorphism` package.
-/// - Soft blur with subtle inner/outer border glows
-/// - Rounded corners (defaults to iOS-like 18–20)
-/// - Ink response w/ gentle scale on press
-/// - Adapts to Light/Dark themes
 class GlassListTile extends StatefulWidget {
   const GlassListTile({
     super.key,
@@ -25,6 +17,9 @@ class GlassListTile extends StatefulWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     this.blur = 16,
     this.tintOpacity = 0.18,
+    this.isToggle = false,
+    this.toggleValue = false,
+    this.onToggleChanged,
   });
 
   final Widget? leading;
@@ -41,6 +36,15 @@ class GlassListTile extends StatefulWidget {
 
   /// How strong the frosted tint looks (0–1)
   final double tintOpacity;
+
+  /// Whether this tile should display a toggle switch
+  final bool isToggle;
+
+  /// The current value of the toggle switch
+  final bool toggleValue;
+
+  /// Callback when toggle value changes
+  final ValueChanged<bool>? onToggleChanged;
 
   @override
   State<GlassListTile> createState() => _GlassListTileState();
@@ -61,8 +65,8 @@ class _GlassListTileState extends State<GlassListTile> {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: [
-        (isDark ? Colors.white : Colors.black).withOpacity(baseOpacity * 0.30),
-        (isDark ? Colors.white : Colors.black).withOpacity(baseOpacity * 0.10),
+        (isDark ? Colors.white : Colors.black).withOpac(baseOpacity * 0.30),
+        (isDark ? Colors.white : Colors.black).withOpac(baseOpacity * 0.10),
       ],
     );
 
@@ -70,8 +74,8 @@ class _GlassListTileState extends State<GlassListTile> {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: [
-        Colors.white.withOpacity(isDark ? 0.16 : 0.30),
-        Colors.white.withOpacity(0.05),
+        Colors.white.withOpac(isDark ? 0.16 : 0.30),
+        Colors.white.withOpac(0.05),
       ],
     );
 
@@ -82,6 +86,7 @@ class _GlassListTileState extends State<GlassListTile> {
       duration: const Duration(milliseconds: 120),
       curve: Curves.easeOut,
       child: GlassmorphicContainer(
+        margin: EdgeInsetsGeometry.all(6),
         width: double.infinity,
         height: widget.height,
         borderRadius: widget.borderRadius,
@@ -94,7 +99,9 @@ class _GlassListTileState extends State<GlassListTile> {
           radius: radius,
           onTapDown: () => setState(() => _pressed = true),
           onTapUpOrCancel: () => setState(() => _pressed = false),
-          onTap: widget.onTap,
+          onTap: widget.isToggle
+              ? () => widget.onToggleChanged?.call(!widget.toggleValue)
+              : widget.onTap,
           onLongPress: widget.onLongPress,
           child: Padding(
             padding: widget.padding,
@@ -118,7 +125,7 @@ class _GlassListTileState extends State<GlassListTile> {
                                 ? FontWeight.w600
                                 : FontWeight.w500,
                             color: Theme.of(context).colorScheme.onSurface
-                                .withOpacity(isDark ? 0.95 : 0.90),
+                                .withOpac(isDark ? 0.95 : 0.90),
                           ),
                           child: widget.title!,
                         ),
@@ -128,7 +135,7 @@ class _GlassListTileState extends State<GlassListTile> {
                           style: TextStyle(
                             fontSize: 13,
                             color: Theme.of(context).colorScheme.onSurface
-                                .withOpacity(isDark ? 0.65 : 0.60),
+                                .withOpac(isDark ? 0.65 : 0.60),
                           ),
                           child: widget.subtitle!,
                         ),
@@ -136,13 +143,118 @@ class _GlassListTileState extends State<GlassListTile> {
                     ],
                   ),
                 ),
-                if (widget.trailing != null) ...[
+                if (widget.isToggle) ...[
+                  const SizedBox(width: 12),
+                  _GlassToggleSwitch(
+                    value: widget.toggleValue,
+                    onChanged: widget.onToggleChanged,
+                  ),
+                ] else if (widget.trailing != null) ...[
                   const SizedBox(width: 12),
                   widget.trailing!,
                 ],
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Custom glass-style toggle switch with smooth animations
+class _GlassToggleSwitch extends StatelessWidget {
+  const _GlassToggleSwitch({required this.value, this.onChanged});
+
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: () => onChanged?.call(!value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        width: 50,
+        height: 28,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: value
+                ? [
+                    context.colors.primaryContainer.withOpac(0.8),
+                    context.colors.primaryContainer.withOpac(0.9),
+                  ]
+                : [
+                    (isDark ? Colors.white : Colors.black).withOpac(0.15),
+                    (isDark ? Colors.white : Colors.black).withOpac(0.05),
+                  ],
+          ),
+          border: Border.all(
+            color: value
+                ? context.colors.primaryContainer.withOpac(0.3)
+                : Colors.white.withOpac(isDark ? 0.2 : 0.3),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: value
+                  ? context.colors.primaryContainer.withOpac(0.2)
+                  : Colors.black.withOpac(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Background blur effect
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.white.withOpac(0.05)),
+              ),
+            ),
+            // Toggle knob
+            AnimatedAlign(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                margin: const EdgeInsets.all(2),
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      context.colors.onSurface.withOpac(0.95),
+                      context.colors.onSurface.withOpac(0.8),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpac(0.15),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                    BoxShadow(
+                      color: context.colors.onSurface.withOpac(0.3),
+                      blurRadius: 2,
+                      offset: const Offset(0, -0.5),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -173,8 +285,8 @@ class _InkLayer extends StatelessWidget {
       type: MaterialType.transparency,
       child: InkWell(
         borderRadius: radius,
-        splashColor: Colors.white.withOpacity(0.10),
-        highlightColor: Colors.white.withOpacity(0.06),
+        splashColor: Colors.white.withOpac(0.10),
+        highlightColor: Colors.white.withOpac(0.06),
         onTap: onTap,
         onLongPress: onLongPress,
         onTapDown: (_) => onTapDown(),
@@ -202,43 +314,14 @@ class _AvatarGlassWrap extends StatelessWidget {
       linearGradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.20),
-          Colors.white.withOpacity(0.05),
-        ],
+        colors: [Colors.white.withOpac(0.20), Colors.white.withOpac(0.05)],
       ),
       borderGradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.40),
-          Colors.white.withOpacity(0.05),
-        ],
+        colors: [Colors.white.withOpac(0.40), Colors.white.withOpac(0.05)],
       ),
       child: Center(child: child),
     );
   }
 }
-
-// ---------------- DEMO ----------------
-// Example usage (put this in any screen to preview quickly):
-//
-// Scaffold(
-//   backgroundColor: const Color(0xFF0F1115), // looks great behind glass
-//   appBar: AppBar(title: const Text('Glass ListTiles')),
-//   body: ListView.separated(
-//     padding: const EdgeInsets.all(16),
-//     itemCount: 8,
-//     separatorBuilder: (_, __) => const SizedBox(height: 12),
-//     itemBuilder: (context, i) {
-//       return GlassListTile(
-//         leading: Icon(Icons.person, size: 20, color: Colors.white.withOpacity(0.9)),
-//         title: Text('Contact ${i + 1}'),
-//         subtitle: const Text('Last seen recently'),
-//         trailing: Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.7)),
-//         onTap: () {},
-//         selected: i == 1,
-//       );
-//     },
-//   ),
-// )
