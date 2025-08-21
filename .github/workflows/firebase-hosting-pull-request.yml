@@ -26,7 +26,7 @@ jobs:
       # Install Flutter
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
+          flutter-version: '3.35.1'
 
       # Build Flutter web app
       - run: cd apps/web && flutter build web --release --target=lib/main.dart --web-renderer html
