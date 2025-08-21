@@ -22,6 +22,7 @@ sealed class UserModel with _$UserModel {
     String? definitionOfGod,
     String? godsCalling,
     String? recommendation,
+    String? fcmToken,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

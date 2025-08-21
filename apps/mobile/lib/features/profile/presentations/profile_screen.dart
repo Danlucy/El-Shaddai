@@ -1,6 +1,5 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Only one import needed
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/features/profile/widget/role_dsiplay.dart';
@@ -19,7 +18,8 @@ class UserModelFields {
   static const String role = 'role';
   static const String image = 'image';
   static const String phoneNumber = 'phoneNumber';
-// Add other nullable string fields as constants here if needed
+  static const String fcmToken = 'fcmToken';
+  // Add other nullable string fields as constants here if needed
 }
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -42,15 +42,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       UserModelFields.uid,
       UserModelFields.role,
       UserModelFields.image,
+      UserModelFields.fcmToken,
     };
 
     return widget.userModel!
         .toJson()
         .entries
-        .where((entry) =>
-            !requiredFields.contains(entry.key) && // Exclude required fields
-            (entry.value == null ||
-                entry.value is String?)) // Keep only nullable String fields
+        .where(
+          (entry) =>
+              !requiredFields.contains(entry.key) && // Exclude required fields
+              (entry.value == null || entry.value is String?),
+        ) // Keep only nullable String fields
         .map((entry) => entry.key)
         .toList();
   }
@@ -59,22 +61,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     // Renamed context1 to context for consistency
     final user = ref.watch(userProvider);
-    final userDataState =
-        ref.watch(profileControllerProvider(widget.userModel?.uid));
+    final userDataState = ref.watch(
+      profileControllerProvider(widget.userModel?.uid),
+    );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile'), actions: [
-        IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            GoRouter.of(context).pop(); // Use GoRouter.of(context).pop()
-          },
-        ),
-      ]),
+      appBar: AppBar(
+        title: const Text('Profile'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              GoRouter.of(context).pop(); // Use GoRouter.of(context).pop()
+            },
+          ),
+        ],
+      ),
       drawer: const GeneralDrawer(),
       body: userDataState.when(
         loading: () => const Center(
-            child: CircularProgressIndicator()), // ✅ Single Loading Indicator
+          child: CircularProgressIndicator(),
+        ), // ✅ Single Loading Indicator
         error: (error, stack) =>
             const Center(child: Text('Error loading profile')),
         data: (userData) => widget.userModel != null
@@ -85,17 +92,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       ProfileImage(
-                          uid: widget.userModel?.uid,
-                          ableToEdit: user?.uid == widget.userModel?.uid ||
-                              user?.role == UserRole.admin),
-                      Text(widget.userModel?.name ?? '',
-                          style: const TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
+                        uid: widget.userModel?.uid,
+                        ableToEdit:
+                            user?.uid == widget.userModel?.uid ||
+                            user?.role == UserRole.admin,
+                      ),
+                      Text(
+                        widget.userModel?.name ?? '',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: RoleDisplayWidget(
-                            role: widget.userModel?.role,
-                          )),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: RoleDisplayWidget(role: widget.userModel?.role),
+                      ),
 
                       /// ✅ **Pass `userData` to all fields after loading**
                       ...getNullableStringFields().map((field) {
@@ -106,13 +118,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(UserModelFieldLabels.getLabel(field),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
+                            Text(
+                              UserModelFieldLabels.getLabel(field),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 25.0),
                               child: EditableTextField(
-                                uid: widget.userModel
+                                uid: widget
+                                    .userModel
                                     ?.uid, // Ensure it's the viewed user's uid
                                 fieldName: field,
                                 isEditable: editableFieldIndex == index,
@@ -122,13 +138,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   setState(() {
                                     editableFieldIndex =
                                         (editableFieldIndex == index)
-                                            ? null
-                                            : index;
+                                        ? null
+                                        : index;
                                   });
                                 },
                                 ableToEdit:
                                     user?.uid == widget.userModel?.uid ||
-                                        user?.role == UserRole.admin,
+                                    user?.role == UserRole.admin,
                                 userData: userData,
                               ),
                             ),
@@ -137,53 +153,63 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       }),
                       if (user?.uid == widget.userModel!.uid)
                         OutlinedButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context, // Use the screen's context
-                                  builder: (dialogContext) {
-                                    // Named dialogContext for clarity
-                                    return GestureDetector(
-                                      onTap: () {
-                                        GoRouter.of(dialogContext).pop();
-                                      },
-                                      child: AlertDialog(
-                                        backgroundColor: Colors.transparent,
-                                        content: GestureDetector(
-                                          onTap:
-                                              () {}, // Prevent dialog from closing on content tap
-                                          child: ConfirmButton(
-                                            confirmText: 'Delete',
-                                            description:
-                                                'Are you sure you want to delete your Account?',
-                                            cancelText: 'Cancel',
-                                            confirmAction: () {
-                                              ref
-                                                  .read(authControllerProvider
-                                                      .notifier)
-                                                  .deleteUser(user!.uid,
-                                                      context); // Pass screen context
-                                              GoRouter.of(dialogContext)
-                                                  .pop(); // Pop dialog after action
-                                            },
-                                          ),
-                                        ),
+                          onPressed: () {
+                            showDialog(
+                              context: context, // Use the screen's context
+                              builder: (dialogContext) {
+                                // Named dialogContext for clarity
+                                return GestureDetector(
+                                  onTap: () {
+                                    GoRouter.of(dialogContext).pop();
+                                  },
+                                  child: AlertDialog(
+                                    backgroundColor: Colors.transparent,
+                                    content: GestureDetector(
+                                      onTap:
+                                          () {}, // Prevent dialog from closing on content tap
+                                      child: ConfirmButton(
+                                        confirmText: 'Delete',
+                                        description:
+                                            'Are you sure you want to delete your Account?',
+                                        cancelText: 'Cancel',
+                                        confirmAction: () {
+                                          ref
+                                              .read(
+                                                authControllerProvider.notifier,
+                                              )
+                                              .deleteUser(
+                                                user!.uid,
+                                                context,
+                                              ); // Pass screen context
+                                          GoRouter.of(
+                                            dialogContext,
+                                          ).pop(); // Pop dialog after action
+                                        },
                                       ),
-                                    );
-                                  });
-                            },
-                            child: const Text(
-                              'Delete Account',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red),
-                            ))
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: const Text(
+                            'Delete Account',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
               )
             : const Center(
-                child: Text('User Not Found \nCheck Internet Connection',
-                    textAlign: TextAlign.center, style: errorStyle),
+                child: Text(
+                  'User Not Found \nCheck Internet Connection',
+                  textAlign: TextAlign.center,
+                  style: errorStyle,
+                ),
               ),
       ),
     );

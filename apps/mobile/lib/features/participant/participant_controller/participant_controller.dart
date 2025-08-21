@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -47,10 +46,7 @@ class ParticipantController extends _$ParticipantController {
         );
         if (!exists) {
           // Add the participant along with a timestamp ("when" field)
-          await repository.addParticipant(
-            state.bookingId!,
-            state.userId!,
-          );
+          await repository.addParticipant(state.bookingId!, state.userId!);
         } else {
           if (kDebugMode) {
             print('Participant already exists in the booking');
@@ -76,10 +72,7 @@ class ParticipantController extends _$ParticipantController {
         );
         if (exists) {
           // Add the participant along with a timestamp ("when" field)
-          await repository.removeParticipant(
-            state.bookingId!,
-            state.userId!,
-          );
+          await repository.removeParticipant(state.bookingId!, state.userId!);
           // await repository.isEmptyThenRemove(state.bookingId!);
         } else {
           if (kDebugMode) {

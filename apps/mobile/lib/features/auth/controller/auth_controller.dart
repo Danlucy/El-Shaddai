@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/features/profile/controller/profile_controller.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
@@ -40,6 +42,7 @@ final authStateChangeProvider = StreamProvider((ref) {
 // Updated to extend AsyncNotifier instead of StateNotifier
 class AuthController extends AsyncNotifier<void> {
   late AuthRepository _authRepository;
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Future<void> build() async {
@@ -140,22 +143,36 @@ class AuthController extends AsyncNotifier<void> {
       yield null; // No user logged in
       return;
     }
+    // Listen for FCM token refresh
+    _initAndUpdateFCMToken(auth.currentUser!.uid);
+    // Save initial token
 
     // Retry logic with connectivity check
     while (true) {
       try {
-        yield* _authRepository.getUserData(
-          auth.currentUser!.uid,
-        ); // Yield the results of the fetch
+        yield* _authRepository.getUserData(auth.currentUser!.uid);
         break; // If successful, break the loop
       } catch (e) {
         if (kDebugMode) {
           print('Retrying after error: $e');
           print('Waiting for connectivity...');
         }
-        // Wait a short duration before retrying (optional)
         await Future.delayed(const Duration(seconds: 5));
       }
+    }
+  }
+
+  void _initAndUpdateFCMToken(String uid) async {
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+      ref
+          .read(profileControllerProvider(uid).notifier)
+          .updateUserField('fcmToken', newToken);
+    });
+    final initialToken = await FirebaseMessaging.instance.getToken();
+    if (initialToken != null) {
+      ref
+          .read(profileControllerProvider(currentUser!.uid).notifier)
+          .updateUserField('fcmToken', initialToken);
     }
   }
 }
