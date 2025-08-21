@@ -239,7 +239,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
         Condition.largerThan(name: TABLET, value: true),
       ],
     ).value;
-    final width = MediaQuery.sizeOf(context).width;
 
     // Extract date components
     final dayOfWeek = DateFormat('EEE').format(selectedDate);
@@ -482,7 +481,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
 
                                       // Use Future.microtask to delay provider update
                                       Future.microtask(() {
-                                        print((selectedDate != normalizedDate));
                                         if (selectedDate != normalizedDate) {
                                           ref
                                               .read(
