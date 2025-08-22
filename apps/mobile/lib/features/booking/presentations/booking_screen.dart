@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
@@ -61,8 +60,9 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButton: (user?.role == UserRole.intercessor ||
-              user?.role == UserRole.observer)
+      floatingActionButton:
+          (user.value?.role == UserRole.intercessor ||
+              user.value?.role == UserRole.observer)
           ? null
           : FloatingActionButton(
               backgroundColor: Colors.transparent,
@@ -70,19 +70,15 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
                 ref.read(bookingControllerProvider.notifier).clearState();
 
                 showDialog(
-                    useRootNavigator: false,
-                    context: context,
-                    builder: (context) {
-                      return BookingDialog(
-                        context,
-                      );
-                    });
+                  useRootNavigator: false,
+                  context: context,
+                  builder: (context) {
+                    return BookingDialog(context);
+                  },
+                );
               },
               child: GlassContainer(
-                child: Icon(
-                  Icons.add,
-                  color: context.colors.secondary,
-                ),
+                child: Icon(Icons.add, color: context.colors.secondary),
               ),
             ),
       appBar: AppBar(

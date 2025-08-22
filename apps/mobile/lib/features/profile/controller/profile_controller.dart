@@ -1,11 +1,11 @@
-import 'dart:io';
 import 'dart:convert'; // For Base64 encoding
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:constants/constants.dart';
-
 import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
+import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../auth/controller/auth_controller.dart';
@@ -21,7 +21,7 @@ class ProfileController extends _$ProfileController {
 
     final userRef = FirebaseFirestore.instance
         .collection(FirebaseConstants.usersCollection)
-        .doc(uid ?? user?.uid);
+        .doc(uid ?? user.value?.uid);
 
     yield* userRef.snapshots().map((snapshot) => snapshot.data() ?? {});
   }
@@ -34,7 +34,7 @@ class ProfileController extends _$ProfileController {
 
     final userRef = FirebaseFirestore.instance
         .collection(FirebaseConstants.usersCollection)
-        .doc(uid ?? user.uid);
+        .doc(uid ?? user.value?.uid);
 
     await userRef.update({fieldName: newValue});
   }
@@ -45,8 +45,9 @@ class ProfileController extends _$ProfileController {
     if (user == null) return null;
 
     final ImagePicker picker = ImagePicker();
-    final XFile? imageFile =
-        await picker.pickImage(source: ImageSource.gallery);
+    final XFile? imageFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
 
     if (imageFile != null) {
       // ✅ Compress & Resize Image

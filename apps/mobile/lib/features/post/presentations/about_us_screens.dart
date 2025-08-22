@@ -30,52 +30,55 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
     final posts = ref.watch(postsProvider(postType: PostType.aboutPost));
 
     return Scaffold(
-        floatingActionButton: user?.role == UserRole.admin
-            ? FloatingActionButton(
-                backgroundColor: Colors.transparent,
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return const AddPostDialog(
-                        postType: PostType.aboutPost,
-                      );
-                    },
-                  );
-                },
-                child: const GlassContainer(child: Icon(Icons.add)),
-              )
-            : null,
-        drawer: const GeneralDrawer(),
-        appBar: AppBar(
-          title: const Text('About Us'),
-        ),
-        body: SafeArea(
-          minimum: const EdgeInsets.all(10),
-          child: Column(children: [
+      floatingActionButton: user.value?.role == UserRole.admin
+          ? FloatingActionButton(
+              backgroundColor: Colors.transparent,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return const AddPostDialog(postType: PostType.aboutPost);
+                  },
+                );
+              },
+              child: const GlassContainer(child: Icon(Icons.add)),
+            )
+          : null,
+      drawer: const GeneralDrawer(),
+      appBar: AppBar(title: const Text('About Us')),
+      body: SafeArea(
+        minimum: const EdgeInsets.all(10),
+        child: Column(
+          children: [
             AutoSizeText(
               'The 247 app belongs to EL Shaddai Prayer Altar.\nThe physical address: 31A-2, Jalan Reko Sentral 1, Jalan Reko, Reko Sentral, 43000 Kajang, Selangor',
               textAlign: TextAlign.center,
               minFontSize: 14,
               maxFontSize: 16,
               style: TextStyle(
-                  fontWeight: FontWeight.w600, color: context.colors.primary),
+                fontWeight: FontWeight.w600,
+                color: context.colors.primary,
+              ),
             ),
             RichText(
               text: TextSpan(
                 children: [
                   const TextSpan(
-                      text:
-                          '\n\nIn case of any enquiry, do give us a call or message at '),
+                    text:
+                        '\n\nIn case of any enquiry, do give us a call or message at ',
+                  ),
                   const TextSpan(text: 'Siew-Woei, Ling'),
                   TextSpan(
                     text: ' WhatsApp +60173044168',
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.green),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
-                        final Uri whatsappUrl =
-                            Uri.parse("https://wa.me/60173044168");
+                        final Uri whatsappUrl = Uri.parse(
+                          "https://wa.me/60173044168",
+                        );
                         if (await canLaunchUrl(whatsappUrl)) {
                           await launchUrl(whatsappUrl);
                         } else {
@@ -84,86 +87,95 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
                       },
                   ),
                   const TextSpan(
-                      text:
-                          '. \nAlternatively, you can send us an email.\nEmail: '),
+                    text:
+                        '. \nAlternatively, you can send us an email.\nEmail: ',
+                  ),
                   const TextSpan(
                     text: 'Lingsiewwoei@gmail.com',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
                   ),
                 ],
               ),
             ),
             posts.when(
-                data: (data) {
-                  return Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          ...data.map((post) => ListTile(
-                                leading: CircleAvatar(
-                                  maxRadius: 25,
-                                  minRadius: 20,
-                                  backgroundColor: Colors.grey.shade300,
-                                  backgroundImage: post.image != null
-                                      ? MemoryImage(
-                                          Uint8List.fromList(post.image!))
-                                      : null,
-                                ),
-                                title: Text(post.title),
-                                subtitle: Text(post.content),
-                                trailing: (user?.role == UserRole.admin)
-                                    ? IconButton(
-                                        icon: const Icon(Icons.delete),
-                                        onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return GestureDetector(
-                                                  onTap: () {
-                                                    context.pop();
+              data: (data) {
+                return Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ...data.map(
+                          (post) => ListTile(
+                            leading: CircleAvatar(
+                              maxRadius: 25,
+                              minRadius: 20,
+                              backgroundColor: Colors.grey.shade300,
+                              backgroundImage: post.image != null
+                                  ? MemoryImage(Uint8List.fromList(post.image!))
+                                  : null,
+                            ),
+                            title: Text(post.title),
+                            subtitle: Text(post.content),
+                            trailing: (user.value?.role == UserRole.admin)
+                                ? IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              context.pop();
+                                            },
+                                            child: AlertDialog(
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              content: GestureDetector(
+                                                onTap: () {},
+                                                child: ConfirmButton(
+                                                  confirmText: 'Delete',
+                                                  description:
+                                                      'Are you sure you want to delete this post?',
+                                                  cancelText: 'Cancel',
+                                                  confirmAction: () {
+                                                    ref
+                                                        .read(
+                                                          postControllerProvider
+                                                              .notifier,
+                                                        )
+                                                        .deletePost(
+                                                          postType: PostType
+                                                              .aboutPost,
+                                                          post.id,
+                                                        );
+                                                    Navigator.pop(context);
                                                   },
-                                                  child: AlertDialog(
-                                                    backgroundColor:
-                                                        Colors.transparent,
-                                                    content: GestureDetector(
-                                                      onTap: () {},
-                                                      child: ConfirmButton(
-                                                        confirmText: 'Delete',
-                                                        description:
-                                                            'Are you sure you want to delete this post?',
-                                                        cancelText: 'Cancel',
-                                                        confirmAction: () {
-                                                          ref
-                                                              .read(
-                                                                  postControllerProvider
-                                                                      .notifier)
-                                                              .deletePost(
-                                                                  postType: PostType
-                                                                      .aboutPost,
-                                                                  post.id);
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              });
+                                                ),
+                                              ),
+                                            ),
+                                          );
                                         },
-                                      )
-                                    : null,
-                              ))
-                        ],
-                      ),
+                                      );
+                                    },
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-                error: (x, s) {
-                  throw x;
-                },
-                loading: () => const CircularProgressIndicator())
-          ]),
-        ));
+                  ),
+                );
+              },
+              error: (x, s) {
+                throw x;
+              },
+              loading: () => const CircularProgressIndicator(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

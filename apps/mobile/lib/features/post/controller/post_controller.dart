@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:image/image.dart' as img;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
@@ -23,14 +23,16 @@ class PostController extends _$PostController {
   /// ✅ **Pick & Compress Image**
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? imageFile =
-        await picker.pickImage(source: ImageSource.gallery);
+    final XFile? imageFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
 
     if (imageFile != null) {
       final Uint8List compressedImage = await _compressImage(imageFile);
 
       state = state.copyWith(
-          image: compressedImage); // ✅ Updates state & triggers rebuild
+        image: compressedImage,
+      ); // ✅ Updates state & triggers rebuild
     }
   }
 
@@ -44,14 +46,17 @@ class PostController extends _$PostController {
     if (image == null) return imageBytes; // Return original if decoding fails
 
     // ✅ Adaptive Resize Logic
-    int targetWidth =
-        image.width > 500 ? 350 : image.width + 150; // Resize if width > 500px
+    int targetWidth = image.width > 500
+        ? 350
+        : image.width + 150; // Resize if width > 500px
     final img.Image resizedImage = img.copyResize(image, width: targetWidth);
 
     // ✅ Adjust Compression Quality
     final Uint8List compressedBytes = Uint8List.fromList(
-      img.encodeJpg(resizedImage,
-          quality: 85), // 🔥 Increased to 75 for better quality
+      img.encodeJpg(
+        resizedImage,
+        quality: 85,
+      ), // 🔥 Increased to 75 for better quality
     );
 
     return compressedBytes;
@@ -76,7 +81,7 @@ class PostController extends _$PostController {
           content: state.description!,
           image: state.image,
           id: FirebaseFirestore.instance.collection('dog').doc().id,
-          userId: user!.uid,
+          userId: user.value!.uid,
           createdAt: DateTime.now(),
         );
         ref.read(postRepositoryProvider).addPost(post, postType: postType);

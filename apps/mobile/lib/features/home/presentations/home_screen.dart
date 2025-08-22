@@ -1,8 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/organization/controller/organization_controller.dart';
+import 'package:mobile/core/widgets/glass_container.dart';
+import 'package:repositories/repositories.dart';
+
 import '../../auth/controller/auth_controller.dart';
 import '../widgets/general_drawer.dart';
 
@@ -33,17 +36,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final user = ref.watch(userProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Welcome ${user?.name ?? 'User'}'),
-      ),
+      appBar: AppBar(title: Text('Welcome ${user.value?.name ?? 'User'}')),
       drawer: const GeneralDrawer(),
       body: SafeArea(
         bottom: true,
         child: Column(
           children: <Widget>[
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             // IconButton(
             //   onPressed: () async {
             //     try {
@@ -89,6 +88,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //   },
             //   icon: const Icon(Icons.settings),
             // ),
+            ref
+                .watch(organizationControllerProvider)
+                .when(
+                  data: (organization) {
+                    return GlassContainer(
+                      borderRadius: BorderRadius.circular(12),
+                      height: 50,
+                      width: 150,
+                      blur: 12,
+                      child: Center(
+                        child: Text(
+                          '${organization.displayName}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: context.colors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  error: (error, stack) => Text('Error: $error'),
+                  loading: () => const CircularProgressIndicator(),
+                ),
+            IconButton(
+              onPressed: () {
+                ref.watch(authRepositoryProvider).addCreatedAtFieldAsDateTime();
+              },
+              icon: const Icon(Icons.settings),
+            ),
             Expanded(
               child: AutoSizeText(
                 minFontSize: 13,

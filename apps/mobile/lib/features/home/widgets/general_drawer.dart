@@ -78,9 +78,9 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
               ListTile(
                 leading: const Icon(Icons.account_circle),
                 title: const Text('My Profile'),
-                onTap: () => ProfileRoute(user).push(context),
+                onTap: () => ProfileRoute(user.value).push(context),
               ),
-              if (user?.role == UserRole.admin)
+              if (user.value?.role == UserRole.admin)
                 ListTile(
                   leading: const Icon(Icons.supervisor_account),
                   title: const Text('User Management'),

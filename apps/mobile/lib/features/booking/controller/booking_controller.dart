@@ -241,8 +241,8 @@ class BookingController extends _$BookingController {
       recurrenceState: state.recurrenceState,
       title: state.title!,
       password: state.password,
-      host: user!.lastName ?? user.name,
-      userId: user.uid,
+      host: user.value!.lastName ?? user.value?.name ?? '??',
+      userId: user.value!.uid,
       id: FirebaseFirestore.instance.collection('dog').doc().id,
       location: LocationData(
         web: currentVenue == BookingVenueComponent.location

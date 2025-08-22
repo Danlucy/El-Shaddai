@@ -9,23 +9,23 @@ import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
 
-final userProvider = NotifierProvider<UserNotifier, UserModel?>(
+final userProvider = NotifierProvider<UserNotifier, AsyncValue<UserModel?>>(
   () => UserNotifier(),
 );
 
 // User notifier class
-class UserNotifier extends Notifier<UserModel?> {
+class UserNotifier extends Notifier<AsyncValue<UserModel?>> {
   @override
-  UserModel? build() {
-    return null; // Initialize with null
+  AsyncValue<UserModel?> build() {
+    return const AsyncValue.loading(); // instead of null
   }
 
-  void setUser(UserModel? user) {
-    state = user;
+  void setUser(UserModel user) {
+    state = AsyncValue.data(user);
   }
 
   void clearUser() {
-    state = null;
+    state = const AsyncValue.data(null);
   }
 }
 
@@ -109,14 +109,13 @@ class AuthController extends AsyncNotifier<void> {
     try {
       final user = await _authRepository.signInWithGoogle();
 
-      if (user.isLeft()) {
-        showFailureSnackBar(context, 'NO DATA');
-        state = const AsyncValue.error('NO DATA', StackTrace.empty);
-        return;
-      }
+      // Check if the widget is still mounted before proceeding
+      if (!context.mounted) return;
 
       user.fold(
         (l) {
+          print("❌ Google sign-in failed: ${l.message}");
+
           if (kDebugMode) {
             print('Error signing in with Google: ${l.message}');
           }
@@ -124,6 +123,7 @@ class AuthController extends AsyncNotifier<void> {
           state = AsyncValue.error(l.message, StackTrace.empty);
         },
         (userModel) {
+          print("✅ Got userModel: $userModel");
           ref.read(userProvider.notifier).setUser(userModel);
           state = const AsyncValue.data(null);
         },
@@ -132,7 +132,10 @@ class AuthController extends AsyncNotifier<void> {
       if (kDebugMode) {
         print('Error signing in with Google: $e');
       }
-      showFailureSnackBar(context, e.toString());
+      // Also check here before showing the snackbar for a general catch
+      if (context.mounted) {
+        showFailureSnackBar(context, e.toString());
+      }
       state = AsyncValue.error(e, stackTrace);
     }
   }

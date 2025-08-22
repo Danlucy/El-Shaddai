@@ -9,18 +9,24 @@ part of 'post_repository.dart';
 @ProviderFor(posts)
 const postsProvider = PostsFamily._();
 
-final class PostsProvider extends $FunctionalProvider<
-        AsyncValue<List<PostModel>>, List<PostModel>, Stream<List<PostModel>>>
+final class PostsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<PostModel>>,
+          List<PostModel>,
+          Stream<List<PostModel>>
+        >
     with $FutureModifier<List<PostModel>>, $StreamProvider<List<PostModel>> {
-  const PostsProvider._(
-      {required PostsFamily super.from, required PostType super.argument})
-      : super(
-          retry: null,
-          name: r'postsProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  const PostsProvider._({
+    required PostsFamily super.from,
+    required PostType super.argument,
+  }) : super(
+         retry: null,
+         name: r'postsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$postsHash();
@@ -35,16 +41,13 @@ final class PostsProvider extends $FunctionalProvider<
   @$internal
   @override
   $StreamProviderElement<List<PostModel>> $createElement(
-          $ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<PostModel>> create(Ref ref) {
     final argument = this.argument as PostType;
-    return posts(
-      ref,
-      postType: argument,
-    );
+    return posts(ref, postType: argument);
   }
 
   @override
@@ -63,21 +66,20 @@ String _$postsHash() => r'64be48141bd04bbf979982d9170c4313600ed70b';
 final class PostsFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<PostModel>>, PostType> {
   const PostsFamily._()
-      : super(
-          retry: null,
-          name: r'postsProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: true,
-        );
+    : super(
+        retry: null,
+        name: r'postsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
-  PostsProvider call({
-    required PostType postType,
-  }) =>
+  PostsProvider call({required PostType postType}) =>
       PostsProvider._(argument: postType, from: this);
 
   @override
   String toString() => r'postsProvider';
 }
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

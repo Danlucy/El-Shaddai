@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:util/util.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
@@ -9,6 +10,7 @@ sealed class UserModel with _$UserModel {
     required String name,
     required String uid,
     required UserRole role,
+    @TimestampConverter() required DateTime createdAt,
     String? lastName,
     List<int>? image,
     String? nationality,
