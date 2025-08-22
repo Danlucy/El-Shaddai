@@ -12,10 +12,7 @@ class FooterWidget extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
-          colors: [
-            Colors.black.withOpacity(0.9),
-            Colors.transparent,
-          ],
+          colors: [Colors.black.withOpacity(0.9), Colors.transparent],
         ),
       ),
       child: Column(
@@ -47,8 +44,9 @@ class FooterWidget extends StatelessWidget {
                     // WhatsApp - Assuming you have a custom WhatsApp icon or use a placeholder
                     InkWell(
                       onTap: () async {
-                        final Uri whatsappUrl =
-                            Uri.parse("https://wa.me/60173044168");
+                        final Uri whatsappUrl = Uri.parse(
+                          "https://wa.me/60173044168",
+                        );
                         if (await canLaunchUrl(whatsappUrl)) {
                           await launchUrl(whatsappUrl);
                         } else {
@@ -57,9 +55,11 @@ class FooterWidget extends StatelessWidget {
                       },
                       child: const Row(
                         children: [
-                          Icon(Icons.message,
-                              color: Colors.white70,
-                              size: 16), // Placeholder icon
+                          Icon(
+                            Icons.message,
+                            color: Colors.white70,
+                            size: 16,
+                          ), // Placeholder icon
                           SizedBox(width: 8),
                           Text(
                             'WhatsApp ',
@@ -83,17 +83,17 @@ class FooterWidget extends StatelessWidget {
                   style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
                 const SizedBox(height: 16),
-                // Copyright Text
 
+                // Copyright Text
                 const Text(
-                  '© 2024 El Shaddai Church. All Rights Reserved.',
+                  '© 2024 El Shaddai Church. All Rights Reserved. v1',
                   style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ]
             : [
                 const SizedBox(height: 16),
-                // Copyright Text
 
+                // Copyright Text
                 const Text(
                   '© 2024 El Shaddai Church. All Rights Reserved.',
                   style: TextStyle(color: Colors.white70, fontSize: 14),
