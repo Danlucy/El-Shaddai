@@ -103,3 +103,16 @@ class LocationDataConverter
     };
   }
 }
+class TimestampConverter implements JsonConverter<DateTime, Object?> {
+  const TimestampConverter();
+
+  @override
+  DateTime fromJson(Object? json) {
+    if (json is Timestamp) return json.toDate();
+    if (json is String) return DateTime.parse(json);
+    throw ArgumentError('Invalid date format: $json');
+  }
+
+  @override
+  Object toJson(DateTime object) => object;
+}

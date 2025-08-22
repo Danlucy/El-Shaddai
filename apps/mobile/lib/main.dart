@@ -23,8 +23,7 @@ void main() async {
   await SettingsState.instance.init();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  print('FCM Token: $fcmToken');
+
   final isConnected = await Backend.checkInternetAccess();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -121,7 +120,7 @@ class _MyAppState extends ConsumerState<_MyMobileApp>
             .getUserDataStream()
             .first;
 
-        if (mounted) {
+        if (mounted && userModel != null) {
           ref.read(userProvider.notifier).setUser(userModel);
         }
       } on FirebaseException catch (e) {

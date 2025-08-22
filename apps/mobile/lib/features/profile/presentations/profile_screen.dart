@@ -94,8 +94,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ProfileImage(
                         uid: widget.userModel?.uid,
                         ableToEdit:
-                            user?.uid == widget.userModel?.uid ||
-                            user?.role == UserRole.admin,
+                            user.value?.uid == widget.userModel?.uid ||
+                            user.value?.role == UserRole.admin,
                       ),
                       Text(
                         widget.userModel?.name ?? '',
@@ -143,15 +143,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   });
                                 },
                                 ableToEdit:
-                                    user?.uid == widget.userModel?.uid ||
-                                    user?.role == UserRole.admin,
+                                    user.value?.uid == widget.userModel?.uid ||
+                                    user.value?.role == UserRole.admin,
                                 userData: userData,
                               ),
                             ),
                           ],
                         );
                       }),
-                      if (user?.uid == widget.userModel!.uid)
+                      if (user.value?.uid == widget.userModel!.uid)
                         OutlinedButton(
                           onPressed: () {
                             showDialog(
@@ -178,7 +178,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                                 authControllerProvider.notifier,
                                               )
                                               .deleteUser(
-                                                user!.uid,
+                                                user.value!.uid,
                                                 context,
                                               ); // Pass screen context
                                           GoRouter.of(

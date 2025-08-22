@@ -12,16 +12,16 @@ const bookingStreamProvider = BookingStreamFamily._();
 final class BookingStreamProvider
     extends $FunctionalProvider<AsyncValue<dynamic>, dynamic, Stream<dynamic>>
     with $FutureModifier<dynamic>, $StreamProvider<dynamic> {
-  const BookingStreamProvider._(
-      {required BookingStreamFamily super.from,
-      required String? super.argument})
-      : super(
-          retry: null,
-          name: r'bookingStreamProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  const BookingStreamProvider._({
+    required BookingStreamFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'bookingStreamProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$bookingStreamHash();
@@ -41,10 +41,7 @@ final class BookingStreamProvider
   @override
   Stream<dynamic> create(Ref ref) {
     final argument = this.argument as String?;
-    return bookingStream(
-      ref,
-      bookingId: argument,
-    );
+    return bookingStream(ref, bookingId: argument);
   }
 
   @override
@@ -63,21 +60,20 @@ String _$bookingStreamHash() => r'9908978df0afcd8b4db74214ec562a9f262ed521';
 final class BookingStreamFamily extends $Family
     with $FunctionalFamilyOverride<Stream<dynamic>, String?> {
   const BookingStreamFamily._()
-      : super(
-          retry: null,
-          name: r'bookingStreamProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: true,
-        );
+    : super(
+        retry: null,
+        name: r'bookingStreamProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
-  BookingStreamProvider call({
-    String? bookingId,
-  }) =>
+  BookingStreamProvider call({String? bookingId}) =>
       BookingStreamProvider._(argument: bookingId, from: this);
 
   @override
   String toString() => r'bookingStreamProvider';
 }
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

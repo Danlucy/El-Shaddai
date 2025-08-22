@@ -10,6 +10,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   name: json['name'] as String,
   uid: json['uid'] as String,
   role: $enumDecode(_$UserRoleEnumMap, json['role']),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
   lastName: json['lastName'] as String?,
   image:
       (json['image'] as List<dynamic>?)
@@ -34,6 +35,7 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'name': instance.name,
       'uid': instance.uid,
       'role': _$UserRoleEnumMap[instance.role]!,
+      'createdAt': const TimestampConverter().toJson(instance.createdAt),
       'lastName': instance.lastName,
       'image': instance.image,
       'nationality': instance.nationality,

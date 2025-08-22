@@ -12,15 +12,15 @@ const calendarDateNotifierProvider = CalendarDateNotifierProvider._();
 final class CalendarDateNotifierProvider
     extends $NotifierProvider<CalendarDateNotifier, DateTime> {
   const CalendarDateNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'calendarDateNotifierProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'calendarDateNotifierProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$calendarDateNotifierHash();
@@ -48,8 +48,14 @@ abstract class _$CalendarDateNotifier extends $Notifier<DateTime> {
   void runBuild() {
     final created = build();
     final ref = this.ref as $Ref<DateTime, DateTime>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<DateTime, DateTime>, DateTime, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<DateTime, DateTime>,
+              DateTime,
+              Object?,
+              Object?
+            >;
     element.handleValue(ref, created);
   }
 }

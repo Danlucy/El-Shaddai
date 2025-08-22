@@ -1,6 +1,8 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'dart:io' show Platform;
+import 'package:mobile/core/widgets/organization_dropdown_button.dart';
 
 import '../widgets/login_button.dart';
 
@@ -23,26 +25,18 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      body: Center(
+      body: Align(
+        alignment: AlignmentGeometry.center,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Image.asset(
-              'assets/logo/main_logo.png',
-              height: 300,
-              width: 300,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const SignInButton(
-              mode: 'Google',
-            ),
+            Image.asset('assets/logo/main_logo.png', height: 300, width: 300),
+            const SizedBox(height: 20),
+            const SignInButton(mode: 'Google'),
             const Gap(20),
-            if (Platform.isIOS)
-              const SignInButton(
-                mode: 'Apple',
-              ),
+            if (Platform.isIOS) const SignInButton(mode: 'Apple'),
+            Gap(20),
+            OrganizationSelectionDropdown(),
           ],
         ),
       ),

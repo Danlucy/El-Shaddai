@@ -13,26 +13,28 @@ import 'package:models/models.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:util/util.dart';
 
-import '../user_management/user_management_repository.dart'; // <-- IMPORTANT: Ensure this is uncommented
+import '../user_management/user_management_repository.dart';
 
-final authRepositoryProvider = Provider((ref) => AuthRepository(
+final authRepositoryProvider = Provider(
+  (ref) => AuthRepository(
     firestore: ref.read(firestoreProvider),
     auth: ref.read(authProvider),
-    googleSignIn: ref.read(googleSignInProvider)));
+    googleSignIn: ref.read(googleSignInProvider),
+  ),
+);
 
 class AuthRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
-  bool _isGoogleSignInInitialized = false;
 
-  AuthRepository(
-      {required FirebaseFirestore firestore,
-      required FirebaseAuth auth,
-      required GoogleSignIn googleSignIn})
-      : _firestore = firestore,
-        _auth = auth,
-        _googleSignIn = googleSignIn {
+  AuthRepository({
+    required FirebaseFirestore firestore,
+    required FirebaseAuth auth,
+    required GoogleSignIn googleSignIn,
+  }) : _firestore = firestore,
+       _auth = auth,
+       _googleSignIn = googleSignIn {
     _initializeGoogleSignIn();
   }
 
@@ -45,36 +47,94 @@ class AuthRepository {
       await _googleSignIn.initialize(
         clientId:
             kIsWeb || Platform.isMacOS || Platform.isWindows || Platform.isLinux
-                ? '.apps.googleusercontent.com'
-                : null,
+            ? '5347198504-mv7hsnnvvca4k7keda0410t262f95q8q.apps.googleusercontent.com'
+            : null,
       );
-      _isGoogleSignInInitialized = true;
     } catch (e) {
       print('Failed to initialize Google Sign-In: $e');
     }
   }
 
+  // EXTRACTED METHOD - Handles user creation/retrieval logic
+  Future<UserModel> _handleUserCreationOrRetrieval({
+    required UserCredential userCredential,
+    required UserRole defaultRole,
+  }) async {
+    // Get a reference to the user document
+    final docRef = _users.doc(userCredential.user!.uid);
+    final docSnapshot = await docRef.get();
+
+    // Check if the document exists OR if it's a brand new user
+    if (!docSnapshot.exists ||
+        userCredential.additionalUserInfo?.isNewUser == true) {
+      // If it doesn't exist or is new, create it.
+      final userModel = UserModel(
+        createdAt: DateTime.now(),
+        name: userCredential.user?.displayName ?? 'Nameless',
+        uid: userCredential.user!.uid,
+        role: defaultRole,
+      );
+      await docRef.set(userModel.toJson());
+      return userModel;
+    } else {
+      print('222');
+
+      // If it exists, parse and return the existing data.
+      return UserModel.fromJson(docSnapshot.data() as Map<String, dynamic>);
+    }
+  }
+
+  // SIMPLIFIED Apple sign-in method
   FutureEither<UserModel> signInWithApple() async {
     try {
       final appleProvider = AppleAuthProvider()..addScope('email');
       final userCredential = await _auth.signInWithProvider(appleProvider);
-      UserModel userModel;
-      if (userCredential.additionalUserInfo!.isNewUser) {
-        userModel = UserModel(
-          name: userCredential.user!.displayName ?? 'Nameless',
-          uid: userCredential.user!.uid,
-          role: UserRole.intercessor,
-        );
-        await _users.doc(userCredential.user?.uid).set(userModel.toJson());
-      } else {
-        userModel = await getUserData(userCredential.user!.uid).first;
-      }
+
+      final userModel = await _handleUserCreationOrRetrieval(
+        userCredential: userCredential,
+        defaultRole: UserRole.intercessor,
+      );
 
       return right(userModel);
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
       return left(Failure(e.toString()));
+    }
+  }
+
+  // SIMPLIFIED Google sign-in method
+  FutureEither<UserModel> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount account = await _googleSignIn.authenticate(
+        scopeHint: const ['email', 'profile'],
+      );
+
+      final idToken = account.authentication.idToken;
+      if (idToken == null) {
+        return left(Failure('Google authentication failed: missing ID token.'));
+      }
+
+      final authz = await _googleSignIn.authorizationClient
+          .authorizationForScopes(const ['email', 'profile']);
+      final accessToken = authz?.accessToken;
+
+      final credential = GoogleAuthProvider.credential(
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      final userModel = await _handleUserCreationOrRetrieval(
+        userCredential: userCredential,
+        defaultRole: UserRole.observer,
+      );
+      print(userModel);
+      return right(userModel);
+    } on FirebaseException catch (e) {
+      return left(Failure(e.message ?? 'Firebase error.'));
+    } catch (e) {
+      return left(Failure('Google sign-in failed: $e'));
     }
   }
 
@@ -88,14 +148,16 @@ class AuthRepository {
     try {
       AuthCredential? credential;
 
-      if (user.providerData
-          .any((info) => info.providerId == GoogleAuthProvider().providerId)) {
+      if (user.providerData.any(
+        (info) => info.providerId == GoogleAuthProvider().providerId,
+      )) {
         // Google re-authentication
         await _googleSignIn.signOut();
 
         try {
-          final account = await _googleSignIn
-              .authenticate(scopeHint: const ['email', 'profile']);
+          final account = await _googleSignIn.authenticate(
+            scopeHint: const ['email', 'profile'],
+          );
 
           final idToken = account.authentication.idToken;
           if (idToken == null) {
@@ -115,8 +177,9 @@ class AuthRepository {
         } catch (e) {
           return left(Failure('Google re-authentication failed: $e'));
         }
-      } else if (user.providerData
-          .any((info) => info.providerId == AppleAuthProvider().providerId)) {
+      } else if (user.providerData.any(
+        (info) => info.providerId == AppleAuthProvider().providerId,
+      )) {
         // Apple re-authentication
         try {
           final appleResult = await SignInWithApple.getAppleIDCredential(
@@ -150,8 +213,11 @@ class AuthRepository {
     }
   }
 
-  FutureEither<void> deleteUserAccount(BuildContext context, Ref ref,
-      {Function(BuildContext)? onSuccess}) async {
+  FutureEither<void> deleteUserAccount(
+    BuildContext context,
+    Ref ref, {
+    Function(BuildContext)? onSuccess,
+  }) async {
     try {
       final User? currentUser = _auth.currentUser;
       if (currentUser == null) {
@@ -163,11 +229,12 @@ class AuthRepository {
       return reauthResult.fold(
         (failure) {
           showFailureSnackBar(
-              context,
-              (failure.message.contains('credentials do not correspond') ||
-                      failure.message.contains('previously signed in user'))
-                  ? 'Sign In With Your OWN Account'
-                  : failure.message);
+            context,
+            (failure.message.contains('credentials do not correspond') ||
+                    failure.message.contains('previously signed in user'))
+                ? 'Sign In With Your OWN Account'
+                : failure.message,
+          );
           return left(failure);
         },
         (success) async {
@@ -179,15 +246,17 @@ class AuthRepository {
             await currentUser.delete();
             await _auth.signOut();
 
-            // New Logic: Check for the optional callback
             if (onSuccess != null) {
               onSuccess(context);
             }
 
             return right(null);
           } on FirebaseException catch (e) {
-            return left(Failure(e.message ??
-                'Firebase error occurred during account deletion'));
+            return left(
+              Failure(
+                e.message ?? 'Firebase error occurred during account deletion',
+              ),
+            );
           } catch (e) {
             return left(Failure('Failed to delete account: ${e.toString()}'));
           }
@@ -198,57 +267,11 @@ class AuthRepository {
     }
   }
 
-  FutureEither<UserModel> signInWithGoogle() async {
-    try {
-      // 1) Start Google sign-in (scopes go here now)
-      final GoogleSignInAccount account = await _googleSignIn
-          .authenticate(scopeHint: const ['email', 'profile']);
-
-      // 2) Get ID token (accessToken moved elsewhere in v7)
-      final idToken = account.authentication.idToken;
-      if (idToken == null) {
-        return left(Failure('Google authentication failed: missing ID token.'));
-      }
-
-      // 3) (Optional) Ask for an OAuth access token if you want one
-      final authz = await _googleSignIn.authorizationClient
-          .authorizationForScopes(const ['email', 'profile']);
-      final accessToken = authz?.accessToken;
-
-      // 4) Use with Firebase
-      final credential = GoogleAuthProvider.credential(
-        idToken: idToken,
-        accessToken: accessToken, // optional
-      );
-      final userCred = await _auth.signInWithCredential(credential);
-
-      // 5) Create or fetch your app user
-      late final UserModel userModel;
-      if (userCred.additionalUserInfo?.isNewUser == true) {
-        userModel = UserModel(
-          name: userCred.user?.displayName ?? 'Nameless',
-          uid: userCred.user!.uid,
-          role: UserRole.observer,
-        );
-        await _users.doc(userCred.user!.uid).set(userModel.toJson());
-      } else {
-        userModel = await getUserData(userCred.user!.uid).first;
-      }
-      return right(userModel);
-    } on FirebaseException catch (e) {
-      return left(Failure(e.message ?? 'Firebase error.'));
-    } catch (e) {
-      return left(Failure('Google sign-in failed: $e'));
-    }
-  }
-
   Stream<UserModel> getUserData(String uid) {
     try {
-      return _users.doc(uid).snapshots().map(
-        (event) {
-          return UserModel.fromJson(event.data() as Map<String, dynamic>);
-        },
-      );
+      return _users.doc(uid).snapshots().map((event) {
+        return UserModel.fromJson(event.data() as Map<String, dynamic>);
+      });
     } catch (e) {
       throw 'USER NOT FOUND, check internet.';
     }
@@ -260,6 +283,46 @@ class AuthRepository {
       await _auth.signOut();
     } catch (e) {
       print('Error during sign out: $e');
+    }
+  }
+
+  Future<void> addCreatedAtFieldAsDateTime() async {
+    final firestore = FirebaseFirestore.instance;
+    final usersCollection = firestore.collection('users');
+
+    // Use the client's (your phone's) current time.
+    final clientTimestamp = DateTime.now();
+
+    debugPrint(
+      'Starting migration: Adding "createdAt" field using DateTime.now()...',
+    );
+
+    try {
+      final snapshot = await usersCollection.get();
+      if (snapshot.docs.isEmpty) {
+        debugPrint('No users found to update.');
+        return;
+      }
+
+      final batch = firestore.batch();
+      int documentsToUpdate = 0;
+
+      for (final doc in snapshot.docs) {
+        // This will add the field to all documents.
+        batch.update(doc.reference, {'createdAt': clientTimestamp});
+        documentsToUpdate++;
+      }
+
+      if (documentsToUpdate > 0) {
+        await batch.commit();
+        debugPrint(
+          '✅ Successfully added "createdAt" field to $documentsToUpdate user documents.',
+        );
+      } else {
+        debugPrint('No users needed an update.');
+      }
+    } catch (e) {
+      debugPrint('❌ An error occurred during migration: $e');
     }
   }
 }

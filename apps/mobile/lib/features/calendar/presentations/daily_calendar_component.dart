@@ -10,7 +10,6 @@ import 'package:util/util.dart';
 
 import '../../../core/widgets/loader.dart';
 import '../../booking/presentations/booking_dialog.dart';
-import '../controller/calendar_controller.dart';
 import '../widget/booking_details_dialog.dart';
 
 class DailyCalendarComponent extends ConsumerStatefulWidget {
@@ -32,12 +31,14 @@ class _DailyCalendarComponentState
   // This helper method is now a static function or a top-level function
   // to prevent it from being tightly coupled to the widget's state.
   static _AppointmentDataSource _getCalendarDataSource(
-      List<BookingModel> bookingModels) {
+    List<BookingModel> bookingModels,
+  ) {
     List<BookingModel> appointments = <BookingModel>[];
 
     for (BookingModel booking in bookingModels) {
-      int duration =
-          booking.timeRange.end.difference(booking.timeRange.start).inDays;
+      int duration = booking.timeRange.end
+          .difference(booking.timeRange.start)
+          .inDays;
 
       for (int i = 0; i <= duration; i++) {
         DateTime currentDate = DateTime(
@@ -74,20 +75,19 @@ class _DailyCalendarComponentState
           );
         }
 
-        appointments.add(BookingModel(
-          timeRange: CustomDateTimeRange(
-            start: startTime,
-            end: endTime,
+        appointments.add(
+          BookingModel(
+            timeRange: CustomDateTimeRange(start: startTime, end: endTime),
+            description: booking.description,
+            title: booking.title,
+            recurrenceState: booking.recurrenceState,
+            location: booking.location,
+            createdAt: booking.createdAt,
+            host: booking.host,
+            userId: booking.userId,
+            id: booking.id,
           ),
-          description: booking.description,
-          title: booking.title,
-          recurrenceState: booking.recurrenceState,
-          location: booking.location,
-          createdAt: booking.createdAt,
-          host: booking.host,
-          userId: booking.userId,
-          id: booking.id,
-        ));
+        );
       }
     }
     return _AppointmentDataSource(appointments);
@@ -100,134 +100,124 @@ class _DailyCalendarComponentState
     final bookingFunction = ref.read(bookingControllerProvider.notifier);
     // final selectedDate = ref.watch(calendarDateNotifierProvider);
     final user = ref.watch(userProvider);
-    ref.listen(
-      calendarDateNotifierProvider,
-      (previous, next) {
-        widget.dailyCalendarController.displayDate = next;
-        widget.dailyCalendarController.selectedDate = next;
-      },
-    );
+    ref.listen(calendarDateNotifierProvider, (previous, next) {
+      widget.dailyCalendarController.displayDate = next;
+      widget.dailyCalendarController.selectedDate = next;
+    });
 
     return bookingStream.when(
-        data: (data) {
-          final dataSource = _getCalendarDataSource(data);
+      data: (data) {
+        final dataSource = _getCalendarDataSource(data);
 
-          // IMPORTANT: Reset the counter for each frame build.
-          _appointmentCounter = 0;
+        // IMPORTANT: Reset the counter for each frame build.
+        _appointmentCounter = 0;
 
-          return SfCalendar(
-            headerHeight: 0,
-            viewHeaderHeight: 0,
-            onViewChanged: (ViewChangedDetails details) {
-              // When user navigates in daily view, update the shared state
-              if (details.visibleDates.isNotEmpty) {
-                final visibleDate = details.visibleDates.first;
-                final currentSelected = ref.read(calendarDateNotifierProvider);
+        return SfCalendar(
+          headerHeight: 0,
+          viewHeaderHeight: 0,
+          onViewChanged: (ViewChangedDetails details) {
+            // When user navigates in daily view, update the shared state
+            if (details.visibleDates.isNotEmpty) {
+              final visibleDate = details.visibleDates.first;
+              final currentSelected = ref.read(calendarDateNotifierProvider);
 
-                if (currentSelected.day != visibleDate.day ||
-                    currentSelected.month != visibleDate.month ||
-                    currentSelected.year != visibleDate.year) {
-                  // CORRECTED: Delay the provider modification until the next frame.
-                  // This prevents the error from being thrown.
-                  Future.microtask(() {
-                    ref
-                        .read(calendarDateNotifierProvider.notifier)
-                        .updateSelectedDate(visibleDate);
-                  });
-                }
+              if (currentSelected.day != visibleDate.day ||
+                  currentSelected.month != visibleDate.month ||
+                  currentSelected.year != visibleDate.year) {
+                // CORRECTED: Delay the provider modification until the next frame.
+                // This prevents the error from being thrown.
+                Future.microtask(() {
+                  ref
+                      .read(calendarDateNotifierProvider.notifier)
+                      .updateSelectedDate(visibleDate);
+                });
               }
-            },
-            onLongPress: (CalendarLongPressDetails tapped) {
-              if (user?.role == UserRole.observer ||
-                  user?.role == UserRole.intercessor) {
-                return;
-              } //cancel operation if obs or intercessor role
+            }
+          },
+          onLongPress: (CalendarLongPressDetails tapped) {
+            if (user.value?.role == UserRole.observer ||
+                user.value?.role == UserRole.intercessor) {
+              return;
+            } //cancel operation if obs or intercessor role
 
-              bookingFunction.clearState();
-              if (tapped.date != null) {
-                bookingFunction.setStartTime(tapped.date!, context);
-                bookingFunction.setEndTime(
-                  tapped.date!.add(const Duration(minutes: 30)),
-                  context,
-                );
-                bookingFunction.setDateRange(
-                  DateTimeRange(start: tapped.date!, end: tapped.date!),
-                );
-              }
-
-              showDialog(
-                useRootNavigator: false,
-                context: context,
-                builder: (context) {
-                  return BookingDialog(
-                    context,
-                  );
-                },
+            bookingFunction.clearState();
+            if (tapped.date != null) {
+              bookingFunction.setStartTime(tapped.date!, context);
+              bookingFunction.setEndTime(
+                tapped.date!.add(const Duration(minutes: 30)),
+                context,
               );
-            },
-            appointmentBuilder:
-                (BuildContext context, CalendarAppointmentDetails details) {
-              final appointment = details.appointments.first as BookingModel;
+              bookingFunction.setDateRange(
+                DateTimeRange(start: tapped.date!, end: tapped.date!),
+              );
+            }
 
-              // Use the counter to determine the alternating color.
-              final backgroundColor = _appointmentCounter % 2 == 0
-                  ? context.colors.primaryContainer
-                  : context.colors.secondaryContainer;
+            showDialog(
+              useRootNavigator: false,
+              context: context,
+              builder: (context) {
+                return BookingDialog(context);
+              },
+            );
+          },
+          appointmentBuilder:
+              (BuildContext context, CalendarAppointmentDetails details) {
+                final appointment = details.appointments.first as BookingModel;
 
-              // IMPORTANT: Increment the counter for the next appointment.
-              _appointmentCounter++;
+                // Use the counter to determine the alternating color.
+                final backgroundColor = _appointmentCounter % 2 == 0
+                    ? context.colors.primaryContainer
+                    : context.colors.secondaryContainer;
 
-              return GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return BookingDetailsDialog(
-                        bookingModel: appointment,
-                      );
-                    },
-                  );
-                },
-                child: Container(
-                  color: backgroundColor,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          appointment.title,
-                          style: TextStyle(
+                // IMPORTANT: Increment the counter for the next appointment.
+                _appointmentCounter++;
+
+                return GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return BookingDetailsDialog(bookingModel: appointment);
+                      },
+                    );
+                  },
+                  child: Container(
+                    color: backgroundColor,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            appointment.title,
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
-                              color: context.colors.primary),
-                        ),
-                      ],
+                              color: context.colors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-            dataSource: dataSource,
-            controller: widget.dailyCalendarController,
-            view: CalendarView.day,
-            timeSlotViewSettings: const TimeSlotViewSettings(
-                timeRulerSize: 80,
-                timeIntervalHeight: 80,
-                timeFormat: 'hh:mm a',
-                timeInterval: Duration(
-                  minutes: 30,
-                )),
-          );
-        },
-        error: (error, stack) {
-          return const Center(
-            child: Text('Error'),
-          );
-        },
-        loading: () => const Loader());
+                );
+              },
+          dataSource: dataSource,
+          controller: widget.dailyCalendarController,
+          view: CalendarView.day,
+          timeSlotViewSettings: const TimeSlotViewSettings(
+            timeRulerSize: 80,
+            timeIntervalHeight: 80,
+            timeFormat: 'hh:mm a',
+            timeInterval: Duration(minutes: 30),
+          ),
+        );
+      },
+      error: (error, stack) {
+        return const Center(child: Text('Error'));
+      },
+      loading: () => const Loader(),
+    );
   }
 }
 
@@ -259,16 +249,19 @@ class _AppointmentDataSource extends CalendarDataSource<BookingModel> {
 
   @override
   BookingModel convertAppointmentToObject(
-      BookingModel customData, Appointment appointment) {
+    BookingModel customData,
+    Appointment appointment,
+  ) {
     return BookingModel(
-        timeRange: customData.timeRange,
-        description: customData.description,
-        title: customData.title,
-        recurrenceState: customData.recurrenceState,
-        location: customData.location,
-        createdAt: customData.createdAt,
-        host: customData.host,
-        userId: customData.userId,
-        id: customData.id);
+      timeRange: customData.timeRange,
+      description: customData.description,
+      title: customData.title,
+      recurrenceState: customData.recurrenceState,
+      location: customData.location,
+      createdAt: customData.createdAt,
+      host: customData.host,
+      userId: customData.userId,
+      id: customData.id,
+    );
   }
 }
