@@ -258,14 +258,22 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                     MonthlyCalendarController();
 
                 return Column(
-                  mainAxisSize: MainAxisSize.max,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // Date Display Header - moved to top for web layout
                     Container(
                       width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 16),
                       child: GlassmorphicContainer(
-                        height: 60,
+                        height: ResponsiveValue(
+                          context,
+                          defaultValue:
+                              60, // ← Add this default value for small screens
+                          conditionalValues: [
+                            Condition.smallerThan(name: MOBILE, value: 50),
+                            Condition.between(start: 450, end: 800, value: 70),
+                            Condition.largerThan(name: TABLET, value: 80),
+                          ],
+                        ).value.toDouble(),
                         width: double.infinity,
                         border: 1,
                         blur: 5,
@@ -360,8 +368,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                             ),
                             headerHeight: ResponsiveValue(
                               context,
+                              defaultValue:
+                                  50, // ← Add this default value for small screens
                               conditionalValues: [
-                                Condition.smallerThan(name: MOBILE, value: 60),
                                 Condition.between(
                                   start: 450,
                                   end: 800,

@@ -57,7 +57,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               ),
               GlassmorphicContainer(
                 width: width * 0.9, // Fallback value
-                height: width * 0.8, // Fallback value
+                height: width * 0.9, // Fallback value
                 borderRadius: 20,
                 linearGradient: LinearGradient(
                   begin: Alignment.topLeft,

@@ -1,12 +1,10 @@
-// Note: You removed this import in your new main.dart structure.
-// import 'package:flutter_church_app/scaffold_with_nav_bar.dart';
-
 import 'dart:async'; // Added by user's main.dart
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:constants/constants.dart'; // Added by user's main.dart
 import 'package:firebase/firebase.dart'; // Added by user's main.dart
 import 'package:firebase_core/firebase_core.dart'; // Added by user's main.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Added by user's main.dart
 import 'package:responsive_framework/responsive_framework.dart';
@@ -81,7 +79,9 @@ class _ConnectivityErrorScreenState extends State<ConnectivityErrorScreen> {
         hasConnectivity.value = true;
       }
     } catch (e) {
-      print('Retry failed: $e');
+      if (kDebugMode) {
+        print('Retry failed: $e');
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -101,25 +101,25 @@ class _ConnectivityErrorScreenState extends State<ConnectivityErrorScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.blue.shade50,
+        backgroundColor: context.colors.surface,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.cloud_off, size: 80, color: Colors.blue.shade300),
+              Icon(Icons.cloud_off, size: 80, color: context.colors.onSurface),
               const SizedBox(height: 24),
               Text(
                 'Unable to connect to Firebase',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.blue.shade800,
+                  color: context.colors.outlineVariant,
                 ),
               ),
               const SizedBox(height: 12),
               Text(
                 'Please check your internet connection and try again',
-                style: TextStyle(fontSize: 16, color: Colors.blue.shade600),
+                style: TextStyle(fontSize: 16, color: Colors.redAccent),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -134,7 +134,7 @@ class _ConnectivityErrorScreenState extends State<ConnectivityErrorScreen> {
                     : const Icon(Icons.refresh),
                 label: Text(_isRetrying ? 'Connecting...' : 'Retry'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.redAccent,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -146,7 +146,7 @@ class _ConnectivityErrorScreenState extends State<ConnectivityErrorScreen> {
                 const SizedBox(height: 16),
                 Text(
                   'Auto-retry in progress... (${_retryCount}/5)',
-                  style: TextStyle(fontSize: 12, color: Colors.blue.shade500),
+                  style: TextStyle(fontSize: 12, color: Colors.redAccent),
                 ),
               ],
             ],
