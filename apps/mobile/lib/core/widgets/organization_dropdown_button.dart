@@ -5,9 +5,6 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:mobile/core/organization/controller/organization_controller.dart';
 
 class OrganizationSelectionDropdown extends ConsumerWidget {
-  // Use a nullable type to represent the state where nothing is selected yet.
-  OrganizationsID? _selectedOrg;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GlassmorphicContainer(

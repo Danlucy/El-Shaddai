@@ -15,6 +15,8 @@ import 'package:website/features/booking/controller/booking_controller.dart';
 import 'package:website/features/booking/controller/data_source.dart';
 import 'package:website/features/booking/presentations/daily_booking_dialog.dart';
 
+import '../provider/booking_provider.dart';
+
 class MonthlyCalendarComponent extends ConsumerStatefulWidget {
   const MonthlyCalendarComponent({super.key});
 
@@ -250,7 +252,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
       animation: _gradientAnimation,
       builder: (context, child) {
         return ref
-            .watch(bookingStreamProvider())
+            .watch(getCurrentOrgBookingsStreamProvider)
             .when(
               data: (data) {
                 // Create a controller instance for checking booking status

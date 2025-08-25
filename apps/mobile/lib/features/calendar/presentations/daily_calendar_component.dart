@@ -10,6 +10,7 @@ import 'package:util/util.dart';
 
 import '../../../core/widgets/loader.dart';
 import '../../booking/presentations/booking_dialog.dart';
+import '../../booking/provider/booking_provider.dart';
 import '../widget/booking_details_dialog.dart';
 
 class DailyCalendarComponent extends ConsumerStatefulWidget {
@@ -96,7 +97,7 @@ class _DailyCalendarComponentState
   @override
   Widget build(BuildContext context) {
     ref.watch(bookingControllerProvider);
-    final bookingStream = ref.watch(bookingStreamProvider());
+    final bookingStream = ref.watch(getCurrentOrgBookingsStreamProvider);
     final bookingFunction = ref.read(bookingControllerProvider.notifier);
     // final selectedDate = ref.watch(calendarDateNotifierProvider);
     final user = ref.watch(userProvider);

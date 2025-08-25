@@ -9,6 +9,7 @@ import 'package:website/features/home/presenations/shell_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+// SOLUTION 1: Use child routes (Recommended)
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -28,32 +29,34 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Booking tab
+          // Booking tab with child routes
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/booking',
                 builder: (context, state) => const BookingScreen(),
-              ),
-              GoRoute(
-                path: '/booking/:id', // The path with the ID parameter
-                builder: (context, state) {
-                  // Extract the 'id' parameter from the URL
-                  final String bookingId = state.pathParameters['id']!;
-                  // Pass the ID to your details screen
-                  return BookingDetailsScreen(bookingId: bookingId);
-                },
+                routes: [
+                  // Child route - URL becomes /booking/details/:id
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) {
+                      final String bookingId = state.pathParameters['id']!;
+                      return BookingDetailsScreen(bookingId: bookingId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/list',
-              builder: (context, state) {
-                return BookingListScreen();
-              },
-            ),
-          ])
+          // List tab
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/list',
+                builder: (context, state) => BookingListScreen(),
+              ),
+            ],
+          ),
         ],
       ),
     ],

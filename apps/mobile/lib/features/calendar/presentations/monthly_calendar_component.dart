@@ -1,17 +1,18 @@
 import 'dart:math';
+
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
 import 'package:mobile/features/booking/presentations/booking_screen.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:intl/intl.dart';
 import 'package:util/util.dart';
 
 import '../../../core/widgets/loader.dart';
-
+import '../../booking/provider/booking_provider.dart';
 import '../controller/calendar_controller.dart';
 
 class MonthlyCalendarComponent extends ConsumerStatefulWidget {
@@ -63,8 +64,9 @@ class _MonthlyCalendarComponentState
   Point<int> _getGridPosition(DateTime date, DateTime displayDate) {
     // Get the first day of the week for the first day of the month view
     final firstDayOfMonth = DateTime(displayDate.year, displayDate.month, 1);
-    final firstDayInView =
-        firstDayOfMonth.subtract(Duration(days: firstDayOfMonth.weekday % 7));
+    final firstDayInView = firstDayOfMonth.subtract(
+      Duration(days: firstDayOfMonth.weekday % 7),
+    );
 
     final dayDifference = date.difference(firstDayInView).inDays;
     final row = dayDifference ~/ 7;
@@ -74,25 +76,29 @@ class _MonthlyCalendarComponentState
 
   // Calculate gradient direction and intensity for each cell with animation
   Map<String, dynamic> _getCellGradientInfo(
-      DateTime date,
-      DateTime selectedDate,
-      DateTime? previousSelectedDate,
-      double animationValue) {
-    Map<String, dynamic> currentGradientInfo =
-        _calculateGradientForDate(date, selectedDate);
+    DateTime date,
+    DateTime selectedDate,
+    DateTime? previousSelectedDate,
+    double animationValue,
+  ) {
+    Map<String, dynamic> currentGradientInfo = _calculateGradientForDate(
+      date,
+      selectedDate,
+    );
     Map<String, dynamic> previousGradientInfo = previousSelectedDate != null
         ? _calculateGradientForDate(date, previousSelectedDate)
         : {
             'distance': 10.0,
             'start': Alignment.center,
             'end': Alignment.center,
-            'intensity': 0.0
+            'intensity': 0.0,
           };
 
     final currentIntensity = currentGradientInfo['intensity'] as double;
     final previousIntensity = previousGradientInfo['intensity'] as double;
 
-    final interpolatedIntensity = previousIntensity +
+    final interpolatedIntensity =
+        previousIntensity +
         (currentIntensity - previousIntensity) * animationValue;
 
     return {
@@ -105,7 +111,9 @@ class _MonthlyCalendarComponentState
 
   // Helper method to calculate gradient for a specific date using Manhattan distance
   Map<String, dynamic> _calculateGradientForDate(
-      DateTime date, DateTime targetDate) {
+    DateTime date,
+    DateTime targetDate,
+  ) {
     // Ensure we are comparing dates within the same month's view
     final displayDate =
         widget.monthlyCalendarController.displayDate ?? targetDate;
@@ -126,7 +134,7 @@ class _MonthlyCalendarComponentState
         'distance': 0.0,
         'start': Alignment.center,
         'end': Alignment.center,
-        'intensity': 0.0
+        'intensity': 0.0,
       };
     }
 
@@ -189,17 +197,15 @@ class _MonthlyCalendarComponentState
       _gradientAnimationController.forward();
     }
 
-    ref.listen(
-      calendarDateNotifierProvider,
-      (previous, next) {
-        if (widget.monthlyCalendarController.displayDate != next) {
-          widget.monthlyCalendarController.selectedDate = next;
-          widget.monthlyCalendarController.displayDate = next;
-        }
-      },
-    );
+    ref.listen(calendarDateNotifierProvider, (previous, next) {
+      if (widget.monthlyCalendarController.displayDate != next) {
+        widget.monthlyCalendarController.selectedDate = next;
+        widget.monthlyCalendarController.displayDate = next;
+      }
+    });
 
-    final bool isOldMan = TextScaleFactor.scaleFactor(
+    final bool isOldMan =
+        TextScaleFactor.scaleFactor(
           MediaQuery.textScalerOf(context).scale(1),
         ) ==
         TextScaleFactor.oldMan;
@@ -213,7 +219,9 @@ class _MonthlyCalendarComponentState
     return AnimatedBuilder(
       animation: _gradientAnimation,
       builder: (context, child) {
-        return ref.watch(bookingStreamProvider()).when(
+        return ref
+            .watch(getCurrentOrgBookingsStreamProvider)
+            .when(
               data: (data) {
                 return Column(
                   children: [
@@ -229,109 +237,130 @@ class _MonthlyCalendarComponentState
                         ),
                         monthCellBuilder:
                             (BuildContext context, MonthCellDetails details) {
-                          bool isCurrentMonth = details.date.month ==
-                              widget
-                                  .monthlyCalendarController.displayDate!.month;
-                          bool isSelectedDate = details.date == selectedDate;
+                              bool isCurrentMonth =
+                                  details.date.month ==
+                                  widget
+                                      .monthlyCalendarController
+                                      .displayDate!
+                                      .month;
+                              bool isSelectedDate =
+                                  details.date == selectedDate;
 
-                          final gradientInfo = _getCellGradientInfo(
-                              details.date,
-                              selectedDate,
-                              _previousSelectedDate,
-                              _gradientAnimation.value);
+                              final gradientInfo = _getCellGradientInfo(
+                                details.date,
+                                selectedDate,
+                                _previousSelectedDate,
+                                _gradientAnimation.value,
+                              );
 
-                          final intensity = gradientInfo['intensity'] as double;
-                          final gradientStart =
-                              gradientInfo['start'] as Alignment;
-                          final gradientEnd = gradientInfo['end'] as Alignment;
+                              final intensity =
+                                  gradientInfo['intensity'] as double;
+                              final gradientStart =
+                                  gradientInfo['start'] as Alignment;
+                              final gradientEnd =
+                                  gradientInfo['end'] as Alignment;
 
-                          List<BookingModel> bookings = data.where((element) {
-                            return isOverlapping(
-                                details.date, element.timeRange);
-                          }).toList();
-                          bool isBooked = bookings.isNotEmpty;
+                              List<BookingModel> bookings = data.where((
+                                element,
+                              ) {
+                                return isOverlapping(
+                                  details.date,
+                                  element.timeRange,
+                                );
+                              }).toList();
+                              bool isBooked = bookings.isNotEmpty;
 
-                          bool fullyBooked =
-                              controller.isFullyBooked(details.date, bookings);
+                              bool fullyBooked = controller.isFullyBooked(
+                                details.date,
+                                bookings,
+                              );
 
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              border: isSelectedDate
-                                  ? Border.all(
-                                      color: context.colors.secondary,
-                                      width: 2.0,
-                                    )
-                                  : Border.all(width: 0.2, color: Colors.grey),
-                            ),
-                            child: Stack(
-                              children: [
-                                if (intensity > 0)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: gradientStart,
-                                        end: gradientEnd,
-                                        colors: [
-                                          Colors.transparent,
-                                          context.colors.secondary
-                                              .withOpac(intensity * 0.3),
-                                          context.colors.secondary
-                                              .withOpac(intensity * 0.6),
-                                          context.colors.secondary
-                                              .withOpac(intensity),
-                                        ],
-                                        stops: const [0.0, 0.3, 0.7, 1.0],
-                                      ),
-                                    ),
-                                  ),
-                                Column(
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  border: isSelectedDate
+                                      ? Border.all(
+                                          color: context.colors.secondary,
+                                          width: 2.0,
+                                        )
+                                      : Border.all(
+                                          width: 0.2,
+                                          color: Colors.grey,
+                                        ),
+                                ),
+                                child: Stack(
                                   children: [
-                                    Center(
-                                      child: Text(
-                                        details.date.day.toString(),
-                                        style: TextStyle(
-                                          fontSize: isSelectedDate
-                                              ? (isOldMan ? 12 : 18)
-                                              : (isOldMan ? 10 : 16),
-                                          fontWeight:
-                                              intensity > 0.15 || isSelectedDate
+                                    if (intensity > 0)
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: gradientStart,
+                                            end: gradientEnd,
+                                            colors: [
+                                              Colors.transparent,
+                                              context.colors.secondary.withOpac(
+                                                intensity * 0.3,
+                                              ),
+                                              context.colors.secondary.withOpac(
+                                                intensity * 0.6,
+                                              ),
+                                              context.colors.secondary.withOpac(
+                                                intensity,
+                                              ),
+                                            ],
+                                            stops: const [0.0, 0.3, 0.7, 1.0],
+                                          ),
+                                        ),
+                                      ),
+                                    Column(
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            details.date.day.toString(),
+                                            style: TextStyle(
+                                              fontSize: isSelectedDate
+                                                  ? (isOldMan ? 12 : 18)
+                                                  : (isOldMan ? 10 : 16),
+                                              fontWeight:
+                                                  intensity > 0.15 ||
+                                                      isSelectedDate
                                                   ? FontWeight.w500
                                                   : FontWeight.normal,
-                                          color: !isCurrentMonth
-                                              ? Colors.grey
-                                              : isSelectedDate
+                                              color: !isCurrentMonth
+                                                  ? Colors.grey
+                                                  : isSelectedDate
                                                   ? context.colors.secondary
                                                   : intensity > 0.15
-                                                      ? context.colors.secondary
-                                                          .withOpac(0.9)
-                                                      : Colors.white,
+                                                  ? context.colors.secondary
+                                                        .withOpac(0.9)
+                                                  : Colors.white,
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        if (isBooked)
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              top: isSelectedDate
+                                                  ? 0
+                                                  : (isOldMan ? 2 : 3),
+                                            ),
+                                            child: CircleAvatar(
+                                              radius: isSelectedDate
+                                                  ? (isOldMan ? 3.5 : 4)
+                                                  : 3,
+                                              backgroundColor: fullyBooked
+                                                  ? Colors.red
+                                                  : Colors.green,
+                                            ),
+                                          )
+                                        else
+                                          Container(),
+                                      ],
                                     ),
-                                    if (isBooked)
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            top: isSelectedDate
-                                                ? 0
-                                                : (isOldMan ? 2 : 3)),
-                                        child: CircleAvatar(
-                                          radius: isSelectedDate
-                                              ? (isOldMan ? 3.5 : 4)
-                                              : 3,
-                                          backgroundColor: fullyBooked
-                                              ? Colors.red
-                                              : Colors.green,
-                                        ),
-                                      )
-                                    else
-                                      Container(),
                                   ],
                                 ),
-                              ],
-                            ),
-                          );
-                        },
+                              );
+                            },
                         onTap: (details) {
                           if (details.date != null) {
                             ref
@@ -343,67 +372,71 @@ class _MonthlyCalendarComponentState
                       ),
                     ),
                     Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 2),
-                        child: IntrinsicHeight(
-                          child: GlassContainer(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Center(
-                              child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  style: DefaultTextStyle.of(context).style,
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: '$dayOfWeek, '.toUpperCase(),
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.normal,
-                                        color: context.colors.secondary
-                                            .withOpac(0.8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 2,
+                      ),
+                      child: IntrinsicHeight(
+                        child: GlassContainer(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Center(
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                style: DefaultTextStyle.of(context).style,
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: '$dayOfWeek, '.toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      color: context.colors.secondary.withOpac(
+                                        0.8,
                                       ),
                                     ),
-                                    TextSpan(
-                                      text: '$dayOfMonth ',
-                                      style: TextStyle(
-                                        fontSize:
-                                            22, // Large font size for the date
-                                        fontWeight: FontWeight
-                                            .bold, // Bold for the date
-                                        color: context.colors.secondary,
+                                  ),
+                                  TextSpan(
+                                    text: '$dayOfMonth ',
+                                    style: TextStyle(
+                                      fontSize:
+                                          22, // Large font size for the date
+                                      fontWeight:
+                                          FontWeight.bold, // Bold for the date
+                                      color: context.colors.secondary,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: monthOfMonth,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: context.colors.primary.withOpac(
+                                        0.8,
                                       ),
                                     ),
-                                    TextSpan(
-                                      text: monthOfMonth,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: context.colors.primary
-                                            .withOpac(0.8),
+                                  ),
+                                  TextSpan(
+                                    text: yearOfMonth,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: context.colors.secondary.withOpac(
+                                        0.8,
                                       ),
                                     ),
-                                    TextSpan(
-                                      text: yearOfMonth,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal,
-                                        color: context.colors.secondary
-                                            .withOpac(0.8),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
                   ],
                 );
               },
               error: (error, stack) {
-                return const Center(
-                  child: Text('Error'),
-                );
+                return const Center(child: Text('Error'));
               },
               loading: () => const Loader(),
             );

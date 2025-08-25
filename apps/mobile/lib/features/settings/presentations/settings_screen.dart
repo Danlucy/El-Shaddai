@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/organization/controller/organization_controller.dart';
 import 'package:mobile/core/router/router.dart';
 import 'package:mobile/core/widgets/glass_list_tile.dart';
 import 'package:mobile/features/home/widgets/general_drawer.dart';
@@ -158,6 +159,54 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           .clearAccessToken();
                     },
                   ),
+            GlassListTile(
+              title: DropdownButtonHideUnderline(
+                child: DropdownButton<OrganizationsID>(
+                  value: ref.watch(organizationControllerProvider).value,
+                  isExpanded: true,
+                  dropdownColor: Colors.black.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(12),
+
+                  // placeholder
+                  hint: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Select an Organization',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: context.colors.primary,
+                      ),
+                    ),
+                  ),
+
+                  // change org
+                  onChanged: (OrganizationsID? newValue) {
+                    if (newValue != null) {
+                      ref
+                          .read(organizationControllerProvider.notifier)
+                          .updateOrg(newValue);
+                    }
+                  },
+
+                  // menu items
+                  items: OrganizationsID.values.map((org) {
+                    return DropdownMenuItem(
+                      value: org,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          org.displayName,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: context.colors.primary,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -56,7 +56,7 @@ final class ParticipantControllerProvider
 }
 
 String _$participantControllerHash() =>
-    r'7e96b7c3eb21172bc8b5cea2cdcb8f085944ec62';
+    r'c738465e1f7e6c57dc54449481f1444b14fc8d26';
 
 final class ParticipantControllerFamily extends $Family
     with

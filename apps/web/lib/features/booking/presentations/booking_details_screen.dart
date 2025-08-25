@@ -1,24 +1,22 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:repositories/repositories.dart';
 import 'package:website/core/widgets/animated_background.dart';
 import 'package:website/core/widgets/footer_widget.dart';
 import 'package:website/core/widgets/loader.dart';
+import 'package:website/features/booking/provider/booking_provider.dart';
 import 'package:website/features/booking/widget/booking_details_widget.dart';
 
 class BookingDetailsScreen extends ConsumerWidget {
-  const BookingDetailsScreen({
-    super.key,
-    required this.bookingId,
-  });
+  const BookingDetailsScreen({super.key, required this.bookingId});
 
   final String bookingId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bookingStream =
-        ref.watch(bookingStreamProvider(bookingId: bookingId));
+    final bookingStream = ref.watch(
+      getSingleCurrentOrgBookingStreamProvider(bookingId: bookingId),
+    );
 
     return Scaffold(
       body: AnimatedBackground(
@@ -30,11 +28,12 @@ class BookingDetailsScreen extends ConsumerWidget {
               return const Center(child: Text('Booking not found.'));
             }
             return SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // Main Title
-                    Padding(
+              child: ListView(
+                children: [
+                  // Main Title - Fixed height
+                  Align(
+                    alignment: AlignmentGeometry.center,
+                    child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20.0),
                       child: Text(
                         'Booking Details',
@@ -45,24 +44,23 @@ class BookingDetailsScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    // The core content
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: 1200,
-                            maxHeight: MediaQuery.sizeOf(context).height * 0.85,
-                          ),
-                          child: BookingDetailsContent(booking: booking),
+                  ),
+                  // The core content - Takes available space
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 1200,
+                          maxHeight: 1000,
                         ),
+                        child: BookingDetailsContent(booking: booking),
                       ),
                     ),
-                    const SizedBox(height: 40),
-                    // The footer
-                    FooterWidget(moreInfo: true),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 40),
+                  const FooterWidget(moreInfo: true),
+                ],
               ),
             );
           },

@@ -2,13 +2,13 @@ import 'package:api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mobile/features/booking/provider/booking_provider.dart';
+import 'package:mobile/features/booking/state/booking_state.dart';
 import 'package:models/models.dart';
-import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:util/util.dart';
 
 import '../../auth/controller/auth_controller.dart';
-import '../state/booking_state.dart';
 
 part 'booking_controller.g.dart';
 
@@ -331,7 +331,7 @@ class BookingController extends _$BookingController {
     bool isUpdating,
     String? bookingId,
   ) {
-    final bookingsAsync = ref.watch(bookingStreamProvider());
+    final bookingsAsync = ref.watch(getCurrentOrgBookingsStreamProvider);
     if (!bookingsAsync.hasValue) {
       throw 'No bookings found. Ensure internet connection is available.';
       // or throw an appropriate error

@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:models/models.dart';
-import 'package:repositories/repositories.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:util/util.dart';
 
@@ -16,6 +15,7 @@ import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
 import '../../calendar/widget/booking_details_dialog.dart';
 import '../../home/widgets/general_drawer.dart';
+import '../provider/booking_provider.dart';
 import 'booking_screen.dart';
 
 class BookingListScreen extends ConsumerStatefulWidget {
@@ -80,7 +80,8 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
     } else if (textScaleFactor == TextScaleFactor.boomer) {
       appointmentHeight = 90; // DailyCalendarComponent takes 30%
     }
-    final bookingStream = ref.watch(bookingStreamProvider());
+    final bookingStream = ref.watch(getCurrentOrgBookingsStreamProvider);
+    print(bookingStream);
     return Scaffold(
       drawer: const GeneralDrawer(),
       appBar: AppBar(title: const Text('Prayer Watch List')),
@@ -156,7 +157,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                               context.pop();
 
                               ref
-                                  .read(bookingRepositoryProvider)
+                                  .read(currentOrgRepositoryProvider)
                                   .deleteBooking(bookingModel.id);
                             },
                           );

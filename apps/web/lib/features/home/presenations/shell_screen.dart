@@ -39,6 +39,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                 break;
               case '/booking':
                 navigationShell.goBranch(1);
+                context.go('/booking');
                 break;
               case '/list':
                 navigationShell.goBranch(2);
