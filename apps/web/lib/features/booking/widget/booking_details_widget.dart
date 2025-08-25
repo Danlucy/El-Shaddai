@@ -19,6 +19,8 @@ import 'package:website/core/widgets/loader.dart';
 import 'package:website/features/auth/controller/auth_controller.dart';
 import 'package:website/features/participant/controller/participant_controller.dart';
 
+import '../provider/booking_provider.dart';
+
 /// A widget that displays the core content for a booking's details.
 /// This is designed to be embedded in other screens.
 class BookingDetailsContent extends ConsumerStatefulWidget {
@@ -34,8 +36,10 @@ class BookingDetailsContent extends ConsumerStatefulWidget {
 class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
   @override
   Widget build(BuildContext context) {
-    final user =
-        ProviderScope.containerOf(context, listen: false).read(userProvider);
+    final user = ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(userProvider);
     final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
 
     return GlassmorphicContainer(
@@ -53,10 +57,7 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
         end: Alignment.bottomRight,
       ),
       borderGradient: LinearGradient(
-        colors: [
-          Colors.white.withOpacity(0.8),
-          Colors.white.withOpacity(0.1),
-        ],
+        colors: [Colors.white.withOpacity(0.8), Colors.white.withOpacity(0.1)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
@@ -115,22 +116,19 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
   }
 
   LinearGradient _glassBg(BuildContext context) => LinearGradient(
-        colors: [
-          Theme.of(context).colorScheme.surface.withOpacity(0.1),
-          Theme.of(context).colorScheme.surface.withOpacity(0.05),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
+    colors: [
+      Theme.of(context).colorScheme.surface.withOpacity(0.1),
+      Theme.of(context).colorScheme.surface.withOpacity(0.05),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 
   LinearGradient _glassBorder() => LinearGradient(
-        colors: [
-          Colors.white.withOpacity(0.8),
-          Colors.white.withOpacity(0.1),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
+    colors: [Colors.white.withOpacity(0.8), Colors.white.withOpacity(0.1)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }
 
 // Helper Widget for the main details column
@@ -160,8 +158,9 @@ class _MainDetailsColumn extends StatelessWidget {
             Column(
               children: [
                 CalendarWidget(
-                    date: booking.timeRange.start,
-                    color: Theme.of(context).colorScheme.primary),
+                  date: booking.timeRange.start,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 const Gap(4),
                 Text(DateFormat.jm().format(booking.timeRange.start)),
               ],
@@ -173,8 +172,9 @@ class _MainDetailsColumn extends StatelessWidget {
             Column(
               children: [
                 CalendarWidget(
-                    date: booking.timeRange.end,
-                    color: Theme.of(context).colorScheme.primary),
+                  date: booking.timeRange.end,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 const Gap(4),
                 Text(DateFormat.jm().format(booking.timeRange.end)),
               ],
@@ -183,10 +183,7 @@ class _MainDetailsColumn extends StatelessWidget {
         ),
         const Gap(24),
         // Description
-        Text(
-          'Description',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        Text('Description', style: Theme.of(context).textTheme.titleMedium),
         const Gap(8),
         Container(
           width: double.infinity,
@@ -200,10 +197,7 @@ class _MainDetailsColumn extends StatelessWidget {
         const Gap(24),
         // Location Details
         if (booking.location.address != null) ...[
-          Text(
-            'Location',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text('Location', style: Theme.of(context).textTheme.titleMedium),
           const Gap(8),
           Row(
             children: [
@@ -230,7 +224,7 @@ class _MainDetailsColumn extends StatelessWidget {
                   Marker(
                     markerId: const MarkerId("1"),
                     position: booking.location.chords!,
-                  )
+                  ),
                 },
               ),
             ),
@@ -247,10 +241,12 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final participantStream =
-        ref.watch(participantRepositoryProvider).getAllParticipants(booking.id);
-    final participationFunction =
-        ref.read(participantControllerProvider(booking.id).notifier);
+    final participantStream = ref
+        .watch(participantRepositoryProvider)
+        .getAllParticipants(booking.id);
+    final participationFunction = ref.read(
+      participantControllerProvider(booking.id).notifier,
+    );
 
     return GlassmorphicContainer(
       width: double.infinity,
@@ -263,19 +259,13 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
       linearGradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.2),
-          Colors.white.withOpacity(0.05),
-        ],
+        colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.05)],
         stops: const [0.1, 1],
       ),
       borderGradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.5),
-          Colors.white.withOpacity(0.5),
-        ],
+        colors: [Colors.white.withOpacity(0.5), Colors.white.withOpacity(0.5)],
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
@@ -295,7 +285,8 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
                       launchURL(booking.location.web!);
                       if (booking.password != null) {
                         Clipboard.setData(
-                            ClipboardData(text: booking.password!));
+                          ClipboardData(text: booking.password!),
+                        );
                       }
                     },
                     child: const CircleAvatar(
@@ -308,11 +299,13 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
                     child: GestureDetector(
                       onTap: () {
                         Clipboard.setData(
-                            ClipboardData(text: booking.location.meetingID()));
+                          ClipboardData(text: booking.location.meetingID()),
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content:
-                                    Text('Meeting ID copied to clipboard')));
+                          const SnackBar(
+                            content: Text('Meeting ID copied to clipboard'),
+                          ),
+                        );
                       },
                       child: Text(
                         booking.location.meetingID(spaced: true),
@@ -327,32 +320,34 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
                         context: context,
                         builder: (context) => Dialog(
                           child: GlassmorphicContainer(
-                              linearGradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.white.withOpac(0.2),
-                                  Colors.white.withOpac(0.1),
-                                ],
-                                stops: const [0.1, 1.0],
+                            linearGradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white.withOpac(0.2),
+                                Colors.white.withOpac(0.1),
+                              ],
+                              stops: const [0.1, 1.0],
+                            ),
+                            borderGradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white.withOpac(0.5),
+                                Colors.white.withOpac(0.5),
+                              ],
+                            ),
+                            width: 350,
+                            height: 60,
+                            borderRadius: 16, // 👈 use param
+                            blur: 10,
+                            border: 1,
+                            child: Center(
+                              child: SelectableText(
+                                booking.password ?? 'No Password',
                               ),
-                              borderGradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.white.withOpac(0.5),
-                                  Colors.white.withOpac(0.5),
-                                ],
-                              ),
-                              width: 350,
-                              height: 60,
-                              borderRadius: 16, // 👈 use param
-                              blur: 10,
-                              border: 1,
-                              child: Center(
-                                child: SelectableText(
-                                    booking.password ?? 'No Password'),
-                              )),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -378,8 +373,9 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
 
                   final participants = snapshot.data ?? [];
 
-                  final bool isJoined = participants
-                      .any((userModel) => userModel.uid == user?.uid);
+                  final bool isJoined = participants.any(
+                    (userModel) => userModel.uid == user?.uid,
+                  );
 
                   return SingleChildScrollView(
                     padding: const EdgeInsets.all(8),
@@ -412,7 +408,11 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
                             user?.role != UserRole.observer &&
                             user != null)
                           joinButton(
-                              user, isJoined, participationFunction, context),
+                            user,
+                            isJoined,
+                            participationFunction,
+                            context,
+                          ),
                       ],
                     ),
                   );
@@ -445,7 +445,7 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
                             confirmAction: () {
                               context.pop();
                               ref
-                                  .read(bookingRepositoryProvider)
+                                  .read(currentOrgRepositoryProvider)
                                   .deleteBooking(booking.id);
                               context.pop();
                             },
@@ -464,8 +464,12 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
   }
 }
 
-OutlinedButton joinButton(UserModel? user, bool isJoined,
-    ParticipantController participationFunction, BuildContext context) {
+OutlinedButton joinButton(
+  UserModel? user,
+  bool isJoined,
+  ParticipantController participationFunction,
+  BuildContext context,
+) {
   return OutlinedButton(
     onPressed: () async {
       if (user?.uid != null) {
@@ -476,14 +480,15 @@ OutlinedButton joinButton(UserModel? user, bool isJoined,
             await participationFunction.addParticipant();
           }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${e.toString()}')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text("User unavailable, check Internet connection")),
+            content: Text("User unavailable, check Internet connection"),
+          ),
         );
       }
     },

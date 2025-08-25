@@ -114,8 +114,6 @@ class AuthController extends AsyncNotifier<void> {
 
       user.fold(
         (l) {
-          print("❌ Google sign-in failed: ${l.message}");
-
           if (kDebugMode) {
             print('Error signing in with Google: ${l.message}');
           }
@@ -123,7 +121,6 @@ class AuthController extends AsyncNotifier<void> {
           state = AsyncValue.error(l.message, StackTrace.empty);
         },
         (userModel) {
-          print("✅ Got userModel: $userModel");
           ref.read(userProvider.notifier).setUser(userModel);
           state = const AsyncValue.data(null);
         },

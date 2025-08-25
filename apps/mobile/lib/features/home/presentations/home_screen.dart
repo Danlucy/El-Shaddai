@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/organization/controller/organization_controller.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
-import 'package:repositories/repositories.dart';
+import 'package:repositories/repositories.dart'
+    hide organizationControllerProvider;
 
 import '../../auth/controller/auth_controller.dart';
 import '../widgets/general_drawer.dart';

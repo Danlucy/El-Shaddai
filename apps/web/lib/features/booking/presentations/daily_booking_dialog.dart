@@ -13,6 +13,7 @@ import 'package:web/web.dart' as web;
 import 'package:website/core/utility/new_tab.dart';
 import 'package:website/features/auth/controller/auth_controller.dart';
 import 'package:website/features/booking/controller/data_source.dart';
+import 'package:website/features/booking/provider/booking_provider.dart';
 
 import '../../../core/widgets/loader.dart';
 
@@ -42,18 +43,16 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    Future(
-      () {
-        // Get the initial date from the provider
-        final initialDate = ref.read(calendarDateNotifierProvider);
-        if (initialDate != null) {
-          _updateCalendarDate(initialDate);
-        } else {
-          // If no date is set, use today's date
-          _updateCalendarDate(DateTime.now());
-        }
-      },
-    );
+    Future(() {
+      // Get the initial date from the provider
+      final initialDate = ref.read(calendarDateNotifierProvider);
+      if (initialDate != null) {
+        _updateCalendarDate(initialDate);
+      } else {
+        // If no date is set, use today's date
+        _updateCalendarDate(DateTime.now());
+      }
+    });
     // Set the initial date after dependencies are available
   }
 
@@ -68,12 +67,14 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
   // This helper method is now a static function or a top-level function
   // to prevent it from being tightly coupled to the widget's state.
   static AppointmentDataSource _getCalendarDataSource(
-      List<BookingModel> bookingModels) {
+    List<BookingModel> bookingModels,
+  ) {
     List<BookingModel> appointments = <BookingModel>[];
 
     for (BookingModel booking in bookingModels) {
-      int duration =
-          booking.timeRange.end.difference(booking.timeRange.start).inDays;
+      int duration = booking.timeRange.end
+          .difference(booking.timeRange.start)
+          .inDays;
 
       for (int i = 0; i <= duration; i++) {
         DateTime currentDate = DateTime(
@@ -110,20 +111,19 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
           );
         }
 
-        appointments.add(BookingModel(
-          timeRange: CustomDateTimeRange(
-            start: startTime,
-            end: endTime,
+        appointments.add(
+          BookingModel(
+            timeRange: CustomDateTimeRange(start: startTime, end: endTime),
+            description: booking.description,
+            title: booking.title,
+            recurrenceState: booking.recurrenceState,
+            location: booking.location,
+            createdAt: booking.createdAt,
+            host: booking.host,
+            userId: booking.userId,
+            id: booking.id,
           ),
-          description: booking.description,
-          title: booking.title,
-          recurrenceState: booking.recurrenceState,
-          location: booking.location,
-          createdAt: booking.createdAt,
-          host: booking.host,
-          userId: booking.userId,
-          id: booking.id,
-        ));
+        );
       }
     }
     return AppointmentDataSource(appointments);
@@ -134,7 +134,7 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
     final width = MediaQuery.sizeOf(context).width;
     final height = MediaQuery.sizeOf(context).height;
 
-    final bookingStream = ref.watch(bookingStreamProvider());
+    final bookingStream = ref.watch(getCurrentOrgBookingsStreamProvider);
     final user = ref.watch(userProvider);
 
     return AlertDialog(
@@ -143,12 +143,15 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
       backgroundColor: Colors.transparent,
       contentPadding: EdgeInsets.all(10),
       content: SizedBox(
-        width: ResponsiveValue(context, conditionalValues: [
-          Condition.equals(name: MOBILE, value: width * 0.9),
-          Condition.between(start: 450, end: 800, value: width * 0.8),
-          Condition.between(start: 801, end: 1200, value: width * 0.6),
-          Condition.between(start: 1201, end: 3000, value: 1000),
-        ]).value.toDouble(),
+        width: ResponsiveValue(
+          context,
+          conditionalValues: [
+            Condition.equals(name: MOBILE, value: width * 0.9),
+            Condition.between(start: 450, end: 800, value: width * 0.8),
+            Condition.between(start: 801, end: 1200, value: width * 0.6),
+            Condition.between(start: 1201, end: 3000, value: 1000),
+          ],
+        ).value.toDouble(),
         height: height * 0.85,
         child: GlassmorphicContainer(
           width: double.infinity,
@@ -182,13 +185,9 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Add date display to verify the correct date is being used
-
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(
-                        Icons.close,
-                        color: context.colors.primary,
-                      ),
+                      icon: Icon(Icons.close, color: context.colors.primary),
                     ),
                   ],
                 ),
@@ -198,12 +197,16 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                      horizontal: ResponsiveValue(context, conditionalValues: [
-                    Condition.equals(name: MOBILE, value: 16),
-                    Condition.between(start: 450, end: 800, value: 20),
-                    Condition.between(start: 801, end: 1200, value: 22),
-                    Condition.between(start: 1201, end: 3000, value: 24),
-                  ]).value.toDouble()),
+                    horizontal: ResponsiveValue(
+                      context,
+                      conditionalValues: [
+                        Condition.equals(name: MOBILE, value: 16),
+                        Condition.between(start: 450, end: 800, value: 20),
+                        Condition.between(start: 801, end: 1200, value: 22),
+                        Condition.between(start: 1201, end: 3000, value: 24),
+                      ],
+                    ).value.toDouble(),
+                  ),
                   child: bookingStream.when(
                     data: (data) {
                       final dataSource = _getCalendarDataSource(data);
@@ -216,29 +219,41 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
                         controller:
                             _dailyCalendarController, // Use the controller
                         // Remove initialSelectedDate - controller handles this
-                        headerHeight:
-                            ResponsiveValue(context, conditionalValues: [
-                          Condition.smallerThan(name: MOBILE, value: 60),
-                          Condition.between(start: 450, end: 800, value: 70),
-                          Condition.largerThan(name: TABLET, value: 80),
-                        ]).value.toDouble(),
-                        viewHeaderHeight:
-                            ResponsiveValue(context, conditionalValues: [
-                          Condition.smallerThan(name: MOBILE, value: 50),
-                          Condition.between(start: 450, end: 800, value: 60),
-                          Condition.largerThan(name: TABLET, value: 70),
-                        ]).value.toDouble(),
+                        headerHeight: ResponsiveValue(
+                          defaultValue: 60,
+                          context,
+                          conditionalValues: [
+                            Condition.smallerThan(name: MOBILE, value: 60),
+                            Condition.between(start: 450, end: 800, value: 70),
+                            Condition.largerThan(name: TABLET, value: 80),
+                          ],
+                        ).value.toDouble(),
+                        viewHeaderHeight: ResponsiveValue(
+                          defaultValue: 50,
+                          context,
+                          conditionalValues: [
+                            Condition.smallerThan(name: MOBILE, value: 50),
+                            Condition.between(start: 450, end: 800, value: 60),
+                            Condition.largerThan(name: TABLET, value: 70),
+                          ],
+                        ).value.toDouble(),
                         headerStyle: CalendarHeaderStyle(
                           textAlign: TextAlign.center,
                           backgroundColor: Colors.transparent,
                           textStyle: TextStyle(
-                            fontSize:
-                                ResponsiveValue(context, conditionalValues: [
-                              Condition.smallerThan(name: MOBILE, value: 20),
-                              Condition.between(
-                                  start: 450, end: 800, value: 24),
-                              Condition.largerThan(name: TABLET, value: 30),
-                            ]).value.toDouble(),
+                            fontSize: ResponsiveValue(
+                              defaultValue: 20,
+                              context,
+                              conditionalValues: [
+                                Condition.smallerThan(name: MOBILE, value: 20),
+                                Condition.between(
+                                  start: 450,
+                                  end: 800,
+                                  value: 24,
+                                ),
+                                Condition.largerThan(name: TABLET, value: 30),
+                              ],
+                            ).value.toDouble(),
                             fontWeight: FontWeight.w600,
                             color: context.colors.primary,
                           ),
@@ -250,143 +265,204 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
                         onLongPress: (CalendarLongPressDetails tapped) {
                           // Your existing long press logic here
                         },
-                        appointmentBuilder: (BuildContext context,
-                            CalendarAppointmentDetails details) {
-                          final appointment =
-                              details.appointments.first as BookingModel;
+                        appointmentBuilder:
+                            (
+                              BuildContext context,
+                              CalendarAppointmentDetails details,
+                            ) {
+                              final appointment =
+                                  details.appointments.first as BookingModel;
 
-                          // Use the counter to determine the alternating color
-                          final backgroundColor = _appointmentCounter % 2 == 0
-                              ? context.colors.primaryContainer.withOpac(0.8)
-                              : context.colors.secondaryContainer.withOpac(0.8);
+                              // Use the counter to determine the alternating color
+                              final backgroundColor =
+                                  _appointmentCounter % 2 == 0
+                                  ? context.colors.primaryContainer.withOpac(
+                                      0.8,
+                                    )
+                                  : context.colors.secondaryContainer.withOpac(
+                                      0.8,
+                                    );
 
-                          // Increment the counter for the next appointment
-                          _appointmentCounter++;
+                              // Increment the counter for the next appointment
+                              _appointmentCounter++;
 
-                          return NewTabContextMenu(
-                            url: '/#/booking/${appointment.id}',
-                            child: GestureDetector(
-                              onTap: () {
-                                context.pop();
-                                context.go(
-                                  '/booking/${appointment.id}',
-                                  extra: appointment,
-                                );
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  color: backgroundColor,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: context.colors.primary.withOpac(0.3),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        appointment.title,
-                                        style: TextStyle(
-                                          fontSize: ResponsiveValue(context,
-                                              conditionalValues: [
-                                                Condition.equals(
-                                                    name: MOBILE, value: 14),
-                                                Condition.between(
-                                                    start: 450,
-                                                    end: 800,
-                                                    value: 18),
-                                                Condition.between(
-                                                    start: 801,
-                                                    end: 1200,
-                                                    value: 20),
-                                                Condition.between(
-                                                    start: 1201,
-                                                    end: 3000,
-                                                    value: 24),
-                                              ]).value.toDouble(),
-                                          fontWeight: FontWeight.w600,
-                                          color: context.colors.primary,
+                              return NewTabContextMenu(
+                                url: '/#/booking/${appointment.id}',
+                                child: GestureDetector(
+                                  onTap: () {
+                                    context.pop();
+                                    context.go(
+                                      '/booking/${appointment.id}',
+                                      extra: appointment,
+                                    );
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: backgroundColor,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: context.colors.primary.withOpac(
+                                          0.3,
                                         ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                        width: 1,
                                       ),
-                                      if (appointment.description.isNotEmpty)
-                                        Text(
-                                          appointment.description,
-                                          style: TextStyle(
-                                            fontSize: ResponsiveValue(context,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            appointment.title,
+                                            style: TextStyle(
+                                              fontSize: ResponsiveValue(
+                                                context,
                                                 conditionalValues: [
                                                   Condition.equals(
-                                                      name: MOBILE, value: 12),
+                                                    name: MOBILE,
+                                                    value: 14,
+                                                  ),
                                                   Condition.between(
+                                                    start: 450,
+                                                    end: 800,
+                                                    value: 18,
+                                                  ),
+                                                  Condition.between(
+                                                    start: 801,
+                                                    end: 1200,
+                                                    value: 20,
+                                                  ),
+                                                  Condition.between(
+                                                    start: 1201,
+                                                    end: 3000,
+                                                    value: 24,
+                                                  ),
+                                                ],
+                                              ).value.toDouble(),
+                                              fontWeight: FontWeight.w600,
+                                              color: context.colors.primary,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          if (appointment
+                                              .description
+                                              .isNotEmpty)
+                                            Text(
+                                              appointment.description,
+                                              style: TextStyle(
+                                                fontSize: ResponsiveValue(
+                                                  context,
+                                                  conditionalValues: [
+                                                    Condition.equals(
+                                                      name: MOBILE,
+                                                      value: 12,
+                                                    ),
+                                                    Condition.between(
                                                       start: 450,
                                                       end: 800,
-                                                      value: 16),
-                                                  Condition.between(
+                                                      value: 16,
+                                                    ),
+                                                    Condition.between(
                                                       start: 801,
                                                       end: 1200,
-                                                      value: 20),
-                                                  Condition.between(
+                                                      value: 20,
+                                                    ),
+                                                    Condition.between(
                                                       start: 1201,
                                                       end: 3000,
-                                                      value: 24),
-                                                ]).value.toDouble(),
-                                            color: context.colors.secondary
-                                                .withOpac(0.8),
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                    ],
+                                                      value: 24,
+                                                    ),
+                                                  ],
+                                                ).value.toDouble(),
+                                                color: context.colors.secondary
+                                                    .withOpac(0.8),
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          );
-                        },
+                              );
+                            },
                         dataSource: dataSource,
                         view: CalendarView.day,
                         timeSlotViewSettings: TimeSlotViewSettings(
-                          timeRulerSize:
-                              ResponsiveValue(context, conditionalValues: [
-                            Condition.equals(name: MOBILE, value: 80),
-                            Condition.between(start: 450, end: 800, value: 90),
-                            Condition.between(
-                                start: 801, end: 1200, value: 100),
-                            Condition.between(
-                                start: 1201, end: 3000, value: 120),
-                          ]).value.toDouble(),
-                          timeIntervalHeight:
-                              ResponsiveValue(context, conditionalValues: [
-                            Condition.equals(name: MOBILE, value: 80),
-                            Condition.between(start: 450, end: 800, value: 100),
-                            Condition.between(
-                                start: 801, end: 1200, value: 110),
-                            Condition.between(
-                                start: 1201, end: 3000, value: 130),
-                          ]).value.toDouble(),
+                          timeRulerSize: ResponsiveValue(
+                            context,
+                            conditionalValues: [
+                              Condition.equals(name: MOBILE, value: 80),
+                              Condition.between(
+                                start: 450,
+                                end: 800,
+                                value: 90,
+                              ),
+                              Condition.between(
+                                start: 801,
+                                end: 1200,
+                                value: 100,
+                              ),
+                              Condition.between(
+                                start: 1201,
+                                end: 3000,
+                                value: 120,
+                              ),
+                            ],
+                          ).value.toDouble(),
+                          timeIntervalHeight: ResponsiveValue(
+                            context,
+                            conditionalValues: [
+                              Condition.equals(name: MOBILE, value: 80),
+                              Condition.between(
+                                start: 450,
+                                end: 800,
+                                value: 100,
+                              ),
+                              Condition.between(
+                                start: 801,
+                                end: 1200,
+                                value: 110,
+                              ),
+                              Condition.between(
+                                start: 1201,
+                                end: 3000,
+                                value: 130,
+                              ),
+                            ],
+                          ).value.toDouble(),
                           timeFormat: 'hh:mm a',
                           timeInterval: const Duration(minutes: 30),
                           timeTextStyle: TextStyle(
                             color: context.colors.secondary,
-                            fontSize:
-                                ResponsiveValue(context, conditionalValues: [
-                              Condition.equals(name: MOBILE, value: 12),
-                              Condition.between(
-                                  start: 450, end: 800, value: 16),
-                              Condition.between(
-                                  start: 801, end: 1200, value: 18),
-                              Condition.between(
-                                  start: 1201, end: 3000, value: 22),
-                            ]).value.toDouble(),
+                            fontSize: ResponsiveValue(
+                              context,
+                              conditionalValues: [
+                                Condition.equals(name: MOBILE, value: 12),
+                                Condition.between(
+                                  start: 450,
+                                  end: 800,
+                                  value: 16,
+                                ),
+                                Condition.between(
+                                  start: 801,
+                                  end: 1200,
+                                  value: 18,
+                                ),
+                                Condition.between(
+                                  start: 1201,
+                                  end: 3000,
+                                  value: 22,
+                                ),
+                              ],
+                            ).value.toDouble(),
                           ),
                         ),
                         backgroundColor: Colors.transparent,
@@ -406,16 +482,27 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
                             Text(
                               'Error loading calendar',
                               style: TextStyle(
-                                fontSize: ResponsiveValue(context,
-                                    conditionalValues: [
-                                      Condition.equals(name: MOBILE, value: 18),
-                                      Condition.between(
-                                          start: 450, end: 800, value: 22),
-                                      Condition.between(
-                                          start: 801, end: 1200, value: 26),
-                                      Condition.between(
-                                          start: 1201, end: 3000, value: 28),
-                                    ]).value.toDouble(),
+                                fontSize: ResponsiveValue(
+                                  context,
+                                  conditionalValues: [
+                                    Condition.equals(name: MOBILE, value: 18),
+                                    Condition.between(
+                                      start: 450,
+                                      end: 800,
+                                      value: 22,
+                                    ),
+                                    Condition.between(
+                                      start: 801,
+                                      end: 1200,
+                                      value: 26,
+                                    ),
+                                    Condition.between(
+                                      start: 1201,
+                                      end: 3000,
+                                      value: 28,
+                                    ),
+                                  ],
+                                ).value.toDouble(),
                                 color: context.colors.error,
                               ),
                             ),
@@ -435,12 +522,15 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
                   '• Tap appointments to view details',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: ResponsiveValue(context, conditionalValues: [
-                      Condition.equals(name: MOBILE, value: 12),
-                      Condition.between(start: 450, end: 800, value: 14),
-                      Condition.between(start: 801, end: 1200, value: 16),
-                      Condition.between(start: 1201, end: 3000, value: 20),
-                    ]).value.toDouble(),
+                    fontSize: ResponsiveValue(
+                      context,
+                      conditionalValues: [
+                        Condition.equals(name: MOBILE, value: 12),
+                        Condition.between(start: 450, end: 800, value: 14),
+                        Condition.between(start: 801, end: 1200, value: 16),
+                        Condition.between(start: 1201, end: 3000, value: 20),
+                      ],
+                    ).value.toDouble(),
                     color: context.colors.secondary.withOpac(0.7),
                     fontStyle: FontStyle.italic,
                   ),

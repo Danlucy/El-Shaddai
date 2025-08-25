@@ -161,6 +161,7 @@ class AuthController extends AsyncNotifier<void> {
       }
 
       final userModel = UserModel(
+        createdAt: DateTime.now(),
         uid: user.uid,
         name: user.displayName ?? '',
         role: UserRole.observer,

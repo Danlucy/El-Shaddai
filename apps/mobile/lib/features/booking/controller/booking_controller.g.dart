@@ -91,7 +91,7 @@ final class BookingControllerProvider
   }
 }
 
-String _$bookingControllerHash() => r'84d129c90bbbb82d003ca7b4f3fb00445eb8fb13';
+String _$bookingControllerHash() => r'6e404590508eb73af8bc4ef46ef43d0e0595d9c6';
 
 abstract class _$BookingController extends $Notifier<BookingState> {
   BookingState build();
