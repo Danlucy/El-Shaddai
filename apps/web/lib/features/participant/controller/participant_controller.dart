@@ -35,7 +35,7 @@ class ParticipantController extends _$ParticipantController {
   }
 
   Future<void> addParticipant() async {
-    final repository = ref.read(participantRepositoryProvider);
+    final repository = ref.watch(participantRepositoryProvider);
 
     if (state.userId!.isNotEmpty && state.userId != null) {
       try {
@@ -46,10 +46,7 @@ class ParticipantController extends _$ParticipantController {
         );
         if (!exists) {
           // Add the participant along with a timestamp ("when" field)
-          await repository.addParticipant(
-            state.bookingId!,
-            state.userId!,
-          );
+          await repository.addParticipant(state.bookingId!, state.userId!);
         } else {
           if (kDebugMode) {
             print('Participant already exists in the booking');
@@ -75,10 +72,7 @@ class ParticipantController extends _$ParticipantController {
         );
         if (exists) {
           // Add the participant along with a timestamp ("when" field)
-          await repository.removeParticipant(
-            state.bookingId!,
-            state.userId!,
-          );
+          await repository.removeParticipant(state.bookingId!, state.userId!);
           // await repository.isEmptyThenRemove(state.bookingId!);
         } else {
           if (kDebugMode) {

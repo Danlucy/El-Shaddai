@@ -35,7 +35,7 @@ class FooterWidget extends StatelessWidget {
 
                 // Copyright Text
                 const Text(
-                  '© 2024 El Shaddai Church. All Rights Reserved. v1',
+                  '© 2024 El Shaddai Church. All Rights Reserved. v2',
                   style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ]

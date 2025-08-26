@@ -46,33 +46,28 @@ class SignInButton extends ConsumerWidget {
             height: 24,
             width: 24,
           )
-        : Icon(
-            Icons.apple,
-            color: Theme.of(context).colorScheme.onPrimary,
-          );
+        : Icon(Icons.apple, color: Theme.of(context).colorScheme.onPrimary);
 
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: width * 0.9,
-        minWidth: width * 0.4,
-        maxHeight: 70,
-        minHeight: 50,
-      ),
-      child: ElevatedButton.icon(
-        onPressed: () {
-          signInWithGoogle(context, ref);
-          // isGoogle
-          //     ? signInWithGoogle(context, ref)
-          //     : signInWithApple(context, ref);
-          Navigator.of(context).pop();
-        },
-        icon: icon,
-        style: style,
-        label: AutoSizeText(
-          'Continue with $mode',
-          maxLines: 1,
-          minFontSize: 12,
-          maxFontSize: 18,
+    return FractionallySizedBox(
+      widthFactor: 0.9,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: 70, minHeight: 50),
+        child: ElevatedButton.icon(
+          onPressed: () {
+            signInWithGoogle(context, ref);
+            // isGoogle
+            //     ? signInWithGoogle(context, ref)
+            //     : signInWithApple(context, ref);
+            Navigator.of(context).pop();
+          },
+          icon: icon,
+          style: style,
+          label: AutoSizeText(
+            'Continue with $mode',
+            maxLines: 1,
+            minFontSize: 12,
+            maxFontSize: 18,
+          ),
         ),
       ),
     );

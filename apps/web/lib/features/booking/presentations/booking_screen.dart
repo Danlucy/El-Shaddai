@@ -55,49 +55,63 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   color: context.colors.primary,
                 ),
               ),
-              GlassmorphicContainer(
-                width: width * 0.9, // Fallback value
-                height: width * 0.9, // Fallback value
-                borderRadius: 20,
-                linearGradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpac(0.2),
-                    Colors.white.withOpac(0.1),
-                  ],
-                  stops: const [0.1, 1],
-                ),
-                border: 2,
-                blur: 15,
-                borderGradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpac(0.5),
-                    Colors.white.withOpac(0.5),
-                  ],
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(
-                    ResponsiveValue<double>(
-                      defaultValue: 16,
-                      context,
-                      conditionalValues: [
-                        const Condition.between(
-                          start: 0,
-                          end: 350,
-                          value: 12.0,
+              Flexible(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: FractionallySizedBox(
+                    heightFactor: 0.9,
+                    widthFactor: 0.9,
+                    child: GlassmorphicContainer(
+                      width: double.infinity,
+                      height: double.infinity,
+                      borderRadius: 20,
+                      linearGradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white.withOpac(0.2),
+                          Colors.white.withOpac(0.1),
+                        ],
+                        stops: const [0.1, 1],
+                      ),
+                      border: 2,
+                      blur: 15,
+                      borderGradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white.withOpac(0.5),
+                          Colors.white.withOpac(0.5),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(
+                          ResponsiveValue<double>(
+                            defaultValue: 16,
+                            context,
+                            conditionalValues: [
+                              const Condition.between(
+                                start: 0,
+                                end: 450,
+                                value: 10.0,
+                              ),
+                              const Condition.between(
+                                start: 451,
+                                end: 1000,
+                                value: 14.0,
+                              ),
+                              const Condition.between(
+                                start: 1001,
+                                end: 3000,
+                                value: 16.0,
+                              ),
+                            ],
+                          ).value,
                         ),
-                        const Condition.between(
-                          start: 351,
-                          end: 450,
-                          value: 16.0,
-                        ),
-                      ],
-                    ).value,
+                        child: MonthlyCalendarComponent(),
+                      ),
+                    ),
                   ),
-                  child: MonthlyCalendarComponent(),
                 ),
               ),
             ],
@@ -323,7 +337,17 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         child: SafeArea(
           bottom: true,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveValue(
+                defaultValue: 0.0,
+                context,
+                conditionalValues: [
+                  Condition.between(start: 0, end: 450, value: 0.0),
+                  const Condition.between(start: 451, end: 3000, value: 20.0),
+                ],
+              ).value,
+              vertical: 20,
+            ),
             child: ResponsiveBreakpoints.of(context).largerThan(TABLET)
                 ? _buildDesktopLayout(context)
                 : _buildMobileLayout(context),
