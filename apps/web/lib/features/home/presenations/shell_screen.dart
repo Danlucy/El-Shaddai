@@ -77,7 +77,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                       : null,
                 ),
                 title: Text(
-                  'Event Calendar',
+                  'Calendar View',
                   style: TextStyle(
                     color: currentLocation == '/booking'
                         ? Theme.of(context).colorScheme.primary
@@ -96,7 +96,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                       : null,
                 ),
                 title: Text(
-                  'Booking List',
+                  'Prayer List',
                   style: TextStyle(
                     color: currentLocation == '/list'
                         ? Theme.of(context).colorScheme.primary

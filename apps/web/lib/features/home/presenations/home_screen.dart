@@ -19,7 +19,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   void goBooking() {
-    context.go('/booking');
+    context.go('/list');
   }
 
   @override
@@ -72,7 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 _buildRichText(context),
                 GlassmorphicButton(
-                  text: '247 Prayer Event Calendar',
+                  text: '247 Prayer List',
                   icon: Icons.calendar_today,
                   onPressed: () {
                     goBooking();
@@ -162,7 +162,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         GlassmorphicButton(
-          text: '247 Prayer Event Calendar',
+          text: '247 Prayer List',
           icon: Icons.calendar_today,
           onPressed: () {
             goBooking();
@@ -221,7 +221,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           TextSpan(
-            text: 'El Shaddai 247 ${isMobile ? '\n' : ''}',
+            text: 'EL Shaddai 247 ${isMobile ? '\n' : ''}',
             style: TextStyle(
               fontSize: ResponsiveValue<double>(
                 context,
@@ -236,7 +236,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           TextSpan(
-            text: 'Prayer Altar\n',
+            text: 'Prayer Altar\n\n',
             style: TextStyle(
               fontSize: ResponsiveValue<double>(
                 context,
@@ -265,7 +265,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           TextSpan(
-            text: 'Kingdom Of God.',
+            text: 'Kingdom of God.',
             style: TextStyle(
               fontSize:
                   ResponsiveValue<double>(
@@ -283,7 +283,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           TextSpan(
             text:
-                '\n\nJoin us in our prayers with the \n ${isMobile ? '247 Event Calendar' : ' '}',
+                '\n\nJoin us in our prayers with the \n ${isMobile ? '247 Prayer List' : ' '}',
             style: TextStyle(
               fontSize: ResponsiveValue<double>(
                 context,

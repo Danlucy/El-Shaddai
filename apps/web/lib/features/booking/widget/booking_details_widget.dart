@@ -244,7 +244,7 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
     final participantStream = ref
         .watch(participantRepositoryProvider)
         .getAllParticipants(booking.id);
-    final participationFunction = ref.read(
+    final participationFunction = ref.watch(
       participantControllerProvider(booking.id).notifier,
     );
 
@@ -425,8 +425,9 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
               Padding(
                 padding: EdgeInsetsGeometry.symmetric(vertical: 10),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
+                    Flexible(
                       child: GlassmorphicButton(
                         backgroundColors: [
                           context.colors.errorContainer.withOpac(0.12),
