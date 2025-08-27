@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile/core/organization/controller/organization_controller.dart';
 import 'package:mobile/core/router/router.dart';
 import 'package:mobile/core/widgets/glass_list_tile.dart';
 import 'package:mobile/features/home/widgets/general_drawer.dart';
 import 'package:mobile/features/notifications/controller/notifications_controller.dart';
 import 'package:mobile/features/settings/state/settings_state.dart';
+import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -82,28 +82,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            GlassListTile(
-              leading: Icon(
-                Icons.notifications,
-                size: 20,
-                color: Colors.white.withOpac(0.9),
-              ),
-              title: const Text('Push Notifications'),
-              subtitle: const Text('Receive alerts and updates'),
-              isToggle: true,
-              toggleValue: _notifications,
-              onToggleChanged: (value) async {
-                if (value) {
-                  final granted = await NotificationsController.instance
-                      .requestPermission();
-                  setState(() => _notifications = granted);
-                  await SettingsState.instance.setNotifications(granted);
-                } else {
-                  setState(() => _notifications = false);
-                  await SettingsState.instance.setNotifications(false);
-                }
-              },
-            ),
+            // GlassListTile(
+            //   leading: Icon(
+            //     Icons.notifications,
+            //     size: 20,
+            //     color: Colors.white.withOpac(0.9),
+            //   ),
+            //   title: const Text('Push Notifications'),
+            //   subtitle: const Text('Receive alerts and updates'),
+            //   isToggle: true,
+            //   toggleValue: _notifications,
+            //   onToggleChanged: (value) async {
+            //     if (value) {
+            //       final granted = await NotificationsController.instance
+            //           .requestPermission();
+            //       setState(() => _notifications = granted);
+            //       await SettingsState.instance.setNotifications(granted);
+            //     } else {
+            //       setState(() => _notifications = false);
+            //       await SettingsState.instance.setNotifications(false);
+            //     }
+            //   },
+            // ),
             (ref.watch(accessTokenNotifierProvider).value == null)
                 ? GlassListTile(
                     onTap: () {
@@ -164,7 +164,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 child: DropdownButton<OrganizationsID>(
                   value: ref.watch(organizationControllerProvider).value,
                   isExpanded: true,
-                  dropdownColor: Colors.black.withOpacity(0.7),
+                  dropdownColor: Colors.black.withOpac(0.7),
                   borderRadius: BorderRadius.circular(12),
 
                   // placeholder

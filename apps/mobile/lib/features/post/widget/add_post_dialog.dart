@@ -7,10 +7,7 @@ import 'package:repositories/repositories.dart';
 import '../controller/post_controller.dart';
 
 class AddPostDialog extends ConsumerStatefulWidget {
-  const AddPostDialog({
-    super.key,
-    required this.postType,
-  });
+  const AddPostDialog({super.key, required this.postType});
   final PostType postType;
   @override
   ConsumerState createState() => _AddPostDialogState();
@@ -23,8 +20,6 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.sizeOf(context).height;
-    var width = MediaQuery.sizeOf(context).width;
     ref.watch(postControllerProvider);
 
     final postController = ref.read(postControllerProvider.notifier);
@@ -32,19 +27,19 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
     final isFeedPost = widget.postType == PostType.feedPost;
     return AlertDialog(
       insetPadding: EdgeInsets.zero,
-      content: SizedBox(
-        width: width * 0.8,
-        height: height * 0.9,
+      content: FractionallySizedBox(
+        widthFactor: 0.9,
+        heightFactor: 0.9,
         child: Column(
           children: [
             const SizedBox(height: 16),
-            Text(isFeedPost ? 'Create Watch Leader Post' : 'Create User Post',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Text(
+              isFeedPost ? 'Create Watch Leader Post' : 'Create User Post',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
             const SizedBox(height: 16),
 
             /// 🔹 **CircleAvatar Updates When `image` Changes**
-
             const SizedBox(height: 16),
 
             /// **📌 Scrollable Fields & Static Bottom Button**
@@ -66,11 +61,15 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                             backgroundColor: Colors.grey.shade300,
                             backgroundImage: postState.image != null
                                 ? MemoryImage(
-                                    Uint8List.fromList(postState.image!))
+                                    Uint8List.fromList(postState.image!),
+                                  )
                                 : null,
                             child: postState.image == null
-                                ? const Icon(Icons.camera_alt,
-                                    size: 40, color: Colors.white)
+                                ? const Icon(
+                                    Icons.camera_alt,
+                                    size: 40,
+                                    color: Colors.white,
+                                  )
                                 : null,
                           ),
                         ),
@@ -79,7 +78,9 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                           onChanged: postController.setTitle,
                           controller: _titleController,
                           decoration: const InputDecoration(
-                              labelText: 'Name', border: OutlineInputBorder()),
+                            labelText: 'Name',
+                            border: OutlineInputBorder(),
+                          ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return 'This cannot be empty';
@@ -93,8 +94,9 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                           onChanged: postController.setDescription,
                           controller: _descriptionController,
                           decoration: InputDecoration(
-                              labelText: isFeedPost ? "Description" : 'Message',
-                              border: const OutlineInputBorder()),
+                            labelText: isFeedPost ? "Description" : 'Message',
+                            border: const OutlineInputBorder(),
+                          ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return 'This cannot be empty';

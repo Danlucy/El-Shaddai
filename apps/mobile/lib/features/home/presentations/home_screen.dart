@@ -2,12 +2,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/core/organization/controller/organization_controller.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
-import 'package:repositories/repositories.dart'
-    hide organizationControllerProvider;
+import 'package:repositories/repositories.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
-import '../../auth/controller/auth_controller.dart';
 import '../widgets/general_drawer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -34,16 +32,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
-
     return Scaffold(
-      appBar: AppBar(title: Text('Welcome ${user.value?.name ?? 'User'}')),
+      appBar: AppBar(
+        actionsPadding: EdgeInsets.all(10),
+        titleSpacing: 0,
+        centerTitle: true,
+        title: ref
+            .watch(organizationControllerProvider)
+            .when(
+              data: (organization) {
+                return IntrinsicWidth(
+                  child: GlassContainer(
+                    padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
+                    borderRadius: BorderRadius.circular(16),
+                    height: 40,
+                    width: double.infinity,
+                    blur: 12,
+                    child: Center(
+                      child: GradientText(
+                        colors: [
+                          context.colors.primary,
+                          context.colors.primary,
+                        ],
+                        organization.displayName,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              error: (error, stack) => Text('Error: $error'),
+              loading: () => const CircularProgressIndicator(),
+            ),
+      ),
       drawer: const GeneralDrawer(),
       body: SafeArea(
         bottom: true,
         child: Column(
           children: <Widget>[
             const SizedBox(height: 20),
+
             // IconButton(
             //   onPressed: () async {
             //     try {
@@ -89,34 +121,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //   },
             //   icon: const Icon(Icons.settings),
             // ),
-            ref
-                .watch(organizationControllerProvider)
-                .when(
-                  data: (organization) {
-                    return GlassContainer(
-                      borderRadius: BorderRadius.circular(12),
-                      height: 50,
-                      width: 150,
-                      blur: 12,
-                      child: Center(
-                        child: Text(
-                          '${organization.displayName}',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 24,
-                            color: context.colors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  error: (error, stack) => Text('Error: $error'),
-                  loading: () => const CircularProgressIndicator(),
-                ),
             IconButton(
               onPressed: () {
-                ref.watch(authRepositoryProvider).addCreatedAtFieldAsDateTime();
+                ref
+                    .watch(authRepositoryProvider)
+                    .removeOldRoleFieldFromAllUsers();
               },
               icon: const Icon(Icons.settings),
             ),

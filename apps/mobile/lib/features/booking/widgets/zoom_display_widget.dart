@@ -11,9 +11,7 @@ import 'package:showcaseview/showcaseview.dart';
 import '../../tip/controller/onboarding_controller.dart';
 
 class ZoomDisplayComponent extends ConsumerStatefulWidget {
-  const ZoomDisplayComponent({
-    super.key,
-  });
+  const ZoomDisplayComponent({super.key});
 
   @override
   ConsumerState<ZoomDisplayComponent> createState() =>
@@ -50,7 +48,9 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
   }
 
   void _checkAndTriggerShowcase(
-      BookingVenueComponent currentVenue, Set<String> seenTips) {
+    BookingVenueComponent currentVenue,
+    Set<String> seenTips,
+  ) {
     if (_hasTriggeredShowcase) return;
 
     const tipId = 'zoom_input_tour_tip';
@@ -68,11 +68,9 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
 
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
-        ShowCaseWidget.of(context).startShowCase([
-          _zoomIconKey,
-          _zoomTextFormFieldKey,
-          _zoomKeyIconKey,
-        ]);
+        ShowCaseWidget.of(
+          context,
+        ).startShowCase([_zoomIconKey, _zoomTextFormFieldKey, _zoomKeyIconKey]);
         ref.read(onboardingNotifierProvider.notifier).markTipAsSeen(tipId);
       } else {}
     });
@@ -238,8 +236,9 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
                       backgroundColor: Colors.transparent,
                       contentPadding: EdgeInsets.zero,
                       content: GlassmorphismPasswordDialog(
-                        initialPassword:
-                            ref.read(bookingControllerProvider).password,
+                        initialPassword: ref
+                            .read(bookingControllerProvider)
+                            .password,
                         onPasswordSubmitted: (newPassword) {
                           Future.microtask(() {
                             ref
@@ -286,8 +285,9 @@ class _GlassmorphismPasswordDialogState
   @override
   void initState() {
     super.initState();
-    _passwordController =
-        TextEditingController(text: widget.initialPassword ?? '');
+    _passwordController = TextEditingController(
+      text: widget.initialPassword ?? '',
+    );
     _focusNode = FocusNode();
 
     if (!widget.isDisplay) {
@@ -325,53 +325,56 @@ class _GlassmorphismPasswordDialogState
       hintText = 'Enter Password (Optional)';
     }
 
-    return GlassContainer(
-      width: MediaQuery.of(context).size.width * 0.8,
-      height: 100,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: GestureDetector(
-              onTap: widget.isDisplay
-                  ? () {
-                      final text = _passwordController.text.trim();
-                      if (text.isNotEmpty) {
-                        Clipboard.setData(ClipboardData(text: text));
+    return FractionallySizedBox(
+      widthFactor: 0.8,
+      child: GlassContainer(
+        width: double.infinity,
+        height: 100,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: GestureDetector(
+                onTap: widget.isDisplay
+                    ? () {
+                        final text = _passwordController.text.trim();
+                        if (text.isNotEmpty) {
+                          Clipboard.setData(ClipboardData(text: text));
+                        }
                       }
-                    }
-                  : null,
-              child: AbsorbPointer(
-                absorbing: widget.isDisplay,
-                child: TextField(
-                  controller: _passwordController,
-                  focusNode: _focusNode,
-                  onSubmitted: (value) {
-                    Navigator.of(context).pop();
-                  },
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.visiblePassword,
-                  obscureText: false,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: hintText, // Use the determined hintText
-                    hintStyle: const TextStyle(
-                      fontSize: 16,
-                      letterSpacing: 1,
-                      color: Colors.white70,
+                    : null,
+                child: AbsorbPointer(
+                  absorbing: widget.isDisplay,
+                  child: TextField(
+                    controller: _passwordController,
+                    focusNode: _focusNode,
+                    onSubmitted: (value) {
+                      Navigator.of(context).pop();
+                    },
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.visiblePassword,
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: hintText, // Use the determined hintText
+                      hintStyle: const TextStyle(
+                        fontSize: 16,
+                        letterSpacing: 1,
+                        color: Colors.white70,
+                      ),
                     ),
-                  ),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,38 +1,53 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:constants/constants.dart';
 import 'package:firebase/firebase.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:models/models.dart';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_management_repository.g.dart';
 
 /// ✅ **Provider for UserManagementRepository**
 @riverpod
-UserManagementRepository userManagementRepository(Ref ref) {
+UserManagementRepository userManagementRepository(
+  Ref ref,
+  String? organizationId,
+) {
   final firestore = ref.watch(firestoreProvider);
-  return UserManagementRepository(firestore);
+  return UserManagementRepository(
+    firestore: firestore,
+    organizationId: organizationId,
+  );
 }
 
 /// ✅ **Normal Class (Not an `_riverpod` class)**
 class UserManagementRepository {
   final FirebaseFirestore _firestore;
+  final String? _organizationId;
 
   /// 🔥 **Default Constructor**
-  UserManagementRepository(this._firestore);
-
+  UserManagementRepository({
+    required FirebaseFirestore firestore,
+    required String? organizationId,
+  }) : _firestore = firestore,
+       _organizationId = organizationId;
   CollectionReference get _user =>
       _firestore.collection(FirebaseConstants.usersCollection);
 
   /// ✅ **Update user role**
-  Future<void> updateUserRole(String role, String uId) async {
+  Future<void> updateUserRole({
+    required String uid,
+    required String role,
+  }) async {
     try {
-      await _user
-          .doc(uId)
-          .update({'role': role}); // Use `name` instead of `toString()`
+      if (_organizationId == null) {
+        throw Exception('Organization ID is not set.');
+      }
+      await _user.doc(uid).update({
+        'roles.$_organizationId': role, // nested field update
+      });
     } catch (e) {
       print('Failed to update role: $e');
+      rethrow;
     }
   }
 
@@ -41,9 +56,7 @@ class UserManagementRepository {
     await _user.doc(uid).delete();
   }
 
-  Future<void> clearUserDataExcept(
-    String uid,
-  ) async {
+  Future<void> clearUserDataExcept(String uid) async {
     try {
       // First get the current document
       DocumentSnapshot doc = await _user.doc(uid).get();
@@ -74,41 +87,37 @@ class UserManagementRepository {
 }
 
 @riverpod
-Stream<List<UserModel>> usersByRole(Ref ref,
-    {UserRole? role, String searchTerm = ''}) {
-  // Watch the userManagementRepositoryProvider to get the Firestore instance
-  final userRepo = ref.watch(userManagementRepositoryProvider);
-  final firestore =
-      userRepo._firestore; // Access the private _firestore instance
+Stream<List<UserModel>> usersByRoleForOrg(
+  Ref ref, {
+  required String orgId,
+  UserRole? role,
+  String searchTerm = '',
+}) {
+  final firestore = ref.watch(firestoreProvider);
 
-  // Start with a base query
-  Query<Map<String, dynamic>> query =
-      firestore.collection(FirebaseConstants.usersCollection);
+  Query<Map<String, dynamic>> query = firestore.collection(
+    FirebaseConstants.usersCollection,
+  );
 
-  // ✅ Step 1: Filter by role on the server if a role is provided
-  if (role != null) {
-    query = query.where('role',
-        isEqualTo: role.name); // Using role.name for comparison
-  }
-
-  // ✅ Step 2: Sort the results on the server
   query = query.orderBy('name');
 
   return query.snapshots().map((snapshot) {
-    List<UserModel> users = snapshot.docs.map((doc) {
+    final users = snapshot.docs.map((doc) {
       final userData = doc.data();
-      final user = UserModel.fromJson({...userData, 'id': doc.id});
-      return user;
+      return UserModel.fromJson({...userData, 'id': doc.id});
     }).toList();
 
-    // ✅ Step 3: Apply the name search filter on the client
-    if (searchTerm.isNotEmpty) {
-      users = users
-          .where((user) =>
-              user.name.toLowerCase().contains(searchTerm.toLowerCase()))
-          .toList();
-    }
+    return users.where((user) {
+      final userRole = user.roles[orgId] ?? UserRole.observer;
 
-    return users;
+      if (role != null && userRole != role) return false;
+
+      if (searchTerm.isNotEmpty &&
+          !user.name.toLowerCase().contains(searchTerm.toLowerCase())) {
+        return false;
+      }
+
+      return true;
+    }).toList();
   });
 }

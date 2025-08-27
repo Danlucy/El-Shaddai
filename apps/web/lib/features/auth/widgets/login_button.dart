@@ -19,7 +19,6 @@ class SignInButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool isGoogle = mode == 'Google';
-    final width = MediaQuery.sizeOf(context).width;
 
     // Define styles based on the mode
     final ButtonStyle style = isGoogle

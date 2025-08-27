@@ -9,7 +9,9 @@ part of 'user_model.dart';
 _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   name: json['name'] as String,
   uid: json['uid'] as String,
-  role: $enumDecode(_$UserRoleEnumMap, json['role']),
+  roles: (json['roles'] as Map<String, dynamic>).map(
+    (k, e) => MapEntry(k, $enumDecode(_$UserRoleEnumMap, e)),
+  ),
   createdAt: const TimestampConverter().fromJson(json['createdAt']),
   lastName: json['lastName'] as String?,
   image:
@@ -34,7 +36,7 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
     <String, dynamic>{
       'name': instance.name,
       'uid': instance.uid,
-      'role': _$UserRoleEnumMap[instance.role]!,
+      'roles': instance.roles.map((k, e) => MapEntry(k, _$UserRoleEnumMap[e]!)),
       'createdAt': const TimestampConverter().toJson(instance.createdAt),
       'lastName': instance.lastName,
       'image': instance.image,

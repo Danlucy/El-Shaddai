@@ -2,6 +2,7 @@ import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/user/user_provider.dart';
 import 'package:mobile/features/profile/widget/role_dsiplay.dart';
 import 'package:models/models.dart';
 
@@ -95,7 +96,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         uid: widget.userModel?.uid,
                         ableToEdit:
                             user.value?.uid == widget.userModel?.uid ||
-                            user.value?.role == UserRole.admin,
+                            user.value?.currentRole(ref) == UserRole.admin,
                       ),
                       Text(
                         widget.userModel?.name ?? '',
@@ -106,7 +107,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: RoleDisplayWidget(role: widget.userModel?.role),
+                        child: RoleDisplayWidget(
+                          role: widget.userModel?.currentRole(ref),
+                        ),
                       ),
 
                       /// ✅ **Pass `userData` to all fields after loading**
@@ -144,7 +147,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 },
                                 ableToEdit:
                                     user.value?.uid == widget.userModel?.uid ||
-                                    user.value?.role == UserRole.admin,
+                                    user.value?.currentRole(ref) ==
+                                        UserRole.admin,
                                 userData: userData,
                               ),
                             ),

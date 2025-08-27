@@ -17,7 +17,7 @@ final class UserManagementControllerProvider
         argument: null,
         retry: null,
         name: r'userManagementControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -39,7 +39,7 @@ final class UserManagementControllerProvider
 }
 
 String _$userManagementControllerHash() =>
-    r'bcbf1ec9a2e1ae89a5161264dbf184cabfb3172c';
+    r'fdb4c152376a7dcb88380c4819a60e1739af514b';
 
 abstract class _$UserManagementController extends $Notifier<void> {
   void build();

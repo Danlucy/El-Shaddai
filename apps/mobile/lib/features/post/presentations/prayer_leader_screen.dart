@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/core/user/user_provider.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
+import 'package:mobile/features/post/provider/post_provider.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 
@@ -30,13 +32,13 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final posts = ref.watch(postsProvider(postType: PostType.feedPost));
+    final posts = ref.watch(getCurrentOrgFeedPostsStreamProvider);
     final user = ref.watch(userProvider);
 
     return Scaffold(
       drawer: const GeneralDrawer(),
       appBar: AppBar(title: const Text('Watch Leaders')),
-      floatingActionButton: user.value?.role == UserRole.admin
+      floatingActionButton: user.value?.currentRole(ref) == UserRole.admin
           ? FloatingActionButton(
               backgroundColor: Colors.transparent,
               onPressed: () {
@@ -53,6 +55,16 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
       body: Center(
         child: posts.when(
           data: (data) {
+            if (data.isEmpty) {
+              return const Text(
+                'No posts ¯\\_(ツ)_/¯',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            }
             return SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -81,7 +93,8 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
                                     'EEE, MMM d, yyyy ',
                                   ).format(post.createdAt),
                                 ),
-                                if (user.value?.role == UserRole.admin)
+                                if (user.value?.currentRole(ref) ==
+                                    UserRole.admin)
                                   IconButton(
                                     onPressed: () {
                                       showDialog(

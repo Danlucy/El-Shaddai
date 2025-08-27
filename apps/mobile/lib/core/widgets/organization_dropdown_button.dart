@@ -2,7 +2,7 @@ import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-import 'package:mobile/core/organization/controller/organization_controller.dart';
+import 'package:repositories/repositories.dart';
 
 class OrganizationSelectionDropdown extends ConsumerWidget {
   @override
@@ -42,10 +42,8 @@ class OrganizationSelectionDropdown extends ConsumerWidget {
               ),
             ),
             dropdownColor: Colors.black.withOpac(0.7),
-            // This property makes the dropdown menu's border rounded.
             borderRadius: BorderRadius.circular(12),
 
-            // --- Logic ---
             onChanged: (OrganizationsID? newValue) {
               if (newValue == null) {
                 throw 'Organization not  selected'; // Handle null case

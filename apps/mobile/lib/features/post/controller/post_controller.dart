@@ -9,6 +9,7 @@ import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../auth/controller/auth_controller.dart';
+import '../provider/post_provider.dart';
 import '../state/post_state.dart';
 
 part 'post_controller.g.dart';
@@ -64,7 +65,9 @@ class PostController extends _$PostController {
 
   void deletePost(String postId, {required PostType postType}) {
     try {
-      ref.read(postRepositoryProvider).deletePost(postId, postType: postType);
+      ref
+          .read(currentOrgPostRepositoryProvider)
+          .deletePost(postId, postType: postType);
     } catch (e) {
       if (kDebugMode) {
         print('❌ Error deleting post: $e');
@@ -84,7 +87,9 @@ class PostController extends _$PostController {
           userId: user.value!.uid,
           createdAt: DateTime.now(),
         );
-        ref.read(postRepositoryProvider).addPost(post, postType: postType);
+        ref
+            .read(currentOrgPostRepositoryProvider)
+            .addPost(post, postType: postType);
       }
     } catch (e) {
       if (kDebugMode) {
