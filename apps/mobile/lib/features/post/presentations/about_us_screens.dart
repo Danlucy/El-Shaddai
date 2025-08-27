@@ -5,7 +5,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/user/user_provider.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
+import 'package:mobile/features/post/provider/post_provider.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,10 +29,10 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
-    final posts = ref.watch(postsProvider(postType: PostType.aboutPost));
+    final posts = ref.watch(getCurrentOrgAboutPostsStreamProvider);
 
     return Scaffold(
-      floatingActionButton: user.value?.role == UserRole.admin
+      floatingActionButton: user.value?.currentRole(ref) == UserRole.admin
           ? FloatingActionButton(
               backgroundColor: Colors.transparent,
               onPressed: () {
@@ -118,7 +120,8 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
                             ),
                             title: Text(post.title),
                             subtitle: Text(post.content),
-                            trailing: (user.value?.role == UserRole.admin)
+                            trailing:
+                                (user.value?.currentRole(ref) == UserRole.admin)
                                 ? IconButton(
                                     icon: const Icon(Icons.delete),
                                     onPressed: () {

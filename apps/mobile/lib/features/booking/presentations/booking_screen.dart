@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/user/user_provider.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
 import 'package:models/models.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -61,20 +62,25 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButton:
-          (user.value?.role == UserRole.intercessor ||
-              user.value?.role == UserRole.observer)
+          (user.value?.currentRole(ref) == UserRole.intercessor ||
+              user.value?.currentRole(ref) == UserRole.observer)
           ? null
           : FloatingActionButton(
+              heroTag: "booking_fab", // Unique hero tag
+
               backgroundColor: Colors.transparent,
               onPressed: () {
                 ref.read(bookingControllerProvider.notifier).clearState();
 
-                showDialog(
-                  useRootNavigator: false,
-                  context: context,
-                  builder: (context) {
-                    return BookingDialog(context);
-                  },
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    opaque: false, // Important for transparent background
+                    barrierColor: Colors.black.withOpacity(0.5),
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return BookingDialog(context);
+                    },
+                    transitionDuration: const Duration(milliseconds: 800),
+                  ),
                 );
               },
               child: GlassContainer(

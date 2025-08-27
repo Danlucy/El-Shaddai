@@ -1,10 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:models/models.dart';
-import 'package:repositories/repositories.dart'
-    hide organizationControllerProvider;
+import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-import '../../../core/organization/controller/organization_controller.dart';
 
 part 'booking_provider.g.dart';
 

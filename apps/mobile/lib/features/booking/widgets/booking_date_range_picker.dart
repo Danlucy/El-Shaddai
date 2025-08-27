@@ -2,12 +2,11 @@ import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
 import '../controller/booking_controller.dart';
 
 class BookingDateRangePickerComponent extends ConsumerStatefulWidget {
-  const BookingDateRangePickerComponent({
-    super.key,
-  });
+  const BookingDateRangePickerComponent({super.key});
 
   @override
   ConsumerState<BookingDateRangePickerComponent> createState() =>
@@ -61,12 +60,10 @@ class _BookingDateRangePickerComponentState
       enablePastDates: false,
       headerStyle: DateRangePickerHeaderStyle(
         textAlign: TextAlign.start,
-        backgroundColor: context.colors.secondaryContainer,
+        backgroundColor: Colors.transparent,
       ),
       monthCellStyle: DateRangePickerMonthCellStyle(
-        blackoutDateTextStyle: TextStyle(
-          color: Colors.redAccent.withOpac(0.4),
-        ),
+        blackoutDateTextStyle: TextStyle(color: Colors.redAccent.withOpac(0.4)),
         cellDecoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(5)),
           border: Border.all(color: Colors.white24),
@@ -80,12 +77,10 @@ class _BookingDateRangePickerComponentState
           final start = value.startDate!;
           final end = value.endDate ?? value.startDate!;
 
-          bookingFunction.setDateRange(
-            DateTimeRange(start: start, end: end),
-          );
+          bookingFunction.setDateRange(DateTimeRange(start: start, end: end));
         }
       },
-      backgroundColor: context.colors.secondaryContainer,
+      backgroundColor: Colors.transparent,
       selectionMode: DateRangePickerSelectionMode.range,
     );
   }

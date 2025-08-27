@@ -58,7 +58,6 @@ class AuthRepository {
   // EXTRACTED METHOD - Handles user creation/retrieval logic
   Future<UserModel> _handleUserCreationOrRetrieval({
     required UserCredential userCredential,
-    required UserRole defaultRole,
   }) async {
     // Get a reference to the user document
     final docRef = _users.doc(userCredential.user!.uid);
@@ -72,7 +71,7 @@ class AuthRepository {
         createdAt: DateTime.now(),
         name: userCredential.user?.displayName ?? 'Nameless',
         uid: userCredential.user!.uid,
-        role: defaultRole,
+        roles: {},
       );
       await docRef.set(userModel.toJson());
       return userModel;
@@ -92,7 +91,6 @@ class AuthRepository {
 
       final userModel = await _handleUserCreationOrRetrieval(
         userCredential: userCredential,
-        defaultRole: UserRole.intercessor,
       );
 
       return right(userModel);
@@ -127,7 +125,6 @@ class AuthRepository {
 
       final userModel = await _handleUserCreationOrRetrieval(
         userCredential: userCredential,
-        defaultRole: UserRole.observer,
       );
       print(userModel);
       return right(userModel);
@@ -240,7 +237,7 @@ class AuthRepository {
         (success) async {
           try {
             await ref
-                .read(userManagementRepositoryProvider)
+                .read(userManagementRepositoryProvider(null))
                 .clearUserDataExcept(currentUser.uid);
 
             await currentUser.delete();
@@ -286,43 +283,89 @@ class AuthRepository {
     }
   }
 
-  Future<void> addCreatedAtFieldAsDateTime() async {
+  Future<void> removeOldRoleFieldFromAllUsers() async {
     final firestore = FirebaseFirestore.instance;
     final usersCollection = firestore.collection('users');
 
-    // Use the client's (your phone's) current time.
-    final clientTimestamp = DateTime.now();
-
     debugPrint(
-      'Starting migration: Adding "createdAt" field using DateTime.now()...',
+      '🧹 Starting cleanup: Removing old "role" field from all users...',
     );
 
     try {
       final snapshot = await usersCollection.get();
       if (snapshot.docs.isEmpty) {
-        debugPrint('No users found to update.');
+        debugPrint('❌ No users found.');
         return;
       }
 
       final batch = firestore.batch();
       int documentsToUpdate = 0;
+      int documentsSkipped = 0;
+      int documentsNoRole = 0;
+      int documentsNoRoles = 0;
 
       for (final doc in snapshot.docs) {
-        // This will add the field to all documents.
-        batch.update(doc.reference, {'createdAt': clientTimestamp});
-        documentsToUpdate++;
+        final data = doc.data();
+
+        debugPrint('🔍 Processing user: ${doc.id}');
+
+        final hasRole = data.containsKey('role');
+        final hasRoles = data.containsKey('roles');
+
+        if (hasRole && hasRoles) {
+          // Safe to remove old 'role' field since 'roles' exists
+          batch.update(doc.reference, {'role': FieldValue.delete()});
+          documentsToUpdate++;
+          debugPrint('   ✅ Will remove old "role" field');
+        } else if (hasRole && !hasRoles) {
+          // Don't remove 'role' if 'roles' doesn't exist (migration failed?)
+          documentsSkipped++;
+          debugPrint(
+            '   ⚠️  Skipped: has "role" but no "roles" field (migration incomplete?)',
+          );
+        } else if (!hasRole && hasRoles) {
+          // Already cleaned up
+          documentsNoRole++;
+          debugPrint('   ✅ Already cleaned: no "role" field, has "roles"');
+        } else {
+          // Neither field exists
+          documentsNoRoles++;
+          debugPrint('   ❌ No "role" or "roles" field found');
+        }
       }
 
+      debugPrint('\n📊 CLEANUP SUMMARY BEFORE COMMIT:');
+      debugPrint('   Documents to clean: $documentsToUpdate');
+      debugPrint('   Already cleaned: $documentsNoRole');
+      debugPrint('   Skipped (unsafe): $documentsSkipped');
+      debugPrint('   No roles field: $documentsNoRoles');
+
       if (documentsToUpdate > 0) {
+        debugPrint('\n🔄 Committing batch deletion...');
         await batch.commit();
         debugPrint(
-          '✅ Successfully added "createdAt" field to $documentsToUpdate user documents.',
+          '✅ Successfully removed old "role" field from $documentsToUpdate user documents!',
         );
+
+        if (documentsSkipped > 0) {
+          debugPrint(
+            '⚠️  WARNING: $documentsSkipped users still have "role" field but no "roles" field.',
+          );
+          debugPrint('   These users may need re-migration.');
+        }
       } else {
-        debugPrint('No users needed an update.');
+        debugPrint('\n🤷‍♂️ No old "role" fields to remove.');
+        if (documentsNoRole > 0) {
+          debugPrint('   ✅ $documentsNoRole users already cleaned up');
+        }
+        if (documentsSkipped > 0) {
+          debugPrint('   ⚠️  $documentsSkipped users need migration first');
+        }
       }
     } catch (e) {
-      debugPrint('❌ An error occurred during migration: $e');
+      debugPrint('❌ An error occurred during cleanup: $e');
+      debugPrint('Stack trace: ${StackTrace.current}');
+      rethrow;
     }
   }
 }

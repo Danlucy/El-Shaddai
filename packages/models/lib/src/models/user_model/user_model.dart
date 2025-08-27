@@ -9,7 +9,7 @@ sealed class UserModel with _$UserModel {
   const factory UserModel({
     required String name,
     required String uid,
-    required UserRole role,
+    required Map<String, UserRole> roles,
     @TimestampConverter() required DateTime createdAt,
     String? lastName,
     List<int>? image,

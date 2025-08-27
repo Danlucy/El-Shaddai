@@ -4,9 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'organization_controller.g.dart';
 
 enum OrganizationsID {
-  elShaddai(displayName: 'El Shaddai'),
-  placeHolder(displayName: 'PlaceHolder1'),
-  placeHolder2(displayName: 'PlaceHolder2');
+  elShaddai(displayName: 'EL Shaddai PA'),
+  flamingFire(displayName: 'Flaming Fire KOG');
 
   const OrganizationsID({required this.displayName});
   final String displayName;

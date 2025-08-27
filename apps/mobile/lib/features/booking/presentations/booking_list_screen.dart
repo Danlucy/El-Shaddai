@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/core/user/user_provider.dart';
 import 'package:models/models.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:util/util.dart';
@@ -142,7 +143,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                   return GestureDetector(
                     onLongPress: () {
                       if (bookingModel.userId != user.value?.uid &&
-                          user.value?.role != UserRole.admin) {
+                          user.value?.currentRole(ref) != UserRole.admin) {
                         return;
                       }
                       showDialog(

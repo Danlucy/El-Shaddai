@@ -1,6 +1,7 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/user/user_provider.dart';
 import 'package:models/models.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -80,7 +81,7 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                 title: const Text('My Profile'),
                 onTap: () => ProfileRoute(user.value).push(context),
               ),
-              if (user.value?.role == UserRole.admin)
+              if (user.value?.currentRole(ref) == UserRole.admin)
                 ListTile(
                   leading: const Icon(Icons.supervisor_account),
                   title: const Text('User Management'),

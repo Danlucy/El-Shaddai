@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/user/user_provider.dart';
+import 'package:mobile/core/widgets/loader.dart';
+import 'package:mobile/features/user_management/provider/user_management_provider.dart';
 import 'package:models/models.dart';
-import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
 
 import '../../../core/router/router.dart';
@@ -63,32 +65,39 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
               child: TabBarView(
                 children: UserRole.values.map((role) {
                   // For each role, we create a new list of users
-                  final users = ref.watch(usersByRoleProvider(
-                      role: role, searchTerm: _searchController.text));
+                  final users = ref.watch(
+                    usersByRoleProvider(
+                      role: role,
+                      searchTerm: _searchController.text,
+                    ),
+                  );
 
                   // FIX: Corrected syntax to use the .when() method on the stream
                   return users.when(
-                      data: (data) {
-                        return ListView.builder(
-                          itemCount: data.length,
-                          itemBuilder: (context, index) {
-                            final user = data[index];
-                            return ListTile(
-                              onTap: () {
-                                ProfileRoute(user).push(context);
-                              },
-                              title: Text(user.lastName ?? user.name),
-                              subtitle: Text(user.role.displayName),
-                              trailing: _PopMenuButton(
-                                  user: user, controller: controller),
-                            );
-                          },
-                        );
-                      },
-                      error: (x, s) {
-                        return const Center(child: Text('Error loading users'));
-                      },
-                      loading: () => const CircularProgressIndicator());
+                    data: (data) {
+                      return ListView.builder(
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
+                          final user = data[index];
+                          return ListTile(
+                            onTap: () {
+                              ProfileRoute(user).push(context);
+                            },
+                            title: Text(user.lastName ?? user.name),
+                            subtitle: Text(user.roleDisplayName(ref)),
+                            trailing: _PopMenuButton(
+                              user: user,
+                              controller: controller,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    error: (x, s) {
+                      return const Center(child: Text('Error loading users'));
+                    },
+                    loading: () => const Loader(),
+                  );
                 }).toList(),
               ),
             ),
@@ -100,10 +109,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 }
 
 class _PopMenuButton extends ConsumerWidget {
-  const _PopMenuButton({
-    required this.user,
-    required this.controller,
-  });
+  const _PopMenuButton({required this.user, required this.controller});
 
   final UserModel user;
 
@@ -114,29 +120,27 @@ class _PopMenuButton extends ConsumerWidget {
     return PopupMenuButton<String>(
       itemBuilder: (BuildContext context) => [
         PopupMenuItem(
-          child: const Row(children: [
-            Icon(
-              Icons.supervised_user_circle_sharp,
-              size: 20,
-            ),
-            Gap(5),
-            Text('Role ')
-          ]),
+          child: const Row(
+            children: [
+              Icon(Icons.supervised_user_circle_sharp, size: 20),
+              Gap(5),
+              Text('Role '),
+            ],
+          ),
           onTap: () {
-            _showChangeRoleDialog(context);
+            _showChangeRoleDialog(context, ref);
           },
         ),
         PopupMenuItem(
-          child: const Row(children: [
-            Icon(
-              Icons.delete_forever,
-              size: 20,
-            ),
-            Gap(5),
-            Text('Delete ')
-          ]),
+          child: const Row(
+            children: [
+              Icon(Icons.delete_forever, size: 20),
+              Gap(5),
+              Text('Delete '),
+            ],
+          ),
           onTap: () {
-            if (user.role == UserRole.admin) {
+            if (user.currentRole(ref) == UserRole.admin) {
               showFailureSnackBar(context, 'You cannot delete an admin user');
               return;
             } else {
@@ -165,8 +169,8 @@ class _PopMenuButton extends ConsumerWidget {
     );
   }
 
-  void _showChangeRoleDialog(BuildContext context) {
-    UserRole selectedRole = user.role; // Track selected role
+  void _showChangeRoleDialog(BuildContext context, WidgetRef ref) {
+    UserRole selectedRole = user.currentRole(ref); // Track selected role
 
     showDialog(
       context: context,
@@ -206,14 +210,15 @@ class _PopMenuButton extends ConsumerWidget {
                         bool isSelected =
                             role == selectedRole; // Check selection
                         return Container(
-                            color: isSelected
-                                ? Colors.transparent
-                                : Colors.black.withOpac(0.4),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
-                            child: Text(
-                              role.displayName.capitalize(),
-                            ));
+                          color: isSelected
+                              ? Colors.transparent
+                              : Colors.black.withOpac(0.4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Text(role.displayName.capitalize()),
+                        );
                       }).toList(),
                     ),
                   ),
