@@ -160,11 +160,8 @@ class AuthController extends AsyncNotifier<void> {
         return Left(Failure("No Google user returned"));
       }
 
-      final userModel = UserModel(
-        createdAt: DateTime.now(),
-        uid: user.uid,
-        name: user.displayName ?? '',
-        role: UserRole.observer,
+      final userModel = await _authRepository.handleUserCreationOrRetrieval(
+        userCredential: userCredential,
       );
 
       return Right(userModel); // ✅ wrap in Right

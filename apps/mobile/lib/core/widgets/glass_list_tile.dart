@@ -20,6 +20,8 @@ class GlassListTile extends StatefulWidget {
     this.isToggle = false,
     this.toggleValue = false,
     this.onToggleChanged,
+    this.borderTitle, // New parameter for border title
+    this.borderTitleStyle, // Optional custom style for border title
   });
 
   final Widget? leading;
@@ -45,6 +47,12 @@ class GlassListTile extends StatefulWidget {
 
   /// Callback when toggle value changes
   final ValueChanged<bool>? onToggleChanged;
+
+  /// Small title that appears at the top-left border
+  final String? borderTitle;
+
+  /// Custom style for the border title
+  final TextStyle? borderTitleStyle;
 
   @override
   State<GlassListTile> createState() => _GlassListTileState();
@@ -81,81 +89,164 @@ class _GlassListTileState extends State<GlassListTile> {
 
     final radius = BorderRadius.circular(widget.borderRadius);
 
+    // If no border title, use the original layout
+    if (widget.borderTitle == null) {
+      return AnimatedScale(
+        scale: _pressed ? 0.985 : 1.0,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+        child: GlassmorphicContainer(
+          margin: EdgeInsetsGeometry.all(6),
+          width: double.infinity,
+          height: widget.height,
+          borderRadius: widget.borderRadius,
+          blur: widget.blur,
+          border: 1.2,
+          alignment: Alignment.centerLeft,
+          linearGradient: gradient,
+          borderGradient: borderGrad,
+          child: _buildContent(radius),
+        ),
+      );
+    }
+
+    // With border title layout
     return AnimatedScale(
       scale: _pressed ? 0.985 : 1.0,
       duration: const Duration(milliseconds: 120),
       curve: Curves.easeOut,
-      child: GlassmorphicContainer(
-        margin: EdgeInsetsGeometry.all(6),
-        width: double.infinity,
-        height: widget.height,
-        borderRadius: widget.borderRadius,
-        blur: widget.blur,
-        border: 1.2,
-        alignment: Alignment.centerLeft,
-        linearGradient: gradient,
-        borderGradient: borderGrad,
-        child: _InkLayer(
-          radius: radius,
-          onTapDown: () => setState(() => _pressed = true),
-          onTapUpOrCancel: () => setState(() => _pressed = false),
-          onTap: widget.isToggle
-              ? () => widget.onToggleChanged?.call(!widget.toggleValue)
-              : widget.onTap,
-          onLongPress: widget.onLongPress,
-          child: Padding(
-            padding: widget.padding,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (widget.leading != null) ...[
-                  _AvatarGlassWrap(child: widget.leading!),
-                  const SizedBox(width: 12),
-                ],
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (widget.title != null)
-                        DefaultTextStyle.merge(
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: widget.selected
-                                ? FontWeight.w600
-                                : FontWeight.w500,
-                            color: Theme.of(context).colorScheme.onSurface
-                                .withOpac(isDark ? 0.95 : 0.90),
-                          ),
-                          child: widget.title!,
-                        ),
-                      if (widget.subtitle != null) ...[
-                        const SizedBox(height: 3),
-                        DefaultTextStyle.merge(
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Theme.of(context).colorScheme.onSurface
-                                .withOpac(isDark ? 0.65 : 0.60),
-                          ),
-                          child: widget.subtitle!,
-                        ),
-                      ],
+      child: Container(
+        margin: const EdgeInsets.only(top: 10), // Space for border title
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Main glass container
+            GlassmorphicContainer(
+              margin: EdgeInsetsGeometry.all(6),
+              width: double.infinity,
+              height: widget.height,
+              borderRadius: widget.borderRadius,
+              blur: widget.blur,
+              border: 1.2,
+              alignment: Alignment.centerLeft,
+              linearGradient: gradient,
+              borderGradient: borderGrad,
+              child: _buildContent(radius),
+            ),
+
+            // Border title - perfectly positioned using intrinsic measurements
+            Positioned(
+              left: 20,
+              top: -3,
+              child: IntrinsicWidth(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.white.withOpac(isDark ? 0.15 : 0.25),
+                      width: 0.8,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpac(0.08),
+                        blurRadius: 3,
+                        offset: const Offset(0, 1),
+                      ),
                     ],
                   ),
-                ),
-                if (widget.isToggle) ...[
-                  const SizedBox(width: 12),
-                  _GlassToggleSwitch(
-                    value: widget.toggleValue,
-                    onChanged: widget.onToggleChanged,
+                  child: Text(
+                    widget.borderTitle!,
+                    style:
+                        widget.borderTitleStyle ??
+                        TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface
+                              .withOpac(isDark ? 0.75 : 0.70),
+                          height: 1.2,
+                          letterSpacing: 0.3,
+                        ),
                   ),
-                ] else if (widget.trailing != null) ...[
-                  const SizedBox(width: 12),
-                  widget.trailing!,
-                ],
-              ],
+                ),
+              ),
             ),
-          ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BorderRadius radius) {
+    return _InkLayer(
+      radius: radius,
+      onTapDown: () => setState(() => _pressed = true),
+      onTapUpOrCancel: () => setState(() => _pressed = false),
+      onTap: widget.isToggle
+          ? () => widget.onToggleChanged?.call(!widget.toggleValue)
+          : widget.onTap,
+      onLongPress: widget.onLongPress,
+      child: Padding(
+        padding: widget.padding,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (widget.leading != null) ...[
+              _AvatarGlassWrap(child: widget.leading!),
+              const SizedBox(width: 12),
+            ],
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.title != null)
+                    DefaultTextStyle.merge(
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: widget.selected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onSurface.withOpac(
+                          Theme.of(context).brightness == Brightness.dark
+                              ? 0.95
+                              : 0.90,
+                        ),
+                      ),
+                      child: widget.title!,
+                    ),
+                  if (widget.subtitle != null) ...[
+                    const SizedBox(height: 3),
+                    DefaultTextStyle.merge(
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.onSurface.withOpac(
+                          Theme.of(context).brightness == Brightness.dark
+                              ? 0.65
+                              : 0.60,
+                        ),
+                      ),
+                      child: widget.subtitle!,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (widget.isToggle) ...[
+              const SizedBox(width: 12),
+              _GlassToggleSwitch(
+                value: widget.toggleValue,
+                onChanged: widget.onToggleChanged,
+              ),
+            ] else if (widget.trailing != null) ...[
+              const SizedBox(width: 12),
+              widget.trailing!,
+            ],
+          ],
         ),
       ),
     );

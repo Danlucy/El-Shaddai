@@ -1,7 +1,6 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/core/user/user_provider.dart';
 import 'package:mobile/features/auth/controller/auth_controller.dart';
 import 'package:mobile/features/booking/controller/booking_controller.dart';
 import 'package:models/models.dart';

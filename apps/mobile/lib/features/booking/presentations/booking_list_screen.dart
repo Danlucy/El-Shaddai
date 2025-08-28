@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile/core/user/user_provider.dart';
-import 'package:models/models.dart';
+import 'package:models/models.dart' hide UserModelX;
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:util/util.dart';
 

@@ -1,13 +1,10 @@
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:intl/intl.dart';
 
 class CalendarWidget extends StatelessWidget {
-  const CalendarWidget({
-    required this.date,
-    required this.color,
-    super.key,
-  });
+  const CalendarWidget({required this.date, required this.color, super.key});
 
   final DateTime date;
   static final monthFormat = DateFormat('MMM');
@@ -22,18 +19,12 @@ class CalendarWidget extends StatelessWidget {
       blur: 10,
       border: 2,
       linearGradient: LinearGradient(
-        colors: [
-          Colors.white.withOpacity(0.1),
-          Colors.white.withOpacity(0.05),
-        ],
+        colors: [Colors.white.withOpac(0.1), Colors.white.withOpac(0.05)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       borderGradient: LinearGradient(
-        colors: [
-          color.withOpacity(0.5),
-          color.withOpacity(0.5),
-        ],
+        colors: [color.withOpac(0.5), color.withOpac(0.5)],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -44,7 +35,7 @@ class CalendarWidget extends StatelessWidget {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.3),
+                color: color.withOpac(0.3),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),

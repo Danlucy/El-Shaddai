@@ -127,7 +127,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                           rowCrossAxisAlignment: CrossAxisAlignment.start,
                           rowSpacing: 24,
                           children: [
-                            // Left Column: Booking List
                             ResponsiveRowColumnItem(
                               rowFlex: 1,
                               child: _BookingList(bookings: bookings),

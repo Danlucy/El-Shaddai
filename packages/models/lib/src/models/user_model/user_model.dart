@@ -31,30 +31,6 @@ sealed class UserModel with _$UserModel {
       _$UserModelFromJson(json);
 }
 
-extension UserModelFieldLabels on UserModel {
-  static const Map<String, String> fieldLabels = {
-    'lastName': 'Full Name.',
-    'nationality': 'Nationality.',
-    'phoneNumber': 'Phone Number.',
-    'description': 'Introduce yourself as in personality.',
-    'church': 'Church Name.',
-    'address': 'Residence Address.',
-    'birthAddress': 'Birth Place.',
-    'prayerNetwork': 'Prayer Network you are involved with.',
-    'beleifInGod':
-        'Do you believe in God the Father, Jesus Christ the son and Holy Spirit? Yes/No.',
-    'definitionOfGod': 'What is your definition of The Kingdom of God?',
-    'godsCalling': "Share with us the calling God has for you.",
-    'recommendation':
-        'Who recommended you to join EL Shaddai 247 Prayer Altar for the Kingdom of God?',
-  };
-
-  /// ✅ Method to get the label for a given field
-  static String getLabel(String fieldName) {
-    return fieldLabels[fieldName] ?? fieldName;
-  }
-}
-
 enum UserRole {
   admin(displayName: 'Admin'),
   watchman(displayName: 'Watchman'),

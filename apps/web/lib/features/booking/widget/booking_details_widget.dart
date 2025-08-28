@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:util/util.dart';
 import 'package:website/core/utility/utility.dart';
 import 'package:website/core/widgets/calendar_widget.dart';
 import 'package:website/core/widgets/confirm_button.dart';
@@ -189,7 +190,7 @@ class _MainDetailsColumn extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondary.withOpac(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(booking.description),
@@ -259,13 +260,13 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
       linearGradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.05)],
+        colors: [Colors.white.withOpac(0.2), Colors.white.withOpac(0.05)],
         stops: const [0.1, 1],
       ),
       borderGradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Colors.white.withOpacity(0.5), Colors.white.withOpacity(0.5)],
+        colors: [Colors.white.withOpac(0.5), Colors.white.withOpac(0.5)],
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
@@ -390,7 +391,7 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
                             itemCount: participants.length,
                             separatorBuilder: (_, __) => Divider(
                               height: 1,
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white.withOpac(0.5),
                             ),
                             itemBuilder: (context, index) {
                               final userModel = participants[index];
@@ -405,7 +406,7 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
 
                         // ✅ Join button at the bottom of the list
                         if (user?.uid != booking.userId &&
-                            user?.role != UserRole.observer &&
+                            user?.currentRole(ref) != UserRole.observer &&
                             user != null)
                           joinButton(
                             user,
@@ -421,7 +422,8 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
             ),
 
             // --- Admin Actions ---
-            if ((user?.uid == booking.userId) || user?.role == UserRole.admin)
+            if ((user?.uid == booking.userId) ||
+                user?.currentRole(ref) == UserRole.admin)
               Padding(
                 padding: EdgeInsetsGeometry.symmetric(vertical: 10),
                 child: Row(

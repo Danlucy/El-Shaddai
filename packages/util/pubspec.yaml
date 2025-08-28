@@ -13,6 +13,8 @@ dependencies:
     path: ../../packages/api
   models:
     path: ../../packages/models
+  repositories:
+    path: ../../packages/repositories
   flutter:
     sdk: flutter
   #  firebase_core: ^4.0.0

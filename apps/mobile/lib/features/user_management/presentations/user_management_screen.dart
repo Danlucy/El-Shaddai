@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile/core/user/user_provider.dart';
 import 'package:mobile/core/widgets/loader.dart';
 import 'package:mobile/features/user_management/provider/user_management_provider.dart';
+import 'package:models/models.dart' hide UserModelFieldLabels;
 import 'package:models/models.dart';
 import 'package:util/util.dart';
 
@@ -170,7 +170,9 @@ class _PopMenuButton extends ConsumerWidget {
   }
 
   void _showChangeRoleDialog(BuildContext context, WidgetRef ref) {
-    UserRole selectedRole = user.currentRole(ref); // Track selected role
+    UserRole selectedRole = UserModelX(
+      user,
+    ).currentRole(ref); // Track selected role
 
     showDialog(
       context: context,
