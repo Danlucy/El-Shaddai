@@ -1,6 +1,5 @@
 import 'package:api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:models/models.dart';
@@ -10,18 +9,12 @@ class LatLngConverter extends JsonConverter<LatLng?, Object?> {
   @override
   LatLng? fromJson(Object? json) {
     if (json is GeoPoint) {
-      return LatLng(
-        json.latitude,
-        json.longitude,
-      );
+      return LatLng(json.latitude, json.longitude);
     }
     if (json is Map &&
         json.containsKey('latitude') &&
         json.containsKey('longitude')) {
-      return LatLng(
-        json['latitude'],
-        json['longitude'],
-      );
+      return LatLng(json['latitude'], json['longitude']);
     }
     return null;
   }
@@ -103,6 +96,7 @@ class LocationDataConverter
     };
   }
 }
+
 class TimestampConverter implements JsonConverter<DateTime, Object?> {
   const TimestampConverter();
 

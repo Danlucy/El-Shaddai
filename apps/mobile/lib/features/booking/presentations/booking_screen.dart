@@ -2,10 +2,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/core/user/user_provider.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
 import 'package:models/models.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:util/util.dart';
 
 import '../../auth/controller/auth_controller.dart';
 import '../../calendar/presentations/daily_calendar_component.dart';

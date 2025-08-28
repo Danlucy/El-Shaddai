@@ -56,7 +56,7 @@ class AuthRepository {
   }
 
   // EXTRACTED METHOD - Handles user creation/retrieval logic
-  Future<UserModel> _handleUserCreationOrRetrieval({
+  Future<UserModel> handleUserCreationOrRetrieval({
     required UserCredential userCredential,
   }) async {
     // Get a reference to the user document
@@ -89,7 +89,7 @@ class AuthRepository {
       final appleProvider = AppleAuthProvider()..addScope('email');
       final userCredential = await _auth.signInWithProvider(appleProvider);
 
-      final userModel = await _handleUserCreationOrRetrieval(
+      final userModel = await handleUserCreationOrRetrieval(
         userCredential: userCredential,
       );
 
@@ -123,7 +123,7 @@ class AuthRepository {
       );
       final userCredential = await _auth.signInWithCredential(credential);
 
-      final userModel = await _handleUserCreationOrRetrieval(
+      final userModel = await handleUserCreationOrRetrieval(
         userCredential: userCredential,
       );
       print(userModel);
@@ -283,89 +283,4 @@ class AuthRepository {
     }
   }
 
-  Future<void> removeOldRoleFieldFromAllUsers() async {
-    final firestore = FirebaseFirestore.instance;
-    final usersCollection = firestore.collection('users');
-
-    debugPrint(
-      '🧹 Starting cleanup: Removing old "role" field from all users...',
-    );
-
-    try {
-      final snapshot = await usersCollection.get();
-      if (snapshot.docs.isEmpty) {
-        debugPrint('❌ No users found.');
-        return;
-      }
-
-      final batch = firestore.batch();
-      int documentsToUpdate = 0;
-      int documentsSkipped = 0;
-      int documentsNoRole = 0;
-      int documentsNoRoles = 0;
-
-      for (final doc in snapshot.docs) {
-        final data = doc.data();
-
-        debugPrint('🔍 Processing user: ${doc.id}');
-
-        final hasRole = data.containsKey('role');
-        final hasRoles = data.containsKey('roles');
-
-        if (hasRole && hasRoles) {
-          // Safe to remove old 'role' field since 'roles' exists
-          batch.update(doc.reference, {'role': FieldValue.delete()});
-          documentsToUpdate++;
-          debugPrint('   ✅ Will remove old "role" field');
-        } else if (hasRole && !hasRoles) {
-          // Don't remove 'role' if 'roles' doesn't exist (migration failed?)
-          documentsSkipped++;
-          debugPrint(
-            '   ⚠️  Skipped: has "role" but no "roles" field (migration incomplete?)',
-          );
-        } else if (!hasRole && hasRoles) {
-          // Already cleaned up
-          documentsNoRole++;
-          debugPrint('   ✅ Already cleaned: no "role" field, has "roles"');
-        } else {
-          // Neither field exists
-          documentsNoRoles++;
-          debugPrint('   ❌ No "role" or "roles" field found');
-        }
-      }
-
-      debugPrint('\n📊 CLEANUP SUMMARY BEFORE COMMIT:');
-      debugPrint('   Documents to clean: $documentsToUpdate');
-      debugPrint('   Already cleaned: $documentsNoRole');
-      debugPrint('   Skipped (unsafe): $documentsSkipped');
-      debugPrint('   No roles field: $documentsNoRoles');
-
-      if (documentsToUpdate > 0) {
-        debugPrint('\n🔄 Committing batch deletion...');
-        await batch.commit();
-        debugPrint(
-          '✅ Successfully removed old "role" field from $documentsToUpdate user documents!',
-        );
-
-        if (documentsSkipped > 0) {
-          debugPrint(
-            '⚠️  WARNING: $documentsSkipped users still have "role" field but no "roles" field.',
-          );
-          debugPrint('   These users may need re-migration.');
-        }
-      } else {
-        debugPrint('\n🤷‍♂️ No old "role" fields to remove.');
-        if (documentsNoRole > 0) {
-          debugPrint('   ✅ $documentsNoRole users already cleaned up');
-        }
-        if (documentsSkipped > 0) {
-          debugPrint('   ⚠️  $documentsSkipped users need migration first');
-        }
-      }
-    } catch (e) {
-      debugPrint('❌ An error occurred during cleanup: $e');
-      debugPrint('Stack trace: ${StackTrace.current}');
-      rethrow;
-    }
-  }
 }

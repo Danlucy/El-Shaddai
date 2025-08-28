@@ -42,7 +42,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             .when(
               data: (organization) {
                 return IntrinsicWidth(
+                  stepWidth: 100,
                   child: GlassContainer(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
                     padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
                     borderRadius: BorderRadius.circular(16),
                     height: 40,
@@ -53,6 +55,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         colors: [
                           context.colors.primary,
                           context.colors.primary,
+                          context.colors.secondary,
                         ],
                         organization.displayName,
                         textAlign: TextAlign.start,
@@ -121,14 +124,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //   },
             //   icon: const Icon(Icons.settings),
             // ),
-            IconButton(
-              onPressed: () {
-                ref
-                    .watch(authRepositoryProvider)
-                    .removeOldRoleFieldFromAllUsers();
-              },
-              icon: const Icon(Icons.settings),
-            ),
+            // IconButton(
+            //   onPressed: () {
+            //     ref
+            //         .watch(authRepositoryProvider)
+            //         .removeOldRoleFieldFromAllUsers();
+            //   },
+            //   icon: const Icon(Icons.settings),
+            // ),
             Expanded(
               child: AutoSizeText(
                 minFontSize: 13,

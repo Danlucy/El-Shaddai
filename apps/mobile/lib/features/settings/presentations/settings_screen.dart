@@ -160,6 +160,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     },
                   ),
             GlassListTile(
+              borderTitle: 'Select Prayer Alter',
               title: DropdownButtonHideUnderline(
                 child: DropdownButton<OrganizationsID>(
                   value: ref.watch(organizationControllerProvider).value,
@@ -171,7 +172,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   hint: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      'Select an Organization',
+                      'Select Prayer Alter',
                       style: TextStyle(
                         fontSize: 16,
                         color: context.colors.primary,

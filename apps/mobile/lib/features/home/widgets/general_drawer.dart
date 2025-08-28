@@ -1,9 +1,9 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/core/user/user_provider.dart';
 import 'package:models/models.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:util/util.dart';
 
 import '../../../core/router/router.dart';
 import '../../../core/widgets/glass_container.dart'; // Make sure you have this import
@@ -19,7 +19,7 @@ class GeneralDrawer extends ConsumerStatefulWidget {
 
 class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
   final height = 600.0;
-  final width = 280.0;
+  final width = 260.0;
 
   String _appVersion = '';
 

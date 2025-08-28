@@ -7,11 +7,11 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile/core/user/user_provider.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
 import 'package:mobile/features/booking/widgets/zoom_display_widget.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
+import 'package:util/util.dart';
 
 import '../../../core/router/router.dart';
 import '../../../core/utility/url_launcher.dart';

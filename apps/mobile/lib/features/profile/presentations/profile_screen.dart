@@ -2,9 +2,9 @@ import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile/core/user/user_provider.dart';
 import 'package:mobile/features/profile/widget/role_dsiplay.dart';
 import 'package:models/models.dart';
+import 'package:util/util.dart';
 
 import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
@@ -122,7 +122,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              UserModelFieldLabels.getLabel(field),
+                              UserModelX.getLabel(field),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),

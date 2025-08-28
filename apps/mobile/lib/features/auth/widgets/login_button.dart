@@ -25,6 +25,7 @@ class SignInButton extends ConsumerWidget {
           minWidth: 100,
           maxHeight: 70,
           minHeight: 50,
+          maxWidth: 400,
         ),
         child: ElevatedButton.icon(
           onPressed: () {
@@ -52,9 +53,9 @@ class SignInButton extends ConsumerWidget {
           label: AutoSizeText(
             maxLines: 1,
             minFontSize: 12,
-            maxFontSize: 18,
+            maxFontSize: 16,
             'Continue with $mode',
-            style: const TextStyle(fontSize: 18),
+            style: const TextStyle(fontSize: 16),
           ),
         ),
       ),
