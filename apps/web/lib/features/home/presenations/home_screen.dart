@@ -36,7 +36,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         secondaryColor: context.colors.secondary,
         child: SafeArea(
           bottom: true,
-          child: Column(
+          child: ListView(
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -50,15 +50,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       : _buildMobileLayout(context),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  'Select Prayer Alter',
-                  style: TextStyle(fontSize: 20),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    'Select Prayer Alter',
+                    style: TextStyle(fontSize: 20),
+                  ),
                 ),
               ),
-              OrganizationSelectionDropdown(),
-              Spacer(),
+              Center(child: OrganizationSelectionDropdown()),
+              Gap(150),
               FooterWidget(moreInfo: true),
             ],
           ),
