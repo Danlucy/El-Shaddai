@@ -40,6 +40,7 @@ class OrganizationSelectionDropdown extends ConsumerWidget {
               padding: EdgeInsets.only(left: 16.0),
               child: Text(
                 'Select an Organization',
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: context.colors.primary),
               ),
             ),
@@ -63,11 +64,13 @@ class OrganizationSelectionDropdown extends ConsumerWidget {
                     value: value,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 16.0),
-                      child: Text(
-                        value.displayName, // Use the user-friendly name
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: context.colors.primary,
+                      child: Center(
+                        child: Text(
+                          value.displayName, // Use the user-friendly name
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: context.colors.primary,
+                          ),
                         ),
                       ),
                     ),

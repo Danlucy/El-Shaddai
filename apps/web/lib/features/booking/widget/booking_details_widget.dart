@@ -12,6 +12,7 @@ import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:util/util.dart';
+import 'package:website/core/utility/launch_google_map.dart';
 import 'package:website/core/utility/utility.dart';
 import 'package:website/core/widgets/calendar_widget.dart';
 import 'package:website/core/widgets/confirm_button.dart';
@@ -211,24 +212,55 @@ class _MainDetailsColumn extends StatelessWidget {
         const Gap(16),
         // Google Map
         if (booking.location.chords != null)
-          SizedBox(
-            height: 250,
-            width: double.infinity,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: booking.location.chords!,
-                  zoom: 13,
-                ),
-                markers: {
-                  Marker(
-                    markerId: const MarkerId("1"),
-                    position: booking.location.chords!,
+          Column(
+            children: [
+              SizedBox(
+                height: 200,
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: GoogleMap(
+                    zoomGesturesEnabled: false,
+                    initialCameraPosition: CameraPosition(
+                      target: booking.location.chords!,
+                      zoom: 13,
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId("1"),
+                        position: booking.location.chords!,
+                      ),
+                    },
                   ),
-                },
+                ),
               ),
-            ),
+              Gap(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      booking.location.chords?.openInGoogleMaps();
+                    },
+                    child: Image.asset(
+                      'assets/google_map.png',
+                      height: 60,
+                      width: 100,
+                    ),
+                  ),
+                  OutlinedButton(
+                    onPressed: () {
+                      booking.location.chords?.openInWaze();
+                    },
+                    child: Image.asset(
+                      'assets/waze_logo.png',
+                      height: 60,
+                      width: 100,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
       ],
     );

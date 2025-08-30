@@ -28,39 +28,41 @@ class BookingDetailsScreen extends ConsumerWidget {
               return const Center(child: Text('Booking not found.'));
             }
             return SafeArea(
-              child: ListView(
-                children: [
-                  // Main Title - Fixed height
-                  Align(
-                    alignment: AlignmentGeometry.center,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0),
-                      child: Text(
-                        'Booking Details',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: context.colors.primary,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // Main Title - Fixed height
+                    Align(
+                      alignment: AlignmentGeometry.center,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20.0),
+                        child: Text(
+                          'Booking Details',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: context.colors.primary,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  // The core content - Takes available space
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 1200,
-                          maxHeight: 1000,
+                    // The core content - Takes available space
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: 1200,
+                            maxHeight: 1000,
+                          ),
+                          child: BookingDetailsContent(booking: booking),
                         ),
-                        child: BookingDetailsContent(booking: booking),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  const FooterWidget(moreInfo: true),
-                ],
+                    const SizedBox(height: 40),
+                    const FooterWidget(moreInfo: true),
+                  ],
+                ),
               ),
             );
           },

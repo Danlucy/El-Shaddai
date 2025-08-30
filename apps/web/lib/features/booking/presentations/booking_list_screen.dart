@@ -203,7 +203,10 @@ class _BookingList extends ConsumerWidget {
             scheduleViewMonthHeaderBuilder:
                 (BuildContext context, ScheduleViewMonthHeaderDetails details) {
                   return GlassmorphicContainer(
+                    width: double.infinity,
                     height: double.infinity,
+                    constraints: BoxConstraints(maxHeight: 50),
+
                     borderRadius: 20,
                     alignment: Alignment.center,
                     blur: 10,
@@ -227,7 +230,6 @@ class _BookingList extends ConsumerWidget {
                         Colors.white.withOpac(0.5),
                       ],
                     ),
-                    width: double.infinity,
                     padding: const EdgeInsets.symmetric(
                       vertical: 12,
                       horizontal: 16,
@@ -249,6 +251,19 @@ class _BookingList extends ConsumerWidget {
             view: CalendarView.schedule,
             dataSource: getCalendarDataSource(bookings),
             scheduleViewSettings: ScheduleViewSettings(
+              monthHeaderSettings: MonthHeaderSettings(
+                height: ResponsiveValue<double>(
+                  context,
+                  defaultValue: 80,
+                  conditionalValues: [
+                    Condition.between(start: 0, end: 450, value: 80),
+                    const Condition.between(start: 801, end: 1000, value: 80),
+                    const Condition.between(start: 1001, end: 1200, value: 100),
+                    const Condition.between(start: 1201, end: 1920, value: 100),
+                    const Condition.between(start: 1921, end: 3000, value: 100),
+                  ],
+                ).value,
+              ),
               appointmentItemHeight: ResponsiveValue<double>(
                 context,
                 defaultValue: 80,
