@@ -50,16 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       : _buildMobileLayout(context),
                 ),
               ),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    'Select Prayer Alter',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-              ),
-              Center(child: OrganizationSelectionDropdown()),
+
               Gap(150),
               FooterWidget(moreInfo: true),
             ],
@@ -104,6 +95,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
+        Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Text('Select Prayer Alter', style: TextStyle(fontSize: 20)),
+          ),
+        ),
+        Center(child: OrganizationSelectionDropdown()),
+        Gap(50),
+
         GradientAnimationText(
           duration: const Duration(seconds: 5),
           text: Text(
@@ -172,6 +172,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
+        Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Text('Select Prayer Alter', style: TextStyle(fontSize: 20)),
+          ),
+        ),
+        Center(child: OrganizationSelectionDropdown()),
+        Gap(30),
         GlassmorphicButton(
           text: '247 Prayer List',
           icon: Icons.calendar_today,
