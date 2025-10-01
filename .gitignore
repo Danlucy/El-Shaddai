@@ -41,6 +41,7 @@ build/
 .dart_tool/
 .packages
 pubspec.lock
+packages/constants/lib/src/constants.dart
 
 # Symbolication related
 app.*.symbols
