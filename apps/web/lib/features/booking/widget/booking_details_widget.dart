@@ -214,23 +214,24 @@ class _MainDetailsColumn extends StatelessWidget {
         if (booking.location.chords != null)
           Column(
             children: [
-              SizedBox(
-                height: 200,
-                width: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: GoogleMap(
-                    zoomGesturesEnabled: false,
-                    initialCameraPosition: CameraPosition(
-                      target: booking.location.chords!,
-                      zoom: 13,
-                    ),
-                    markers: {
-                      Marker(
-                        markerId: const MarkerId("1"),
-                        position: booking.location.chords!,
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 250),
+                child: Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: GoogleMap(
+                      zoomGesturesEnabled: false,
+                      initialCameraPosition: CameraPosition(
+                        target: booking.location.chords!,
+                        zoom: 13,
                       ),
-                    },
+                      markers: {
+                        Marker(
+                          markerId: const MarkerId("1"),
+                          position: booking.location.chords!,
+                        ),
+                      },
+                    ),
                   ),
                 ),
               ),
