@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>GMSApiKey</key>
+    <string>AIzaSyBK-fNR3jAeTHJPIUiQP7985kDOtEI-B-M</string>
+    <key>GMSPlacesApiKey</key>
+    <string>AIzaSyAOqL3NlRC0BnMeHW7Bolxy-QdDfQhmNaM</string>
     <key>UIBackgroundModes</key>
     <array>
         <string>fetch</string>

@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:models/models.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart' as dad;
+
 import '../controller/profile_controller.dart';
-import '../presentations/profile_screen.dart';
 
 class EditableTextField extends ConsumerStatefulWidget {
   final String fieldName;
@@ -85,8 +86,9 @@ class EditableTextFieldState extends ConsumerState<EditableTextField> {
     final newValue = _currentValue.trim();
     if (newValue != _initialText && widget.uid != null) {
       ref
-          .read(profileControllerProvider(widget.uid!)
-              .notifier) // Ensure correct uid
+          .read(
+            profileControllerProvider(widget.uid!).notifier,
+          ) // Ensure correct uid
           .updateUserField(widget.fieldName, newValue);
       _initialText = newValue;
     }
@@ -139,9 +141,7 @@ class EditableTextFieldState extends ConsumerState<EditableTextField> {
         readOnly: !widget.isEditable,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 8,
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
           suffixIcon: widget.ableToEdit
               ? IconButton(
                   padding: EdgeInsets.zero,
@@ -164,8 +164,10 @@ class EditableTextFieldState extends ConsumerState<EditableTextField> {
         readOnly: !widget.isEditable,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 8,
+            vertical: 5,
+          ),
           suffixIcon: widget.ableToEdit
               ? IconButton(
                   padding: EdgeInsets.zero,
@@ -186,11 +188,7 @@ class EditableTextFieldState extends ConsumerState<EditableTextField> {
 class ProfileImage extends ConsumerStatefulWidget {
   final String? uid;
   final bool ableToEdit;
-  const ProfileImage({
-    super.key,
-    required this.uid,
-    required this.ableToEdit,
-  });
+  const ProfileImage({super.key, required this.uid, required this.ableToEdit});
 
   @override
   ConsumerState<ProfileImage> createState() => _ProfileImageState();
@@ -205,11 +203,13 @@ class _ProfileImageState extends ConsumerState<ProfileImage> {
 
     return userDataState.when(
       data: (userData) {
-        final imageData = _localImage ??
-            (userData[UserModelFields.image] != null && // Use constant
-                    userData[UserModelFields.image] is List<dynamic>
+        final imageData =
+            _localImage ??
+            (userData[UserModel.fields.image] != null && // Use constant
+                    userData[UserModel.fields.image] is List<dynamic>
                 ? Uint8List.fromList(
-                    userData[UserModelFields.image].cast<int>())
+                    userData[UserModel.fields.image].cast<int>(),
+                  )
                 : null);
 
         return GestureDetector(
@@ -242,7 +242,8 @@ class _ProfileImageState extends ConsumerState<ProfileImage> {
       },
       loading: () => const CircularProgressIndicator(),
       error: (error, stack) => const Center(
-          child: Text("Error loading profile image")), // More specific error
+        child: Text("Error loading profile image"),
+      ), // More specific error
     );
   }
 }

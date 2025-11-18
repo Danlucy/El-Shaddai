@@ -76,8 +76,6 @@ class AuthRepository {
       await docRef.set(userModel.toJson());
       return userModel;
     } else {
-      print('222');
-
       // If it exists, parse and return the existing data.
       return UserModel.fromJson(docSnapshot.data() as Map<String, dynamic>);
     }
@@ -282,5 +280,4 @@ class AuthRepository {
       print('Error during sign out: $e');
     }
   }
-
 }

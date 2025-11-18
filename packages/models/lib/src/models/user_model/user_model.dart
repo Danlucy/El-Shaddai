@@ -9,7 +9,8 @@ sealed class UserModel with _$UserModel {
   const factory UserModel({
     required String name,
     required String uid,
-    required Map<String, UserRole> roles,
+    @Default({}) Map<String, UserRole> roles,
+
     @TimestampConverter() required DateTime createdAt,
     String? lastName,
     List<int>? image,
@@ -29,6 +30,9 @@ sealed class UserModel with _$UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
+
+  /// 🧭 Firestore field keys (for clean referencing)
+  static const fields = _UserFields();
 }
 
 enum UserRole {
@@ -40,4 +44,28 @@ enum UserRole {
 
   const UserRole({required this.displayName});
   final String displayName;
+}
+
+/// Separate immutable const class to hold all field names
+class _UserFields {
+  const _UserFields();
+
+  final String name = 'name';
+  final String uid = 'uid';
+  final String roles = 'roles';
+  final String createdAt = 'createdAt';
+  final String lastName = 'lastName';
+  final String image = 'image';
+  final String nationality = 'nationality';
+  final String phoneNumber = 'phoneNumber';
+  final String description = 'description';
+  final String address = 'address';
+  final String birthAddress = 'birthAddress';
+  final String church = 'church';
+  final String beleifInGod = 'beleifInGod';
+  final String prayerNetwork = 'prayerNetwork';
+  final String definitionOfGod = 'definitionOfGod';
+  final String godsCalling = 'godsCalling';
+  final String recommendation = 'recommendation';
+  final String fcmToken = 'fcmToken';
 }

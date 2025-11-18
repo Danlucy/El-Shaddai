@@ -231,207 +231,23 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                               ),
                             ),
                           ),
-                        if (booking.location.web != null)
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  launchURL(booking.location.web!);
-                                  if (booking.password != null) {
-                                    Clipboard.setData(
-                                      ClipboardData(text: booking.password!),
-                                    );
-                                  }
-                                },
-                                child: CircleAvatar(
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.primary,
-                                  radius: 20,
-                                  backgroundImage: const AssetImage(
-                                    'assets/zoom.png',
-                                  ),
-                                ),
-                              ),
-                              const Gap(5),
-                              GestureDetector(
-                                onTap: () {
-                                  Clipboard.setData(
-                                    ClipboardData(
-                                      text: booking.location.meetingID(),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  booking.location.meetingID(spaced: true),
-                                ),
-                              ),
-                              const Spacer(),
-                              IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: true,
-                                    builder: (BuildContext dialogContext) {
-                                      return AlertDialog(
-                                        backgroundColor: Colors.transparent,
-                                        contentPadding: EdgeInsets.zero,
-                                        content: GlassmorphismPasswordDialog(
-                                          initialPassword: booking.password,
-                                          isDisplay: true,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: const Icon(Icons.key),
-                              ),
-                            ],
+                        if (booking.location.web != null &&
+                            user.value?.currentRole(ref) != UserRole.observer)
+                          _ZoomComponent(user: user, ref: ref, booking: booking)
+                        else
+                          Text(
+                            'Reach out to About Us page for details on joining this booking.',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
                           ),
+
                         const SizedBox(height: 16),
-                        StreamBuilder<List<UserModel>>(
-                          stream: participantStream,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-
-                            final participants = snapshot.data ?? [];
-                            final bool isJoined = participants.any(
-                              (userModel) => userModel.uid == user.value?.uid,
-                            );
-
-                            return Align(
-                              alignment: Alignment.center,
-                              child: Column(
-                                children: [
-                                  if (participants.isEmpty)
-                                    IntrinsicHeight(
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                          minWidth: 200,
-                                          minHeight: 40,
-                                          maxWidth: 300,
-                                        ),
-                                        // FIX: Added horizontal padding to the GlassContainer
-                                        child: GlassContainer(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 10,
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                const Center(
-                                                  child: Text(
-                                                    'No Intercessors',
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                if (user.value?.uid !=
-                                                        booking.userId &&
-                                                    user.value?.currentRole(
-                                                          ref,
-                                                        ) !=
-                                                        UserRole.observer)
-                                                  joinButton(
-                                                    user.value,
-                                                    isJoined,
-                                                    participationFunction,
-                                                    context,
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  if (participants.isNotEmpty)
-                                    IntrinsicHeight(
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                          minWidth: 200,
-                                          minHeight: 40,
-                                        ),
-                                        // FIX: Added horizontal padding to the GlassContainer
-                                        child: GlassContainer(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              const Text(
-                                                'Intercessors',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8),
-                                              ...participants.map(
-                                                (
-                                                  UserModel userModel,
-                                                ) => GestureDetector(
-                                                  onTap: () {
-                                                    ProfileRoute(
-                                                      userModel,
-                                                    ).push(context);
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          vertical: 2,
-                                                        ),
-                                                    child: Text(
-                                                      userModel.name,
-                                                      style: const TextStyle(
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              if (user.value?.uid !=
-                                                      booking.userId &&
-                                                  user.value?.currentRole(
-                                                        ref,
-                                                      ) !=
-                                                      UserRole.observer)
-                                                joinButton(
-                                                  user.value,
-                                                  isJoined,
-                                                  participationFunction,
-                                                  context,
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  const SizedBox(height: 16),
-                                  if ((user.value?.uid == booking.userId) ||
-                                      user.value?.currentRole(ref) ==
-                                          UserRole.admin)
-                                    Row(
-                                      children: [
-                                        editButton(context, booking),
-                                        const Gap(10),
-                                        deleteButton(context, booking),
-                                      ],
-                                    ),
-                                ],
-                              ),
-                            );
-                          },
+                        _participantComponent(
+                          participantStream,
+                          user,
+                          booking,
+                          participationFunction,
                         ),
                       ],
                     ),
@@ -445,6 +261,133 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
           },
           loading: () => const Loader(),
         ); // Get the organization ID from the provider
+  }
+
+  StreamBuilder<List<UserModel>> _participantComponent(
+    Stream<List<UserModel>> participantStream,
+    AsyncValue<UserModel?> user,
+    BookingModel booking,
+    ParticipantController participationFunction,
+  ) {
+    return StreamBuilder<List<UserModel>>(
+      stream: participantStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final participants = snapshot.data ?? [];
+        final bool isJoined = participants.any(
+          (userModel) => userModel.uid == user.value?.uid,
+        );
+
+        return Align(
+          alignment: Alignment.center,
+          child: Column(
+            children: [
+              if (participants.isEmpty)
+                IntrinsicHeight(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: 200,
+                      minHeight: 40,
+                      maxWidth: 300,
+                    ),
+                    // FIX: Added horizontal padding to the GlassContainer
+                    child: GlassContainer(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Column(
+                          children: [
+                            const Center(
+                              child: Text(
+                                'No Intercessors',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            if (user.value?.uid != booking.userId &&
+                                user.value?.currentRole(ref) !=
+                                    UserRole.observer)
+                              joinButton(
+                                user.value,
+                                isJoined,
+                                participationFunction,
+                                context,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              if (participants.isNotEmpty)
+                IntrinsicHeight(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: 200,
+                      minHeight: 40,
+                    ),
+                    // FIX: Added horizontal padding to the GlassContainer
+                    child: GlassContainer(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Intercessors',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ...participants.map(
+                            (UserModel userModel) => GestureDetector(
+                              onTap: () {
+                                ProfileRoute(userModel).push(context);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 2,
+                                ),
+                                child: Text(
+                                  userModel.name,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (user.value?.uid != booking.userId &&
+                              user.value?.currentRole(ref) != UserRole.observer)
+                            joinButton(
+                              user.value,
+                              isJoined,
+                              participationFunction,
+                              context,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 16),
+              if ((user.value?.uid == booking.userId) ||
+                  user.value?.currentRole(ref) == UserRole.admin)
+                Row(
+                  children: [
+                    editButton(context, booking),
+                    const Gap(10),
+                    deleteButton(context, booking),
+                  ],
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Expanded editButton(BuildContext context, BookingModel booking) {
@@ -526,6 +469,76 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
         }
       },
       child: Text(isJoined ? 'Leave' : 'Join'),
+    );
+  }
+}
+
+class _ZoomComponent extends StatelessWidget {
+  const _ZoomComponent({
+    super.key,
+    required this.user,
+    required this.ref,
+    required this.booking,
+  });
+
+  final AsyncValue<UserModel?> user;
+  final WidgetRef ref;
+  final BookingModel booking;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            if (user.value?.currentRole(ref) == UserRole.observer) {
+              return;
+            }
+            launchURL(booking.location.web!);
+            if (booking.password != null) {
+              Clipboard.setData(ClipboardData(text: booking.password!));
+            }
+          },
+          child: CircleAvatar(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            radius: 20,
+            backgroundImage: const AssetImage('assets/zoom.png'),
+          ),
+        ),
+        const Gap(5),
+        GestureDetector(
+          onTap: () {
+            Clipboard.setData(
+              ClipboardData(text: booking.location.meetingID()),
+            );
+          },
+          child: Text(booking.location.meetingID(spaced: true)),
+        ),
+        const Spacer(),
+        IconButton(
+          onPressed: () {
+            if (user.value?.currentRole(ref) == UserRole.observer) {
+              return;
+            }
+
+            showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (BuildContext dialogContext) {
+                return AlertDialog(
+                  backgroundColor: Colors.transparent,
+                  contentPadding: EdgeInsets.zero,
+                  content: GlassmorphismPasswordDialog(
+                    initialPassword: booking.password,
+                    isDisplay: true,
+                  ),
+                );
+              },
+            );
+          },
+          icon: const Icon(Icons.key),
+        ),
+      ],
     );
   }
 }

@@ -12,17 +12,6 @@ import '../../home/widgets/general_drawer.dart';
 import '../controller/profile_controller.dart';
 import '../widget/profile_text_field_widgets.dart';
 
-// --- Constants for User Model Fields ---
-class UserModelFields {
-  static const String name = 'name';
-  static const String uid = 'uid';
-  static const String role = 'role';
-  static const String image = 'image';
-  static const String phoneNumber = 'phoneNumber';
-  static const String fcmToken = 'fcmToken';
-  // Add other nullable string fields as constants here if needed
-}
-
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key, this.userModel});
   final UserModel? userModel;
@@ -38,12 +27,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (widget.userModel == null) return [];
 
     // Manually define required fields using constants
-    const requiredFields = {
-      UserModelFields.name,
-      UserModelFields.uid,
-      UserModelFields.role,
-      UserModelFields.image,
-      UserModelFields.fcmToken,
+    var requiredFields = {
+      UserModel.fields.name,
+      UserModel.fields.uid,
+      UserModel.fields.roles,
+      UserModel.fields.image,
+      UserModel.fields.fcmToken,
     };
 
     return widget.userModel!
@@ -115,7 +104,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       /// ✅ **Pass `userData` to all fields after loading**
                       ...getNullableStringFields().map((field) {
                         final isPhoneNumber =
-                            field == UserModelFields.phoneNumber;
+                            field == UserModel.fields.phoneNumber;
                         final index = getNullableStringFields().indexOf(field);
 
                         return Column(

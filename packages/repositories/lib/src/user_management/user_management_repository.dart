@@ -66,7 +66,12 @@ class UserManagementRepository {
 
       // Set all fields to null except those we want to keep
       for (String key in userData.keys) {
-        if (['name', 'role', 'uid'].contains(key)) {
+        if ([
+          UserModel.fields.name,
+          UserModel.fields.uid,
+          UserModel.fields.roles,
+          UserModel.fields.createdAt,
+        ].contains(key)) {
           // Keep the original value for fields we want to preserve
           updatedData[key] = userData[key];
         } else {
@@ -99,7 +104,7 @@ Stream<List<UserModel>> usersByRoleForOrg(
     FirebaseConstants.usersCollection,
   );
 
-  query = query.orderBy('name');
+  query = query.orderBy(UserModel.fields.name);
 
   return query.snapshots().map((snapshot) {
     final users = snapshot.docs.map((doc) {

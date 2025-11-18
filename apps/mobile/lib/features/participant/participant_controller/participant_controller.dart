@@ -26,11 +26,11 @@ class ParticipantController extends _$ParticipantController {
   //     throw 'User unavailable, check Internet connection';
   //   }
   // }
-  setUserId(String id) {
+  void setUserId(String id) {
     state = state.copyWith(userId: id);
   }
 
-  setBookingId(String bookingId) {
+  void setBookingId(String bookingId) {
     state = state.copyWith(bookingId: bookingId);
   }
 

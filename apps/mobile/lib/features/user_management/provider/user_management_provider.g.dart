@@ -73,7 +73,7 @@ final class UsersByRoleProvider
   }
 }
 
-String _$usersByRoleHash() => r'e2c0466dca32e7224eb9632233a61c749c1ae78a';
+String _$usersByRoleHash() => r'6d40808580bcdca2232e2fb8b3b8302af8f2532b';
 
 final class UsersByRoleFamily extends $Family
     with

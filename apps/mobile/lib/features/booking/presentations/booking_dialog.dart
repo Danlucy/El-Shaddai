@@ -221,18 +221,27 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                                 const SizedBox(height: 10),
                                 if (widget.bookingModel?.id == null)
                                   const RecurrenceComponent(),
-                                BookButton(
-                                  isUpdating: isUpdating,
-                                  formKey: formKey,
-                                  errorCall: (x) {
-                                    final contextKey = formKey.currentContext;
-                                    if (contextKey != null &&
-                                        contextKey.mounted) {
-                                      showFailureSnackBar(widget.context, x);
-                                    } else {
-                                      throw x;
-                                    }
-                                  },
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom:
+                                        MediaQuery.viewInsetsOf(
+                                          context,
+                                        ).bottom +
+                                        20, // +20 for extra space
+                                  ),
+                                  child: BookButton(
+                                    isUpdating: isUpdating,
+                                    formKey: formKey,
+                                    errorCall: (x) {
+                                      final contextKey = formKey.currentContext;
+                                      if (contextKey != null &&
+                                          contextKey.mounted) {
+                                        showFailureSnackBar(widget.context, x);
+                                      } else {
+                                        throw x;
+                                      }
+                                    },
+                                  ),
                                 ),
                               ],
                             ),

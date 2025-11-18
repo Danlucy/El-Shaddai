@@ -220,13 +220,13 @@ return $default(_that.name,_that.uid,_that.roles,_that.createdAt,_that.lastName,
 @JsonSerializable()
 
 class _UserModel implements UserModel {
-  const _UserModel({required this.name, required this.uid, required final  Map<String, UserRole> roles, @TimestampConverter() required this.createdAt, this.lastName, final  List<int>? image, this.nationality, this.phoneNumber, this.description, this.address, this.birthAddress, this.church, this.beleifInGod, this.prayerNetwork, this.definitionOfGod, this.godsCalling, this.recommendation, this.fcmToken}): _roles = roles,_image = image;
+  const _UserModel({required this.name, required this.uid, final  Map<String, UserRole> roles = const {}, @TimestampConverter() required this.createdAt, this.lastName, final  List<int>? image, this.nationality, this.phoneNumber, this.description, this.address, this.birthAddress, this.church, this.beleifInGod, this.prayerNetwork, this.definitionOfGod, this.godsCalling, this.recommendation, this.fcmToken}): _roles = roles,_image = image;
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override final  String name;
 @override final  String uid;
  final  Map<String, UserRole> _roles;
-@override Map<String, UserRole> get roles {
+@override@JsonKey() Map<String, UserRole> get roles {
   if (_roles is EqualUnmodifiableMapView) return _roles;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableMapView(_roles);

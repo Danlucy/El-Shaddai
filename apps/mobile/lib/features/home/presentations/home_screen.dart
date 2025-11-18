@@ -126,9 +126,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // ),
             // IconButton(
             //   onPressed: () {
-            //     ref
-            //         .watch(authRepositoryProvider)
-            //         .removeOldRoleFieldFromAllUsers();
+            //     ref.watch(authRepositoryProvider).fixAllUsersMissingCreatedAt();
             //   },
             //   icon: const Icon(Icons.settings),
             // ),

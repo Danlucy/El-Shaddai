@@ -52,10 +52,6 @@ class BookingRepository {
   }) async {
     final model = bookingModel.copyWith(recurrenceModel: recurrence);
 
-    print('Organization: $_organizationId');
-    print('Booking ID: $bookingId');
-    print('Booking Model: $bookingModel');
-
     try {
       if (bookingId == null) {
         // 🔹 Create New Booking

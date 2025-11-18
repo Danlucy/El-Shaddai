@@ -171,7 +171,7 @@ class AuthController extends AsyncNotifier<void> {
     final initialToken = await FirebaseMessaging.instance.getToken();
     if (initialToken != null) {
       ref
-          .read(profileControllerProvider(currentUser!.uid).notifier)
+          .read(profileControllerProvider(currentUser?.uid).notifier)
           .updateUserField('fcmToken', initialToken);
     }
   }

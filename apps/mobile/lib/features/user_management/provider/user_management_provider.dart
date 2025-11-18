@@ -23,16 +23,31 @@ AsyncValue<List<UserModel>> usersByRole(
   String searchTerm = '',
 }) {
   final orgAsync = ref.watch(organizationControllerProvider);
-
   return orgAsync.when(
-    data: (org) => ref.watch(
-      usersByRoleForOrgProvider(
-        orgId: org.name, // 👈 use org.id (not .name) if that’s your unique key
-        role: role,
-        searchTerm: searchTerm,
-      ),
-    ),
+    data: (org) {
+      // print('tracl2');
+      // print(
+      //   ref.watch(
+      //     usersByRoleForOrgProvider(
+      //       orgId:
+      //           org.name, // 👈 use org.id (not .name) if that’s your unique key
+      //       role: role,
+      //       searchTerm: searchTerm,
+      //     ),
+      //   ),
+      // );
+      return ref.watch(
+        usersByRoleForOrgProvider(
+          orgId:
+              org.name, // 👈 use org.id (not .name) if that’s your unique key
+          role: role,
+          searchTerm: searchTerm,
+        ),
+      );
+    },
     loading: () => const AsyncValue.loading(),
-    error: (err, stack) => AsyncValue.error(err, stack),
+    error: (err, stack) {
+      return AsyncValue.error(err, stack);
+    },
   );
 }

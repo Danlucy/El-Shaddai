@@ -22,7 +22,7 @@ class OnboardingNotifier extends _$OnboardingNotifier {
     return state.when(
       data: (tips) => tips.contains(tipId),
       loading: () => false,
-      error: (_, __) => false,
+      error: (_, _) => false,
     );
   }
 
