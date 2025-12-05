@@ -11,7 +11,7 @@ class OrganizationSelectionDropdown extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GlassmorphicContainer(
       width: 300,
-      height: 60,
+      height: 40,
       borderRadius: 12,
       blur: 10, // The blur intensity
       alignment: Alignment.center,

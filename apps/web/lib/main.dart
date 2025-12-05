@@ -269,15 +269,15 @@ class _MyAppState extends ConsumerState<_MyWebApp> with WidgetsBindingObserver {
             .read(authControllerProvider.notifier)
             .getUserDataStream()
             .first;
+        if (userModel == null) {
+          throw 'No data';
+        }
 
         if (mounted && !_disposed) {
           ref.read(userProvider.notifier).setUser(userModel);
-          print('User data updated successfully.');
         }
       } on FirebaseException catch (e) {
         if (!_disposed) {
-          print('Firebase Error updating user data: ${e.code} - ${e.message}');
-
           // Handle specific Firebase errors
           switch (e.code) {
             case 'unavailable':

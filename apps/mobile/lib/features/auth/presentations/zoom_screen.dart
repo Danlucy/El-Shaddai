@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../../../api/api_repository.dart';
 import '../../../api/pkce_utils.dart';
 import '../../../core/router/router.dart';
 import '../controller/zoom_auth_controller.dart';
@@ -28,7 +27,8 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
     final String codeVerifier = PKCEUtils.generateCodeVerifier();
     final String codeChallenge = PKCEUtils.generateCodeChallenge(codeVerifier);
     PKCEUtils().saveCodeVerifier(codeVerifier);
-    final String urld = '$zoomLoginBaseUrl'
+    final String urld =
+        '$zoomLoginBaseUrl'
         '?response_type=code'
         '&client_id=$clientId'
         '&redirect_uri=https://daniel-ong.com'
@@ -37,7 +37,8 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(
-          Uri.parse(urld ?? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'));
+        Uri.parse(urld ?? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'),
+      );
 
     // Setting up the navigation delegate to listen for URL changes
     controller.setNavigationDelegate(
@@ -52,14 +53,19 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
             final String? code = uri.queryParameters['code'];
             if (code != null) {
               await prefs.setString('userAuthenticationCode', code);
-              final response =
-                  await apiRepository.getAccessToken(code, codeVerifier);
-              ref.read(accessTokenNotifierProvider.notifier).saveAccessToken(
+              final response = await apiRepository.getAccessToken(
+                code,
+                codeVerifier,
+              );
+              ref
+                  .read(accessTokenNotifierProvider.notifier)
+                  .saveAccessToken(
                     AccessToken(
                       token: response.data['access_token'],
                       refreshToken: response.data['refresh_token'],
-                      duration: DateTime.now()
-                          .add(Duration(seconds: response.data['expires_in'])),
+                      duration: DateTime.now().add(
+                        Duration(seconds: response.data['expires_in']),
+                      ),
                     ),
                   );
 
@@ -92,9 +98,7 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
           },
         ),
       ),
-      body: WebViewWidget(
-        controller: controller,
-      ),
+      body: WebViewWidget(controller: controller),
     );
   }
 }

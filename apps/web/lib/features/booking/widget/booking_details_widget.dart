@@ -90,7 +90,7 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
                       borderGradient: _glassBorder(),
                       child: _ParticipantsAndActionsColumn(
                         booking: widget.booking,
-                        user: user,
+                        user: user.value,
                       ),
                     )
                   : IntrinsicHeight(
@@ -106,7 +106,7 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
                         borderGradient: _glassBorder(),
                         child: _ParticipantsAndActionsColumn(
                           booking: widget.booking,
-                          user: user,
+                          user: user.value,
                         ),
                       ),
                     ),

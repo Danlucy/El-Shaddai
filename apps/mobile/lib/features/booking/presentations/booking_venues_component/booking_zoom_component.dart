@@ -1,14 +1,10 @@
 import 'package:api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/features/booking/widgets/zoom_display_widget.dart';
+import 'package:mobile/features/booking/widgets/zoom_display_component.dart';
 
 class BookingZoomComponent extends ConsumerStatefulWidget {
-  const BookingZoomComponent({
-    this.zoomID,
-    this.password,
-    super.key,
-  });
+  const BookingZoomComponent({this.zoomID, this.password, super.key});
   final String? zoomID;
   final String? password;
 

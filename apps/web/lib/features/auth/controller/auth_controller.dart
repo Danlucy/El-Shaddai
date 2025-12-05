@@ -8,23 +8,23 @@ import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
 
-final userProvider = NotifierProvider<UserNotifier, UserModel?>(
+final userProvider = NotifierProvider<UserNotifier, AsyncValue<UserModel?>>(
   () => UserNotifier(),
 );
 
 // User notifier class
-class UserNotifier extends Notifier<UserModel?> {
+class UserNotifier extends Notifier<AsyncValue<UserModel?>> {
   @override
-  UserModel? build() {
-    return null; // Initialize with null
+  AsyncValue<UserModel?> build() {
+    return const AsyncValue.loading(); // instead of null
   }
 
-  void setUser(UserModel? user) {
-    state = user;
+  void setUser(UserModel user) {
+    state = AsyncValue.data(user);
   }
 
   void clearUser() {
-    state = null;
+    state = const AsyncValue.data(null);
   }
 }
 

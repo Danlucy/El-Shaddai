@@ -12,7 +12,7 @@ class ParticipantController extends _$ParticipantController {
   @override
   ParticipantState build(String bookingId) {
     // Initialize state with the provided bookingId and userId
-    final userId = ref.watch(userProvider)?.uid;
+    final userId = ref.watch(userProvider).value?.uid;
     return ParticipantState(
       userId: userId ?? 'default_user_id',
       bookingId: bookingId,

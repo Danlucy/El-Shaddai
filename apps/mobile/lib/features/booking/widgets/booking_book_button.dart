@@ -2,8 +2,8 @@ import 'package:api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/api/api_repository.dart';
 import 'package:mobile/core/utility/url_launcher.dart';
+
 import '../controller/booking_controller.dart';
 import '../provider/booking_provider.dart';
 

@@ -4,8 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:mobile/features/booking/widgets/zoom_display_component.dart';
+
 // Your controller
-import 'package:mobile/features/booking/widgets/zoom_display_widget.dart';
 
 import 'booking_location_component/booking_location_component.dart';
 

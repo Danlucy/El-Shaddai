@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
 import 'package:website/core/widgets/glass_button.dart';
+import 'package:website/core/widgets/organization_drop_down_button.dart';
 import 'package:website/features/auth/presentations/login_dialog.dart';
 
 import '../../auth/controller/auth_controller.dart';
@@ -16,7 +17,8 @@ class ScaffoldWithNavBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userName =
-        ref.watch(userProvider)?.lastName ?? ref.watch(userProvider)?.name;
+        ref.watch(userProvider).value?.lastName ??
+        ref.watch(userProvider).value?.name;
     final String currentLocation = navigationShell
         .shellRouteContext
         .routerState
@@ -26,6 +28,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        toolbarHeight: 60,
         key: ValueKey(userName),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -96,7 +99,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                       : null,
                 ),
                 title: Text(
-                  'Prayer List',
+                  'Prayer Watch List',
                   style: TextStyle(
                     color: currentLocation == '/list'
                         ? Theme.of(context).colorScheme.primary
@@ -134,6 +137,14 @@ class ScaffoldWithNavBar extends ConsumerWidget {
         ),
         // ✅ Right side empty
         actions: [
+          Center(
+            child: Column(
+              children: [
+                Text('Select Prayer Alter', style: TextStyle(fontSize: 12)),
+                OrganizationSelectionDropdown(),
+              ],
+            ),
+          ),
           Padding(
             padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 4),
             child: GlassmorphicButton(

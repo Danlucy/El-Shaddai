@@ -1,5 +1,4 @@
 import 'package:constants/constants.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gradient_animation_text/flutter_gradient_animation_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,33 +25,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    if (kDebugMode) {
-      print('Screen size: ${screenSize.width} x ${screenSize.height}');
-    }
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: AnimatedBackground(
         surfaceColor: context.colors.surface,
         secondaryColor: context.colors.secondary,
         child: SafeArea(
-          bottom: true,
-          child: ListView(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: 20,
-                ),
-                child: Center(
-                  // ✅ Wrap the layout in a ResponsiveScaler to enable auto-scaling.
-                  child: ResponsiveBreakpoints.of(context).largerThan(TABLET)
-                      ? _buildDesktopLayout(context)
-                      : _buildMobileLayout(context),
+          bottom:
+              false, // Set false so footer creates its own padding if needed
+          child: CustomScrollView(
+            slivers: [
+              // 1. Your Main Content wrapped in a Sliver
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 20,
+                  ),
+                  child: Center(
+                    child: ResponsiveBreakpoints.of(context).largerThan(TABLET)
+                        ? _buildDesktopLayout(context)
+                        : _buildMobileLayout(context),
+                  ),
                 ),
               ),
 
-              Gap(150),
-              FooterWidget(moreInfo: true),
+              // 2. The Magic: Fills remaining space to push footer down
+              SliverFillRemaining(
+                hasScrollBody:
+                    false, // Important: Tells flutter this isn't a list
+                child: Column(
+                  children: [
+                    const Spacer(), // Occupies all available empty space
+                    FooterWidget(moreInfo: true),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -74,7 +83,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 _buildRichText(context),
                 GlassmorphicButton(
-                  text: '247 Prayer List',
+                  text: '247 Prayer Watch List',
                   icon: Icons.calendar_today,
                   onPressed: () {
                     goBooking();
@@ -95,13 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-        Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Text('Select Prayer Alter', style: TextStyle(fontSize: 20)),
-          ),
-        ),
-        Center(child: OrganizationSelectionDropdown()),
+
         Gap(50),
 
         GradientAnimationText(
@@ -181,7 +184,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Center(child: OrganizationSelectionDropdown()),
         Gap(30),
         GlassmorphicButton(
-          text: '247 Prayer List',
+          text: '247 Prayer Watch List',
           icon: Icons.calendar_today,
           onPressed: () {
             goBooking();
@@ -302,7 +305,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           TextSpan(
             text:
-                '\n\nJoin us in our prayers with the \n ${isMobile ? '247 Prayer List' : ' '}',
+                '\n\nJoin us in our prayers with the \n ${isMobile ? '247 Prayer Watch List' : ' '}',
             style: TextStyle(
               fontSize: ResponsiveValue<double>(
                 context,

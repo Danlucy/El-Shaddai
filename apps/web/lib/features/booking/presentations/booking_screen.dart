@@ -1,261 +1,51 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gap/gap.dart';
 import 'package:glassmorphism/glassmorphism.dart';
+import 'package:go_router/go_router.dart';
+import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:website/core/widgets/animated_background.dart';
+import 'package:website/features/booking/presentations/date_header_widget.dart';
 import 'package:website/features/booking/presentations/monthly_calendar_widget.dart';
+import 'package:website/features/booking/presentations/weekly_calendar_widget.dart';
 
 class BookingScreen extends ConsumerStatefulWidget {
-  const BookingScreen({super.key});
+  const BookingScreen({this.bookingModel, super.key});
+  final BookingModel? bookingModel;
+  static final formKey = GlobalKey<FormState>();
 
   @override
   ConsumerState createState() => _BookingScreenState();
 }
 
 class _BookingScreenState extends ConsumerState<BookingScreen> {
-  _buildMobileLayout(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Stack(
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
+  // ✅ 1. Mobile Layout
+  Widget _buildMobileLayout(BuildContext context) {
+    return Stack(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Title
+            Center(
+              child: Text(
                 'Prayer Event Calendar',
                 style: TextStyle(
-                  fontSize: ResponsiveValue<double>(
-                    context,
-                    defaultValue: 20,
-                    conditionalValues: [
-                      Condition.between(start: 0, end: 450, value: 20),
-                      const Condition.between(start: 801, end: 1000, value: 24),
-                      const Condition.between(
-                        start: 1001,
-                        end: 1200,
-                        value: 28,
-                      ),
-                      const Condition.between(
-                        start: 1201,
-                        end: 1920,
-                        value: 30,
-                      ),
-                      const Condition.between(
-                        start: 1921,
-                        end: 3000,
-                        value: 34,
-                      ),
-                    ],
-                  ).value,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: context.colors.primary,
-                ),
-              ),
-              Flexible(
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: FractionallySizedBox(
-                    heightFactor: 0.9,
-                    widthFactor: 0.9,
-                    child: GlassmorphicContainer(
-                      width: double.infinity,
-                      height: double.infinity,
-                      borderRadius: 20,
-                      linearGradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.white.withOpac(0.2),
-                          Colors.white.withOpac(0.1),
-                        ],
-                        stops: const [0.1, 1],
-                      ),
-                      border: 2,
-                      blur: 15,
-                      borderGradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.white.withOpac(0.5),
-                          Colors.white.withOpac(0.5),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(
-                          ResponsiveValue<double>(
-                            defaultValue: 16,
-                            context,
-                            conditionalValues: [
-                              const Condition.between(
-                                start: 0,
-                                end: 450,
-                                value: 10.0,
-                              ),
-                              const Condition.between(
-                                start: 451,
-                                end: 1000,
-                                value: 14.0,
-                              ),
-                              const Condition.between(
-                                start: 1001,
-                                end: 3000,
-                                value: 16.0,
-                              ),
-                            ],
-                          ).value,
-                        ),
-                        child: MonthlyCalendarComponent(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 80,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                gradient: LinearGradient(
-                  colors: [Colors.white.withOpac(0.15), Colors.transparent],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  _buildDesktopLayout(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-
-    return Align(
-      alignment: Alignment.topCenter, // Center the content
-      child: Stack(
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Prayer Event Calendar',
-                style: TextStyle(
-                  fontSize: ResponsiveValue<double>(
-                    context,
-                    defaultValue: 20,
-                    conditionalValues: [
-                      Condition.between(start: 0, end: 450, value: 20),
-                      const Condition.between(start: 801, end: 1000, value: 24),
-                      const Condition.between(
-                        start: 1001,
-                        end: 1200,
-                        value: 28,
-                      ),
-                      const Condition.between(
-                        start: 1201,
-                        end: 1920,
-                        value: 30,
-                      ),
-                      const Condition.between(
-                        start: 1921,
-                        end: 3000,
-                        value: 34,
-                      ),
-                    ],
-                  ).value,
-                  fontWeight: FontWeight.bold,
-                  color: context.colors.primary,
-                ),
-              ),
-              GlassmorphicContainer(
-                constraints: BoxConstraints(
-                  maxWidth: width * 0.5,
-                  maxHeight: width * 0.5,
-                ),
-                width: ResponsiveValue<double>(
-                  context,
-                  defaultValue: 700.0,
-                  conditionalValues: [
-                    // 801-1920px (DESKTOP)
-                    const Condition.between(
-                      start: 801,
-                      end: 1000,
-                      value: 700.0,
-                    ),
-                    const Condition.between(
-                      start: 1001,
-                      end: 1200,
-                      value: 800.0,
-                    ),
-                    const Condition.between(
-                      start: 1201,
-                      end: 1500,
-                      value: 900.0,
-                    ),
-                    const Condition.between(
-                      start: 1501,
-                      end: 1920,
-                      value: 900.0,
-                    ),
-                    const Condition.between(
-                      start: 1921,
-                      end: 2500,
-                      value: 800.0,
-                    ),
-                    const Condition.between(
-                      start: 2501,
-                      end: 3000,
-                      value: 1200.0,
-                    ),
-                  ],
-                ).value, // Fallback value
-                height: ResponsiveValue<double>(
-                  context,
-                  conditionalValues: [
-                    // 801-1920px (DESKTOP)
-                    const Condition.between(
-                      start: 801,
-                      end: 1000,
-                      value: 650.0,
-                    ),
-                    const Condition.between(
-                      start: 1001,
-                      end: 1200,
-                      value: 700.0,
-                    ),
-                    const Condition.between(
-                      start: 1201,
-                      end: 1500,
-                      value: 750.0,
-                    ),
-                    const Condition.between(
-                      start: 1501,
-                      end: 1920,
-                      value: 750.0,
-                    ),
-                    // 1921+ (4K)
-                    const Condition.between(
-                      start: 1921,
-                      end: 2500,
-                      value: 700.0,
-                    ),
-                    const Condition.between(
-                      start: 2501,
-                      end: 3000,
-                      value: 900.0,
-                    ),
-                  ],
-                ).value, // Fallback value
+            const SizedBox(height: 10),
+            // Calendar fills remaining space
+            Expanded(
+              child: GlassmorphicContainer(
+                width: double.infinity,
+                height: double.infinity,
                 borderRadius: 20,
                 linearGradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -277,47 +67,101 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   ],
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(
-                    ResponsiveValue<double>(
-                      defaultValue: 20,
-                      context,
-                      conditionalValues: [
-                        const Condition.between(
-                          start: 451,
-                          end: 800,
-                          value: 20.0,
-                        ), // TABLET
-                        const Condition.between(
-                          start: 801,
-                          end: 1920,
-                          value: 24.0,
-                        ), // DESKTOP
-                        const Condition.between(
-                          start: 1921,
-                          end: 3000,
-                          value: 32.0,
-                        ), // 4K
-                      ],
-                    ).value,
-                  ),
+                  padding: const EdgeInsets.all(10.0),
                   child: MonthlyCalendarComponent(),
                 ),
               ),
-            ],
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 80,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                gradient: LinearGradient(
-                  colors: [Colors.white.withOpacity(0.15), Colors.transparent],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ✅ 2. Updated Desktop Layout
+  Widget _buildDesktopLayout(BuildContext context, DateTime selectedDate) {
+    return Stack(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Text(
+                'Prayer Event Calendar',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: context.colors.primary,
                 ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Expanded forces it to take all remaining height
+            Expanded(
+              child: Row(
+                children: [
+                  // --- LEFT SIDEBAR (Monthly Calendar) ---
+                  _CalendarToolSection(selectedDate),
+                  const Gap(15), // Spacing between panels
+                  _CalendarDisplaySection(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Expanded _CalendarDisplaySection() {
+    return Expanded(
+      child: GlassmorphicContainer(
+        width: double.infinity,
+        height: double.infinity,
+        borderRadius: 20,
+        linearGradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white.withOpac(0.2), Colors.white.withOpac(0.1)],
+          stops: const [0.1, 1],
+        ),
+        border: 2,
+        blur: 15,
+        borderGradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white.withOpac(0.5), Colors.white.withOpac(0.5)],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: WeeklyCalendarComponent(),
+        ),
+      ),
+    );
+  }
+
+  SizedBox _CalendarToolSection(DateTime selectedDate) {
+    return SizedBox(
+      width: 350,
+      height: double.infinity,
+      child: Column(
+        children: [
+          DateHeaderWidget(selectedDate: selectedDate),
+          Gap(10),
+          AspectRatio(aspectRatio: 0.8, child: MonthlyCalendarComponent()),
+          Spacer(),
+          OutlinedButton(
+            onPressed: () {
+              context.go('/booking/create');
+            },
+            child: Padding(
+              padding: EdgeInsetsGeometry.symmetric(
+                horizontal: 10,
+                vertical: 5,
+              ),
+              child: Text(
+                "Create Prayer Watch",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
               ),
             ),
           ),
@@ -328,31 +172,36 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedDate = ref.watch(calendarDateNotifierProvider);
+
     ref.watch(calendarDateNotifierProvider);
+
     return Scaffold(
       extendBodyBehindAppBar: true,
-      body: AnimatedBackground(
-        surfaceColor: context.colors.surface,
-        secondaryColor: context.colors.secondary,
-        child: SafeArea(
-          bottom: true,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveValue(
-                defaultValue: 0.0,
-                context,
-                conditionalValues: [
-                  Condition.between(start: 0, end: 450, value: 0.0),
-                  const Condition.between(start: 451, end: 3000, value: 20.0),
-                ],
-              ).value,
-              vertical: 20,
+      body: Stack(
+        children: [
+          // 1. Background Layer
+          Positioned.fill(
+            child: AnimatedBackground(
+              surfaceColor: context.colors.surface,
+              secondaryColor: context.colors.secondary,
+              child: const SizedBox.expand(),
             ),
-            child: ResponsiveBreakpoints.of(context).largerThan(TABLET)
-                ? _buildDesktopLayout(context)
-                : _buildMobileLayout(context),
           ),
-        ),
+
+          // 2. Content Layer
+          Positioned.fill(
+            child: SafeArea(
+              bottom: true,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                child: ResponsiveBreakpoints.of(context).largerThan(TABLET)
+                    ? _buildDesktopLayout(context, selectedDate)
+                    : _buildMobileLayout(context),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

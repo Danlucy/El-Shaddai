@@ -1,10 +1,6 @@
-import 'dart:math';
-
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glassmorphism/glassmorphism.dart';
-import 'package:intl/intl.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -14,6 +10,8 @@ import 'package:website/core/widgets/loader.dart';
 import 'package:website/features/booking/controller/booking_controller.dart';
 import 'package:website/features/booking/controller/data_source.dart';
 import 'package:website/features/booking/presentations/daily_booking_dialog.dart';
+
+// Import the controller
 
 import '../provider/booking_provider.dart';
 
@@ -31,12 +29,19 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
   late Animation<double> _gradientAnimation;
   late CalendarController _calendarController;
 
+  // Instance of the controller
+  late MonthlyCalendarController _logicController;
+
+  // Track the last known date to avoid redundant animations
   DateTime? _previousSelectedDate;
-  bool _isUpdatingFromProvider = false; // Flag to prevent circular updates
+  // Flag to prevent infinite loops (Provider -> Controller -> Provider)
+  bool _isUpdatingFromProvider = false;
 
   @override
   void initState() {
     super.initState();
+
+    _logicController = MonthlyCalendarController();
 
     _gradientAnimationController = AnimationController(
       duration: const Duration(milliseconds: 600),
@@ -49,14 +54,14 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
     );
 
     _gradientAnimationController.value = 1.0;
-
-    // Initialize internal calendar controller
     _calendarController = CalendarController();
 
-    // Set initial date after the widget is built
+    // Initial Sync on Load
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final selectedDate = ref.read(calendarDateNotifierProvider);
-      _updateCalendarController(selectedDate);
+      _calendarController.selectedDate = selectedDate;
+      _calendarController.displayDate = selectedDate;
+      _previousSelectedDate = selectedDate;
     });
   }
 
@@ -67,171 +72,49 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
     super.dispose();
   }
 
-  // Centralized method to update calendar controller
-  void _updateCalendarController(DateTime date) {
+  // Centralized Logic: Updates Controller without triggering feedback loop
+  void _updateControllerFromProvider(DateTime date) {
+    if (_isUpdatingFromProvider) return; // Stop if we are already updating
+
     _isUpdatingFromProvider = true;
 
-    // Only update if the date is actually different to prevent unnecessary updates
+    // Trigger animation if date changed
+    if (_previousSelectedDate != date) {
+      _previousSelectedDate = date;
+      _gradientAnimationController.reset();
+      _gradientAnimationController.forward();
+    }
+
+    // Update Controller
     if (_calendarController.selectedDate != date) {
       _calendarController.selectedDate = date;
     }
+    // Ensure the month view actually navigates to the new date
     if (_calendarController.displayDate?.month != date.month ||
         _calendarController.displayDate?.year != date.year) {
       _calendarController.displayDate = date;
     }
 
-    // Reset flag after a brief delay to allow calendar to update
-    Future.delayed(const Duration(milliseconds: 150), () {
+    // Release lock after a short delay
+    Future.delayed(const Duration(milliseconds: 200), () {
       if (mounted) {
         _isUpdatingFromProvider = false;
       }
     });
   }
 
-  // Utility to get the grid position (row and column) of a date
-  Point<int> _getGridPosition(DateTime date, DateTime displayDate) {
-    final firstDayOfMonth = DateTime(displayDate.year, displayDate.month, 1);
-    final firstDayInView = firstDayOfMonth.subtract(
-      Duration(days: firstDayOfMonth.weekday % 7),
-    );
-
-    final dayDifference = date.difference(firstDayInView).inDays;
-    final row = dayDifference ~/ 7;
-    final col = dayDifference % 7;
-    return Point<int>(col, row);
-  }
-
-  // Calculate gradient direction and intensity for each cell with animation
-  Map<String, dynamic> _getCellGradientInfo(
-    DateTime date,
-    DateTime selectedDate,
-    DateTime? previousSelectedDate,
-    double animationValue,
-  ) {
-    Map<String, dynamic> currentGradientInfo = _calculateGradientForDate(
-      date,
-      selectedDate,
-    );
-    Map<String, dynamic> previousGradientInfo = previousSelectedDate != null
-        ? _calculateGradientForDate(date, previousSelectedDate)
-        : {
-            'distance': 10.0,
-            'start': Alignment.center,
-            'end': Alignment.center,
-            'intensity': 0.0,
-          };
-
-    final currentIntensity = currentGradientInfo['intensity'] as double;
-    final previousIntensity = previousGradientInfo['intensity'] as double;
-
-    final interpolatedIntensity =
-        previousIntensity +
-        (currentIntensity - previousIntensity) * animationValue;
-
-    return {
-      'distance': currentGradientInfo['distance'],
-      'start': currentGradientInfo['start'],
-      'end': currentGradientInfo['end'],
-      'intensity': interpolatedIntensity,
-    };
-  }
-
-  // Helper method to calculate gradient for a specific date using Manhattan distance
-  Map<String, dynamic> _calculateGradientForDate(
-    DateTime date,
-    DateTime targetDate,
-  ) {
-    final displayDate = _calendarController.displayDate ?? targetDate;
-
-    final targetPos = _getGridPosition(targetDate, displayDate);
-    final currentPos = _getGridPosition(date, displayDate);
-
-    final rowDiff = targetPos.y - currentPos.y;
-    final colDiff = targetPos.x - currentPos.x;
-
-    final distance = (rowDiff.abs() + colDiff.abs()).toDouble();
-
-    if (distance == 0) {
-      return {
-        'distance': 0.0,
-        'start': Alignment.center,
-        'end': Alignment.center,
-        'intensity': 0.0,
-      };
-    }
-
-    Alignment gradientStart;
-    Alignment gradientEnd;
-
-    if (rowDiff > 0 && colDiff == 0) {
-      gradientStart = Alignment.topCenter;
-      gradientEnd = Alignment.bottomCenter;
-    } else if (rowDiff < 0 && colDiff == 0) {
-      gradientStart = Alignment.bottomCenter;
-      gradientEnd = Alignment.topCenter;
-    } else if (rowDiff == 0 && colDiff > 0) {
-      gradientStart = Alignment.centerLeft;
-      gradientEnd = Alignment.centerRight;
-    } else if (rowDiff == 0 && colDiff < 0) {
-      gradientStart = Alignment.centerRight;
-      gradientEnd = Alignment.centerLeft;
-    } else if (rowDiff > 0 && colDiff > 0) {
-      gradientStart = Alignment.topLeft;
-      gradientEnd = Alignment.bottomRight;
-    } else if (rowDiff > 0 && colDiff < 0) {
-      gradientStart = Alignment.topRight;
-      gradientEnd = Alignment.bottomLeft;
-    } else if (rowDiff < 0 && colDiff > 0) {
-      gradientStart = Alignment.bottomLeft;
-      gradientEnd = Alignment.topRight;
-    } else if (rowDiff < 0 && colDiff < 0) {
-      gradientStart = Alignment.bottomRight;
-      gradientEnd = Alignment.topLeft;
-    } else {
-      gradientStart = Alignment.center;
-      gradientEnd = Alignment.center;
-    }
-
-    final intensity = 0.4 / (distance + 0);
-
-    return {
-      'distance': distance,
-      'start': gradientStart,
-      'end': gradientEnd,
-      'intensity': intensity,
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
+    // 1. WATCH for UI Rebuilds
     final selectedDate = ref.watch(calendarDateNotifierProvider);
 
-    // Handle date changes from provider
-    if (_previousSelectedDate != selectedDate) {
-      _previousSelectedDate = selectedDate;
-      _gradientAnimationController.reset();
-      _gradientAnimationController.forward();
-
-      // Update calendar controller when provider changes
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!_isUpdatingFromProvider && mounted) {
-          _updateCalendarController(selectedDate);
-        }
-      });
-    }
-
-    // Listen to provider changes - but avoid circular updates
+    // 2. LISTEN for Logic Updates
     ref.listen(calendarDateNotifierProvider, (previous, next) {
-      if (!_isUpdatingFromProvider && previous != next && mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            _updateCalendarController(next);
-          }
-        });
+      if (previous != next) {
+        _updateControllerFromProvider(next);
       }
     });
 
-    // Web-optimized text scaling - simpler approach for web
     final bool isLargeText = ResponsiveValue(
       context,
       defaultValue: false,
@@ -241,13 +124,6 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
         Condition.largerThan(name: TABLET, value: true),
       ],
     ).value;
-
-    // Extract date components
-    final dayOfWeek = DateFormat('EEE').format(selectedDate);
-    final dayOfMonth = DateFormat('d').format(selectedDate);
-    final monthOfMonth = DateFormat('MMMM ').format(selectedDate);
-    final yearOfMonth = DateFormat('yyyy').format(selectedDate);
-
     return AnimatedBuilder(
       animation: _gradientAnimation,
       builder: (context, child) {
@@ -255,101 +131,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
             .watch(getCurrentOrgBookingsStreamProvider)
             .when(
               data: (data) {
-                // Create a controller instance for checking booking status
-                MonthlyCalendarController controller =
-                    MonthlyCalendarController();
-
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Date Display Header - moved to top for web layout
-                    Container(
-                      width: double.infinity,
-                      child: GlassmorphicContainer(
-                        height: ResponsiveValue(
-                          context,
-                          defaultValue:
-                              60, // ← Add this default value for small screens
-                          conditionalValues: [
-                            Condition.smallerThan(name: MOBILE, value: 50),
-                            Condition.between(start: 450, end: 800, value: 70),
-                            Condition.largerThan(name: TABLET, value: 80),
-                          ],
-                        ).value.toDouble(),
-                        width: double.infinity,
-                        border: 1,
-                        blur: 5,
-                        borderGradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            context.colors.secondary.withOpac(0.1),
-                            context.colors.primary.withOpac(0.1),
-                          ],
-                        ),
-                        linearGradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            context.colors.secondary.withOpac(0.1),
-                            context.colors.primary.withOpac(0.1),
-                          ],
-                        ),
-                        borderRadius: 12,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          child: RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              style: DefaultTextStyle.of(context).style,
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: '$dayOfWeek, '.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: isLargeText ? 24 : 20,
-                                    fontWeight: FontWeight.normal,
-                                    color: context.colors.secondary.withOpac(
-                                      0.8,
-                                    ),
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: '$dayOfMonth ',
-                                  style: TextStyle(
-                                    fontSize: isLargeText ? 28 : 26,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.colors.secondary,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: monthOfMonth,
-                                  style: TextStyle(
-                                    fontSize: isLargeText ? 26 : 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.colors.primary.withOpac(0.8),
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: yearOfMonth,
-                                  style: TextStyle(
-                                    fontSize: isLargeText ? 22 : 18,
-                                    fontWeight: FontWeight.normal,
-                                    color: context.colors.secondary.withOpac(
-                                      0.8,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Calendar Component
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
@@ -362,6 +146,12 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: SfCalendar(
+                            view: CalendarView.month,
+                            controller: _calendarController,
+                            dataSource: BookingDataSource(data),
+                            initialSelectedDate: selectedDate,
+
+                            // Header Config
                             headerStyle: CalendarHeaderStyle(
                               textStyle: TextStyle(
                                 fontSize: isLargeText ? 24 : 20,
@@ -370,8 +160,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                             ),
                             headerHeight: ResponsiveValue(
                               context,
-                              defaultValue:
-                                  50, // ← Add this default value for small screens
+                              defaultValue: 50,
                               conditionalValues: [
                                 Condition.between(
                                   start: 450,
@@ -381,222 +170,234 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                 Condition.largerThan(name: TABLET, value: 80),
                               ],
                             ).value.toDouble(),
+
                             viewNavigationMode: ViewNavigationMode.none,
                             showNavigationArrow: true,
-                            dataSource: BookingDataSource(data),
-                            controller: _calendarController,
-                            initialSelectedDate: selectedDate,
 
-                            // IMPORTANT: Handle calendar's internal selection changes
-                            onSelectionChanged: (CalendarSelectionDetails details) {
-                              if (details.date != null &&
-                                  !_isUpdatingFromProvider) {
-                                final normalizedDate = DateTime(
-                                  details.date!.year,
-                                  details.date!.month,
-                                  details.date!.day,
-                                );
-
-                                // Use Future.microtask to delay provider update
-                                Future.microtask(() {
-                                  ref
-                                      .read(
-                                        calendarDateNotifierProvider.notifier,
-                                      )
-                                      .updateSelectedDate(normalizedDate);
-                                });
-                              }
-                            },
-
-                            // Handle view changes (month navigation)
                             monthViewSettings: const MonthViewSettings(
                               appointmentDisplayCount: 0,
                             ),
-                            monthCellBuilder: (BuildContext context, MonthCellDetails details) {
-                              // Use _calendarController.displayDate with fallback
-                              final currentDisplayDate =
-                                  _calendarController.displayDate ??
-                                  selectedDate;
 
-                              bool isCurrentMonth =
-                                  details.date.month ==
-                                  currentDisplayDate.month;
-
-                              // Normalize dates for comparison (ignore time component)
-                              final normalizedDetailDate = DateTime(
-                                details.date.year,
-                                details.date.month,
-                                details.date.day,
-                              );
-                              final normalizedSelectedDate = DateTime(
-                                selectedDate.year,
-                                selectedDate.month,
-                                selectedDate.day,
-                              );
-
-                              bool isSelectedDate =
-                                  normalizedDetailDate ==
-                                  normalizedSelectedDate;
-
-                              final gradientInfo = _getCellGradientInfo(
-                                details.date,
-                                selectedDate,
-                                _previousSelectedDate,
-                                _gradientAnimation.value,
-                              );
-
-                              final intensity =
-                                  gradientInfo['intensity'] as double;
-                              final gradientStart =
-                                  gradientInfo['start'] as Alignment;
-                              final gradientEnd =
-                                  gradientInfo['end'] as Alignment;
-
-                              List<BookingModel> bookings = data.where((
-                                element,
-                              ) {
-                                return isOverlapping(
-                                  details.date,
-                                  element.timeRange,
-                                );
-                              }).toList();
-                              bool isBooked = bookings.isNotEmpty;
-
-                              bool fullyBooked = controller.isFullyBooked(
-                                details.date,
-                                bookings,
-                              );
-
-                              return MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    border: isSelectedDate
-                                        ? Border.all(
-                                            color: context.colors.secondary,
-                                            width: 2.5,
-                                          )
-                                        : Border.all(
-                                            width: 0.3,
-                                            color: Colors.grey.withOpac(0.4),
-                                          ),
-                                  ),
-                                  child: GestureDetector(
-                                    onTap: () {
+                            // Selection Logic
+                            onSelectionChanged:
+                                (CalendarSelectionDetails details) {
+                                  if (details.date != null &&
+                                      !_isUpdatingFromProvider) {
+                                    Future.microtask(() {
                                       final normalizedDate = DateTime(
-                                        details.date.year,
-                                        details.date.month,
-                                        details.date.day,
+                                        details.date!.year,
+                                        details.date!.month,
+                                        details.date!.day,
+                                      );
+                                      ref
+                                          .read(
+                                            calendarDateNotifierProvider
+                                                .notifier,
+                                          )
+                                          .updateSelectedDate(normalizedDate);
+                                    });
+                                  }
+                                },
+
+                            // Cell Builder
+                            monthCellBuilder:
+                                (
+                                  BuildContext context,
+                                  MonthCellDetails details,
+                                ) {
+                                  // Get current display date from calendar controller or fallback to selected
+                                  final currentDisplayDate =
+                                      _calendarController.displayDate ??
+                                      selectedDate;
+
+                                  bool isCurrentMonth =
+                                      details.date.month ==
+                                      currentDisplayDate.month;
+
+                                  final normalizedDetailDate = DateTime(
+                                    details.date.year,
+                                    details.date.month,
+                                    details.date.day,
+                                  );
+                                  final normalizedSelectedDate = DateTime(
+                                    selectedDate.year,
+                                    selectedDate.month,
+                                    selectedDate.day,
+                                  );
+
+                                  bool isSelectedDate =
+                                      normalizedDetailDate ==
+                                      normalizedSelectedDate;
+
+                                  // DELEGATED TO CONTROLLER
+                                  final gradientInfo = _logicController
+                                      .getCellGradientInfo(
+                                        date: details.date,
+                                        selectedDate: selectedDate,
+                                        previousSelectedDate:
+                                            _previousSelectedDate,
+                                        currentDisplayDate: currentDisplayDate,
+                                        animationValue:
+                                            _gradientAnimation.value,
                                       );
 
-                                      // Use Future.microtask to delay provider update
-                                      Future.microtask(() {
-                                        if (selectedDate != normalizedDate) {
-                                          ref
-                                              .read(
-                                                calendarDateNotifierProvider
-                                                    .notifier,
+                                  final intensity =
+                                      gradientInfo['intensity'] as double;
+                                  final gradientStart =
+                                      gradientInfo['start'] as Alignment;
+                                  final gradientEnd =
+                                      gradientInfo['end'] as Alignment;
+
+                                  // Filter bookings for this day
+                                  List<BookingModel> bookings = data.where((
+                                    element,
+                                  ) {
+                                    return isOverlapping(
+                                      details.date,
+                                      element.timeRange,
+                                    );
+                                  }).toList();
+
+                                  bool isBooked = bookings.isNotEmpty;
+
+                                  // DELEGATED TO CONTROLLER
+                                  bool fullyBooked = _logicController
+                                      .isFullyBooked(details.date, bookings);
+
+                                  return MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        border: isSelectedDate
+                                            ? Border.all(
+                                                color: context.colors.secondary,
+                                                width: 2.5,
                                               )
-                                              .updateSelectedDate(
-                                                normalizedDate,
+                                            : Border.all(
+                                                width: 0.3,
+                                                color: Colors.grey.withOpac(
+                                                  0.4,
+                                                ),
+                                              ),
+                                      ),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          final normalizedDate = DateTime(
+                                            details.date.year,
+                                            details.date.month,
+                                            details.date.day,
+                                          );
+
+                                          Future.microtask(() {
+                                            ref
+                                                .read(
+                                                  calendarDateNotifierProvider
+                                                      .notifier,
+                                                )
+                                                .updateSelectedDate(
+                                                  normalizedDate,
+                                                );
+
+                                            if (selectedDate ==
+                                                normalizedDate) {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    const DailyBookingDialog(),
                                               );
-                                          _updateCalendarController(
-                                            normalizedDate,
-                                          );
-                                        } else {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                const DailyBookingDialog(),
-                                          );
-                                        }
-                                        // ref
-                                        //     .read(
-                                        //       calendarDateNotifierProvider
-                                        //           .notifier,
-                                        //     )
-                                        //     .updateSelectedDate(normalizedDate);
-                                      });
-                                    },
-                                    child: Center(
-                                      child: Stack(
-                                        children: [
-                                          if (intensity > 0)
-                                            _MonthCalendarCellShadowDecoration(
-                                              gradientStart,
-                                              gradientEnd,
-                                              context,
-                                              intensity,
-                                            ),
-                                          Center(
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(
-                                                4.0,
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    details.date.day.toString(),
-                                                    style: TextStyle(
-                                                      fontSize: isSelectedDate
-                                                          ? (isLargeText
-                                                                ? 22
-                                                                : 18)
-                                                          : (isLargeText
-                                                                ? 20
-                                                                : 16),
-                                                      fontWeight:
-                                                          intensity > 0.15 ||
-                                                              isSelectedDate
-                                                          ? FontWeight.w600
-                                                          : FontWeight.normal,
-                                                      color: !isCurrentMonth
-                                                          ? Colors.grey
-                                                                .withOpac(0.6)
-                                                          : isSelectedDate
-                                                          ? context
-                                                                .colors
-                                                                .secondary
-                                                          : intensity > 0.15
-                                                          ? context
-                                                                .colors
-                                                                .secondary
-                                                                .withOpac(0.9)
-                                                          : Colors.white,
-                                                    ),
+                                            }
+                                          });
+                                        },
+                                        child: Center(
+                                          child: Stack(
+                                            children: [
+                                              if (intensity > 0)
+                                                _MonthCalendarCellShadowDecoration(
+                                                  gradientStart,
+                                                  gradientEnd,
+                                                  context,
+                                                  intensity,
+                                                ),
+                                              Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    4.0,
                                                   ),
-                                                  if (isBooked) ...[
-                                                    const SizedBox(height: 2),
-                                                    CircleAvatar(
-                                                      radius: isSelectedDate
-                                                          ? 4.5
-                                                          : 3.5,
-                                                      backgroundColor:
-                                                          fullyBooked
-                                                          ? Colors.red.withOpac(
-                                                              0.9,
-                                                            )
-                                                          : Colors.green
-                                                                .withOpac(0.9),
-                                                    ),
-                                                  ],
-                                                ],
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        details.date.day
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              isSelectedDate
+                                                              ? (isLargeText
+                                                                    ? 22
+                                                                    : 18)
+                                                              : (isLargeText
+                                                                    ? 20
+                                                                    : 16),
+                                                          fontWeight:
+                                                              intensity >
+                                                                      0.15 ||
+                                                                  isSelectedDate
+                                                              ? FontWeight.w600
+                                                              : FontWeight
+                                                                    .normal,
+                                                          color: !isCurrentMonth
+                                                              ? Colors.grey
+                                                                    .withOpac(
+                                                                      0.6,
+                                                                    )
+                                                              : isSelectedDate
+                                                              ? context
+                                                                    .colors
+                                                                    .secondary
+                                                              : intensity > 0.15
+                                                              ? context
+                                                                    .colors
+                                                                    .secondary
+                                                                    .withOpac(
+                                                                      0.9,
+                                                                    )
+                                                              : Colors.white,
+                                                        ),
+                                                      ),
+                                                      if (isBooked) ...[
+                                                        const SizedBox(
+                                                          height: 2,
+                                                        ),
+                                                        CircleAvatar(
+                                                          radius: isSelectedDate
+                                                              ? 4.5
+                                                              : 3.5,
+                                                          backgroundColor:
+                                                              fullyBooked
+                                                              ? Colors.red
+                                                                    .withOpac(
+                                                                      0.9,
+                                                                    )
+                                                              : Colors.green
+                                                                    .withOpac(
+                                                                      0.9,
+                                                                    ),
+                                                        ),
+                                                      ],
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
-                                            ),
+                                            ],
                                           ),
-                                        ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              );
-                            },
-                            showCurrentTimeIndicator: false,
-                            showDatePickerButton: true,
-                            view: CalendarView.month,
+                                  );
+                                },
                           ),
                         ),
                       ),
@@ -604,21 +405,13 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                   ],
                 );
               },
-              error: (error, stack) {
-                return Container(
-                  constraints: const BoxConstraints(maxWidth: 1000),
-                  child: const Center(
-                    child: Text(
-                      'Error loading calendar',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                );
-              },
-              loading: () => Container(
-                constraints: const BoxConstraints(maxWidth: 1000),
-                child: const Loader(),
+              error: (error, stack) => const Center(
+                child: Text(
+                  'Error loading calendar',
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
+              loading: () => const Center(child: Loader()),
             );
       },
     );

@@ -9,7 +9,7 @@ import 'package:mobile/features/booking/widgets/booking_date_range_picker.dart';
 import 'package:mobile/features/booking/widgets/booking_text_field.dart';
 import 'package:mobile/features/booking/widgets/booking_time_picker.dart';
 import 'package:mobile/features/booking/widgets/recurrence_component.dart';
-import 'package:mobile/features/booking/widgets/zoom_display_widget.dart';
+import 'package:mobile/features/booking/widgets/zoom_display_component.dart';
 import 'package:models/models.dart';
 import 'package:util/util.dart';
 

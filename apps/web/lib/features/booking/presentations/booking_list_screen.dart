@@ -306,7 +306,7 @@ class _BookingList extends ConsumerWidget {
                       ? Theme.of(
                           context,
                         ).colorScheme.secondaryContainer.withOpac(0.5)
-                      : Theme.of(context).colorScheme.secondaryContainer;
+                      : context.colors.secondaryContainer;
 
                   return GestureDetector(
                     onTap: () {
