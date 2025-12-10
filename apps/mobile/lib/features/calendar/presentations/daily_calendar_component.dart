@@ -100,7 +100,7 @@ class _DailyCalendarComponentState
     final bookingStream = ref.watch(getCurrentOrgBookingsStreamProvider);
     final bookingFunction = ref.read(bookingControllerProvider.notifier);
     // final selectedDate = ref.watch(calendarDateNotifierProvider);
-    final user = ref.watch(userProvider);
+    final user = ref.watch(userProvider).value;
     ref.listen(calendarDateNotifierProvider, (previous, next) {
       widget.dailyCalendarController.displayDate = next;
       widget.dailyCalendarController.selectedDate = next;
@@ -136,8 +136,8 @@ class _DailyCalendarComponentState
             }
           },
           onLongPress: (CalendarLongPressDetails tapped) {
-            if (user.value?.currentRole(ref) == UserRole.observer ||
-                user.value?.currentRole(ref) == UserRole.intercessor) {
+            if (user?.currentRole(ref) == UserRole.observer ||
+                user?.currentRole(ref) == UserRole.intercessor) {
               return;
             } //cancel operation if obs or intercessor role
 

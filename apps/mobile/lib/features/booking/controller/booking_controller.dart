@@ -233,7 +233,7 @@ class BookingController extends _$BookingController {
   }
 
   BookingModel instantiateBookingModel(String? web) {
-    final user = ref.read(userProvider);
+    final user = ref.read(userProvider).value;
     final currentVenue = ref.read(bookingVenueStateProvider);
     return BookingModel(
       timeRange: state.timeRange!,
@@ -241,8 +241,8 @@ class BookingController extends _$BookingController {
       recurrenceState: state.recurrenceState,
       title: state.title!,
       password: state.password,
-      host: user.value!.lastName ?? user.value?.name ?? '??',
-      userId: user.value!.uid,
+      host: user!.lastName ?? user.name,
+      userId: user.uid,
       id: FirebaseFirestore.instance.collection('dog').doc().id,
       location: LocationData(
         web: currentVenue == BookingVenueComponent.location
@@ -294,7 +294,7 @@ class BookingController extends _$BookingController {
 
     final currentVenue = ref.read(bookingVenueStateProvider);
     final location = state.location;
-    final user = ref.read(userProvider);
+    final user = ref.read(userProvider).value;
 
     if (user == null) {
       throw 'No user found. Ensure internet connection is available.';

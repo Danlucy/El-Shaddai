@@ -71,7 +71,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
     final textScaleFactor = TextScaleFactor.scaleFactor(textScale);
     final today = DateTime.now();
 
-    final user = ref.read(userProvider);
+    final user = ref.read(userProvider).value;
     // Determine flex proportions based on TextScaleFactor
     double appointmentHeight = 70; // Default: Equal space
 
@@ -141,8 +141,8 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
 
                   return GestureDetector(
                     onLongPress: () {
-                      if (bookingModel.userId != user.value?.uid &&
-                          user.value?.currentRole(ref) != UserRole.admin) {
+                      if (bookingModel.userId != user?.uid &&
+                          user?.currentRole(ref) != UserRole.admin) {
                         return;
                       }
                       showDialog(

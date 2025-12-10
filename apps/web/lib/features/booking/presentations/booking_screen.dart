@@ -7,7 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:util/util.dart';
 import 'package:website/core/widgets/animated_background.dart';
+import 'package:website/core/widgets/glass_container.dart';
+import 'package:website/features/auth/controller/auth_controller.dart';
+import 'package:website/features/booking/controller/booking_controller.dart';
 import 'package:website/features/booking/presentations/date_header_widget.dart';
 import 'package:website/features/booking/presentations/monthly_calendar_widget.dart';
 import 'package:website/features/booking/presentations/weekly_calendar_widget.dart';
@@ -29,7 +34,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Title
+            Gap(50),
+
             Center(
               child: Text(
                 'Prayer Event Calendar',
@@ -42,36 +48,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
             ),
             const SizedBox(height: 10),
             // Calendar fills remaining space
-            Expanded(
-              child: GlassmorphicContainer(
-                width: double.infinity,
-                height: double.infinity,
-                borderRadius: 20,
-                linearGradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpac(0.2),
-                    Colors.white.withOpac(0.1),
-                  ],
-                  stops: const [0.1, 1],
-                ),
-                border: 2,
-                blur: 15,
-                borderGradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpac(0.5),
-                    Colors.white.withOpac(0.5),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: MonthlyCalendarComponent(),
-                ),
-              ),
-            ),
+            _MonthlyCalendarWidget(aspectRatio: 1),
+            Gap(15),
+            _CalendarDisplaySection(viewMode: CalendarView.timelineDay),
+            Gap(50),
           ],
         ),
       ],
@@ -79,7 +59,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   }
 
   // ✅ 2. Updated Desktop Layout
-  Widget _buildDesktopLayout(BuildContext context, DateTime selectedDate) {
+  Widget _buildDesktopLayout(BuildContext context) {
     return Stack(
       children: [
         Column(
@@ -101,9 +81,9 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               child: Row(
                 children: [
                   // --- LEFT SIDEBAR (Monthly Calendar) ---
-                  _CalendarToolSection(selectedDate),
+                  _DesktopCalendarToolSection(),
                   const Gap(15), // Spacing between panels
-                  _CalendarDisplaySection(),
+                  _CalendarDisplaySection(viewMode: CalendarView.week),
                 ],
               ),
             ),
@@ -113,7 +93,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     );
   }
 
-  Expanded _CalendarDisplaySection() {
+  Expanded _CalendarDisplaySection({required CalendarView viewMode}) {
     return Expanded(
       child: GlassmorphicContainer(
         width: double.infinity,
@@ -134,34 +114,45 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: WeeklyCalendarComponent(),
+          child: WeeklyCalendarComponent(view: viewMode),
         ),
       ),
     );
   }
 
-  SizedBox _CalendarToolSection(DateTime selectedDate) {
+  SizedBox _DesktopCalendarToolSection() {
+    final user = ref.read(userProvider).value;
+    bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
+
     return SizedBox(
       width: 350,
       height: double.infinity,
       child: Column(
         children: [
-          DateHeaderWidget(selectedDate: selectedDate),
-          Gap(10),
-          AspectRatio(aspectRatio: 0.8, child: MonthlyCalendarComponent()),
+          _MonthlyCalendarWidget(aspectRatio: 0.8),
+
           Spacer(),
-          OutlinedButton(
-            onPressed: () {
-              context.go('/booking/create');
-            },
-            child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(
-                horizontal: 10,
-                vertical: 5,
-              ),
-              child: Text(
-                "Create Prayer Watch",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
+          Hero(
+            tag: "booking_fab", // Same tag as FAB
+
+            child: OutlinedButton(
+              onPressed: () {
+                if (user?.currentRole(ref) == UserRole.intercessor ||
+                    user?.currentRole(ref) == UserRole.observer ||
+                    isDesktop) {
+                  ref.read(bookingControllerProvider.notifier).clearState();
+                  context.go('/booking/create');
+                }
+              },
+              child: Padding(
+                padding: EdgeInsetsGeometry.symmetric(
+                  horizontal: 10,
+                  vertical: 10,
+                ),
+                child: Text(
+                  "Create Prayer Watch",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
+                ),
               ),
             ),
           ),
@@ -172,11 +163,42 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedDate = ref.watch(calendarDateNotifierProvider);
+    final user = ref.read(userProvider).value;
 
     ref.watch(calendarDateNotifierProvider);
+    bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
+    bool isMobile = ResponsiveBreakpoints.of(context).smallerThan(TABLET);
 
     return Scaffold(
+      floatingActionButton:
+          (user?.currentRole(ref) == UserRole.intercessor ||
+              user?.currentRole(ref) == UserRole.observer ||
+              isDesktop)
+          ? null
+          : SizedBox(
+              width: isMobile ? 50 : 80, // ✅ 1. Set your desired WIDTH here
+              height: isMobile ? 50 : 80, // ✅ 2. Set your desired HEIGHT here
+              child: GestureDetector(
+                onTap: () {
+                  ref.read(bookingControllerProvider.notifier).clearState();
+                  context.go('/booking/create');
+                },
+                // ✅ 3. Your GlassContainer fills the SizedBox
+                child: GlassContainer(
+                  width: double.infinity,
+                  height: double.infinity,
+                  blur: 10,
+
+                  child: Center(
+                    child: Icon(
+                      Icons.add,
+                      color: context.colors.secondary,
+                      size: 35,
+                    ),
+                  ),
+                ),
+              ),
+            ),
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
@@ -195,14 +217,34 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               bottom: true,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                child: ResponsiveBreakpoints.of(context).largerThan(TABLET)
-                    ? _buildDesktopLayout(context, selectedDate)
+                child: isDesktop
+                    ? _buildDesktopLayout(context)
                     : _buildMobileLayout(context),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _MonthlyCalendarWidget extends ConsumerWidget {
+  const _MonthlyCalendarWidget({required this.aspectRatio, super.key});
+  final double aspectRatio;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedDate = ref.watch(calendarDateNotifierProvider);
+
+    return Column(
+      children: [
+        DateHeaderWidget(selectedDate: selectedDate),
+        Gap(10),
+        AspectRatio(
+          aspectRatio: aspectRatio,
+          child: MonthlyCalendarComponent(),
+        ),
+      ],
     );
   }
 }

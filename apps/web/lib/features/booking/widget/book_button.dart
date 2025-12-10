@@ -81,9 +81,13 @@ class _BookButtonState extends ConsumerState<BookButton> {
             );
           }
         },
-        child: Text(
-          style: TextStyle(fontSize: 24),
-          widget.isUpdating ? 'Update Prayer Watch' : 'Create Prayer Watch',
+        child: Padding(
+          padding: EdgeInsetsGeometry.symmetric(horizontal: 10, vertical: 15),
+
+          child: Text(
+            style: TextStyle(fontSize: 24),
+            widget.isUpdating ? 'Update Prayer Watch' : 'Create Prayer Watch',
+          ),
         ),
       ),
     );

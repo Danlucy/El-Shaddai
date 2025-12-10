@@ -14,7 +14,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
         (k, e) => MapEntry(k, $enumDecode(_$UserRoleEnumMap, e)),
       ) ??
       const {},
-  createdAt: const TimestampConverter().fromJson(json['createdAt']),
+  createdAt: const TimestampConverter().fromJson(json['createdAt'] as Object),
   lastName: json['lastName'] as String?,
   image:
       (json['image'] as List<dynamic>?)

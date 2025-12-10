@@ -16,12 +16,12 @@ part 'profile_controller.g.dart';
 class ProfileController extends _$ProfileController {
   @override
   Stream<Map<String, dynamic>> build(String? uid) async* {
-    final user = ref.watch(userProvider);
+    final user = ref.watch(userProvider).value;
     if (user == null) yield {};
 
     final userRef = FirebaseFirestore.instance
         .collection(FirebaseConstants.usersCollection)
-        .doc(uid ?? user.value?.uid);
+        .doc(uid ?? user?.uid);
 
     yield* userRef.snapshots().map((snapshot) => snapshot.data() ?? {});
   }
@@ -29,19 +29,19 @@ class ProfileController extends _$ProfileController {
   /// ✅ **Get list of nullable fields in the user model**
   /// ✅ **Update Firestore Field**
   Future<void> updateUserField(String fieldName, dynamic newValue) async {
-    final user = ref.read(userProvider);
+    final user = ref.read(userProvider).value;
     if (user == null) return;
 
     final userRef = FirebaseFirestore.instance
         .collection(FirebaseConstants.usersCollection)
-        .doc(uid ?? user.value?.uid);
+        .doc(uid ?? user.uid);
 
-    await userRef.update({fieldName: newValue});
+    await userRef.set({fieldName: newValue}, SetOptions(merge: true));
   }
 
   /// ✅ **Pick, Compress & Save Image as Base64 in Firestore**
   Future<Uint8List?> pickAndSaveImage() async {
-    final user = ref.read(userProvider);
+    final user = ref.read(userProvider).value;
     if (user == null) return null;
 
     final ImagePicker picker = ImagePicker();

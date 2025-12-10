@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:website/core/widgets/loader.dart';
 import 'package:website/features/booking/controller/data_source.dart';
@@ -11,8 +12,8 @@ import 'package:website/features/booking/controller/data_source.dart';
 import '../provider/booking_provider.dart';
 
 class WeeklyCalendarComponent extends ConsumerStatefulWidget {
-  const WeeklyCalendarComponent({super.key});
-
+  const WeeklyCalendarComponent({required this.view, super.key});
+  final CalendarView view;
   @override
   ConsumerState<WeeklyCalendarComponent> createState() =>
       _WebCalendarComponentState();
@@ -72,6 +73,7 @@ class _WebCalendarComponentState
   Widget build(BuildContext context) {
     // 1. Watch for UI rebuilds
     final selectedDate = ref.watch(calendarDateNotifierProvider);
+    bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
 
     // 2. Listen for logic updates (The Link)
     ref.listen(calendarDateNotifierProvider, (previous, next) {
@@ -100,7 +102,7 @@ class _WebCalendarComponentState
                       borderRadius: BorderRadius.circular(12),
                       child: SfCalendar(
                         headerHeight: 0,
-                        view: CalendarView.week,
+                        view: widget.view,
                         controller: _calendarController,
                         dataSource: BookingDataSource(data),
                         initialSelectedDate: selectedDate,
@@ -108,18 +110,20 @@ class _WebCalendarComponentState
 
                         showDatePickerButton: true,
                         showNavigationArrow: true,
-
+                        viewHeaderHeight: isDesktop ? 80 : 0,
                         timeSlotViewSettings: TimeSlotViewSettings(
                           timeTextStyle: TextStyle(
-                            fontSize: 12,
+                            fontSize: isDesktop ? 14 : 18,
                             color: context.colors.secondary.withOpac(0.7),
                           ),
                           timeFormat: 'h a',
+                          timelineAppointmentHeight: double.infinity,
                           dayFormat: 'EEE',
                           dateFormat: 'd',
+                          timeIntervalWidth: isDesktop ? 60 : 80,
                           startHour: 0,
                           endHour: 24,
-                          numberOfDaysInView: 7,
+                          numberOfDaysInView: isDesktop ? 7 : 1,
                         ),
 
                         appointmentBuilder: (context, details) {

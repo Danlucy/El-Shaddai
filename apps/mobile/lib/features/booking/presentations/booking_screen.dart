@@ -46,7 +46,7 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
     ref.watch(bookingControllerProvider);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final textScaleFactor = TextScaleFactor.scaleFactor(textScale);
-    final user = ref.read(userProvider);
+    final user = ref.read(userProvider).value;
     // Determine flex proportions based on TextScaleFactor
     int monthlyFlex = 4; // Default: Equal space
     int dailyFlex = 5; // Default: Equal space
@@ -62,8 +62,8 @@ class _EventsScreenState extends ConsumerState<BookingScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButton:
-          (user.value?.currentRole(ref) == UserRole.intercessor ||
-              user.value?.currentRole(ref) == UserRole.observer)
+          (user?.currentRole(ref) == UserRole.intercessor ||
+              user?.currentRole(ref) == UserRole.observer)
           ? null
           : FloatingActionButton(
               heroTag: "booking_fab", // Unique hero tag

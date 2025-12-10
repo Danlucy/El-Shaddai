@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:util/util.dart';
 
 import '../controller/booking_controller.dart';
@@ -180,13 +181,20 @@ class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
                   ),
                 );
               } else {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: context.colors.tertiaryContainer,
+                // WRAPPED WITH SHIMMER
+                return Shimmer.fromColors(
+                  baseColor: context.colors.tertiaryContainer.withOpac(0.6),
+                  highlightColor: context.colors.tertiaryContainer.withOpac(
+                    0.3,
                   ),
-                  width: 300,
-                  height: 250,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: context.colors.tertiaryContainer.withOpac(0.6),
+                    ),
+                    width: 300,
+                    height: 250,
+                  ),
                 );
               }
             },

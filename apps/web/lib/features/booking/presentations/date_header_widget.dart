@@ -31,15 +31,7 @@ class DateHeaderWidget extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: GlassmorphicContainer(
-        height: ResponsiveValue(
-          context,
-          defaultValue: 50,
-          conditionalValues: [
-            Condition.smallerThan(name: MOBILE, value: 40),
-            Condition.between(start: 450, end: 800, value: 50),
-            Condition.largerThan(name: TABLET, value: 60),
-          ],
-        ).value.toDouble(),
+        height: 60,
         width: double.infinity,
         border: 1,
         blur: 5,

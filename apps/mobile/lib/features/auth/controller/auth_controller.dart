@@ -42,7 +42,6 @@ final authStateChangeProvider = StreamProvider((ref) {
 // Updated to extend AsyncNotifier instead of StateNotifier
 class AuthController extends AsyncNotifier<void> {
   late AuthRepository _authRepository;
-  final currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Future<void> build() async {
@@ -163,15 +162,20 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   void _initAndUpdateFCMToken(String uid) async {
+    // Listen for Token Refresh
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+      // ✅ Use the 'uid' passed into this function!
       ref
           .read(profileControllerProvider(uid).notifier)
           .updateUserField('fcmToken', newToken);
     });
+
+    // Get Initial Token
     final initialToken = await FirebaseMessaging.instance.getToken();
     if (initialToken != null) {
+      // ✅ Use the 'uid' passed into this function!
       ref
-          .read(profileControllerProvider(currentUser?.uid).notifier)
+          .read(profileControllerProvider(uid).notifier)
           .updateUserField('fcmToken', initialToken);
     }
   }

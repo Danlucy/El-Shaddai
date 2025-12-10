@@ -73,7 +73,7 @@ class AuthRepository {
         uid: userCredential.user!.uid,
         roles: {},
       );
-      await docRef.set(userModel.toJson());
+      await docRef.set(userModel.toJson(), SetOptions(merge: true));
       return userModel;
     } else {
       // If it exists, parse and return the existing data.
@@ -102,11 +102,19 @@ class AuthRepository {
   // SIMPLIFIED Google sign-in method
   FutureEither<UserModel> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount account = await _googleSignIn.authenticate(
+      final GoogleSignInAccount? account = await _googleSignIn.authenticate(
         scopeHint: const ['email', 'profile'],
       );
 
-      final idToken = account.authentication.idToken;
+      // 1. Check if user cancelled
+      if (account == null) return left(Failure('Google sign-in cancelled'));
+
+      // 2. Await the authentication
+      final googleAuth = await account.authentication;
+
+      // 3. NOW get the token
+      final idToken = googleAuth.idToken;
+
       if (idToken == null) {
         return left(Failure('Google authentication failed: missing ID token.'));
       }

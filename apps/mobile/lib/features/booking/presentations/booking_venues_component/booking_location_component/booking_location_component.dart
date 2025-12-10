@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+// Add shimmer import
+import 'package:shimmer/shimmer.dart';
 import 'package:util/util.dart';
 
 import '../../../controller/booking_controller.dart';
@@ -180,14 +182,28 @@ class _GoogleMapComponentState extends ConsumerState<GoogleMapComponent> {
                   ),
                 );
               } else {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: context.colors.tertiaryContainer,
+                // ------------------------------------------------------
+                // WRAPPED THE PLACEHOLDER CONTAINER WITH SHIMMER
+                // ------------------------------------------------------
+                return Shimmer.fromColors(
+                  // Use the solid tertiaryContainer color as base
+                  baseColor: context.colors.tertiaryContainer,
+                  // Use a slightly transparent version for the highlight to create the shine effect.
+                  // Using standard withOpacity for safety, adjust opacity as needed.
+                  highlightColor: context.colors.tertiaryContainer.withOpacity(
+                    0.5,
                   ),
-                  width: 300,
-                  height: 250,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      // The color here defines the shape mask for the shimmer
+                      color: context.colors.tertiaryContainer,
+                    ),
+                    width: 300,
+                    height: 250,
+                  ),
                 );
+                // ------------------------------------------------------
               }
             },
           ),

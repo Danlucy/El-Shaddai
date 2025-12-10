@@ -107,6 +107,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
   Widget build(BuildContext context) {
     // 1. WATCH for UI Rebuilds
     final selectedDate = ref.watch(calendarDateNotifierProvider);
+    bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
 
     // 2. LISTEN for Logic Updates
     ref.listen(calendarDateNotifierProvider, (previous, next) {
@@ -115,15 +116,9 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
       }
     });
 
-    final bool isLargeText = ResponsiveValue(
+    final bool isLargeText = ResponsiveBreakpoints.of(
       context,
-      defaultValue: false,
-      conditionalValues: [
-        Condition.smallerThan(name: MOBILE, value: false),
-        Condition.between(start: 450, end: 800, value: true),
-        Condition.largerThan(name: TABLET, value: true),
-      ],
-    ).value;
+    ).largerOrEqualTo(TABLET);
     return AnimatedBuilder(
       animation: _gradientAnimation,
       builder: (context, child) {
@@ -146,6 +141,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: SfCalendar(
+                            backgroundColor: Colors.transparent,
                             view: CalendarView.month,
                             controller: _calendarController,
                             dataSource: BookingDataSource(data),
@@ -171,7 +167,10 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                               ],
                             ).value.toDouble(),
 
-                            viewNavigationMode: ViewNavigationMode.none,
+                            viewNavigationMode: isDesktop
+                                ? ViewNavigationMode.none
+                                : ViewNavigationMode.snap,
+                            showDatePickerButton: true,
                             showNavigationArrow: true,
 
                             monthViewSettings: const MonthViewSettings(

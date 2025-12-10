@@ -150,15 +150,15 @@ class _TimePickerLabel extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: Colors.transparent,
           border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-            width: 1.5,
+            color: Theme.of(context).colorScheme.outline.withOpac(0.5),
+            width: 2,
           ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpac(0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

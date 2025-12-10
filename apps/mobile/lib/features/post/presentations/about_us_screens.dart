@@ -28,11 +28,11 @@ class AboutUsScreen extends ConsumerStatefulWidget {
 class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
+    final user = ref.watch(userProvider).value;
     final posts = ref.watch(getCurrentOrgAboutPostsStreamProvider);
 
     return Scaffold(
-      floatingActionButton: user.value?.currentRole(ref) == UserRole.admin
+      floatingActionButton: user?.currentRole(ref) == UserRole.admin
           ? FloatingActionButton(
               backgroundColor: Colors.transparent,
               onPressed: () {
@@ -120,8 +120,7 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
                             ),
                             title: Text(post.title),
                             subtitle: Text(post.content),
-                            trailing:
-                                (user.value?.currentRole(ref) == UserRole.admin)
+                            trailing: (user?.currentRole(ref) == UserRole.admin)
                                 ? IconButton(
                                     icon: const Icon(Icons.delete),
                                     onPressed: () {

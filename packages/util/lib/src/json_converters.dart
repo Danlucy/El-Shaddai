@@ -97,16 +97,29 @@ class LocationDataConverter
   }
 }
 
-class TimestampConverter implements JsonConverter<DateTime, Object?> {
+class TimestampConverter implements JsonConverter<DateTime, Object> {
   const TimestampConverter();
 
   @override
-  DateTime fromJson(Object? json) {
-    if (json is Timestamp) return json.toDate();
-    if (json is String) return DateTime.parse(json);
-    throw ArgumentError('Invalid date format: $json');
+  DateTime fromJson(Object json) {
+
+    // 1. Handle Firestore Timestamp (The correct format)
+    if (json is Timestamp) {
+      return json.toDate();
+    }
+
+    // 2. Handle String (The "Buggy" format causing your crash)
+    if (json is String) {
+      return DateTime.parse(json);
+    }
+
+    return DateTime.now(); // Fallback to prevent crash
   }
 
   @override
-  Object toJson(DateTime object) => object;
+  Object toJson(DateTime date) {
+
+    // Always save as Timestamp to fix the DB data over time
+    return Timestamp.fromDate(date);
+  }
 }

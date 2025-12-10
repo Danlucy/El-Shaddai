@@ -160,6 +160,7 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                         ),
                         const Gap(16),
                         // FIX: Padding for the description container
+                        Text('   The Prayer Altar Focus on'),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Container(
@@ -456,15 +457,12 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
               await participationFunction.addParticipant();
             }
           } catch (e) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+            showFailureSnackBar(context, e.toString());
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("User unavailable, check Internet connection"),
-            ),
+          showFailureSnackBar(
+            context,
+            'User unavailable, check Internet connection',
           );
         }
       },

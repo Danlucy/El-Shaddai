@@ -33,12 +33,12 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
   @override
   Widget build(BuildContext context) {
     final posts = ref.watch(getCurrentOrgFeedPostsStreamProvider);
-    final user = ref.watch(userProvider);
+    final user = ref.watch(userProvider).value;
 
     return Scaffold(
       drawer: const GeneralDrawer(),
       appBar: AppBar(title: const Text('Watch Leaders')),
-      floatingActionButton: user.value?.currentRole(ref) == UserRole.admin
+      floatingActionButton: user?.currentRole(ref) == UserRole.admin
           ? FloatingActionButton(
               backgroundColor: Colors.transparent,
               onPressed: () {
@@ -93,8 +93,7 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
                                     'EEE, MMM d, yyyy ',
                                   ).format(post.createdAt),
                                 ),
-                                if (user.value?.currentRole(ref) ==
-                                    UserRole.admin)
+                                if (user?.currentRole(ref) == UserRole.admin)
                                   IconButton(
                                     onPressed: () {
                                       showDialog(

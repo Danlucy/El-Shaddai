@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:models/models.dart';
 import 'package:website/features/booking/presentations/booking_component.dart';
+import 'package:website/features/booking/presentations/booking_details_screen.dart';
 import 'package:website/features/booking/presentations/booking_list_screen.dart';
 import 'package:website/features/booking/presentations/booking_screen.dart';
 import 'package:website/features/home/presenations/home_screen.dart';
@@ -30,18 +31,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
           // Booking tab
+          // ... inside your Booking ShellBranch
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/booking',
                 builder: (context, state) => BookingScreen(),
                 routes: [
-                  // 1. CREATE NEW: Matches /booking/create
+                  // ---------------------------------------------------------
+                  // 1. CREATE & EDIT ROUTES (Must come BEFORE :id)
+                  // ---------------------------------------------------------
                   GoRoute(
-                    path: 'create',
+                    path: 'create', // URL: /booking/create
                     pageBuilder: (context, state) {
                       return CustomTransitionPage(
                         key: state.pageKey,
+                        // No ID passed = Create Mode
                         child: const BookingDialogPage(extraModel: null),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
@@ -50,25 +55,28 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                                 child: child,
                               );
                             },
-                        opaque: false, // Allows BookingScreen to show behind
+                        opaque: false,
                         barrierDismissible: true,
-                        barrierColor: Colors.black54, // Dark overlay color
-                        barrierLabel: 'Dismiss',
+                        barrierColor: Colors.black54,
                         transitionDuration: const Duration(milliseconds: 200),
                       );
                     },
                     routes: [
-                      // 2. EDIT EXISTING: Matches /booking/create/:id
+                      // Sub-route for EDITING: matches /booking/create/:id
                       GoRoute(
-                        path: ':id',
+                        path:
+                            ':actionId', // Rename param to avoid conflict with detail's :id
                         pageBuilder: (context, state) {
-                          final String id = state.pathParameters['id']!;
+                          final String id = state.pathParameters['actionId']!;
                           final BookingModel? extra =
                               state.extra as BookingModel?;
 
                           return CustomTransitionPage(
                             key: state.pageKey,
-                            child: BookingDialogPage(extraModel: extra),
+                            // ID passed = Edit Mode
+                            child: BookingDialogPage(
+                              extraModel: extra,
+                            ), // You might want to pass 'id' here too if fetching
                             transitionsBuilder:
                                 (
                                   context,
@@ -81,11 +89,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                                     child: child,
                                   );
                                 },
-                            opaque:
-                                false, // Allows BookingScreen to show behind
+                            opaque: false,
                             barrierDismissible: true,
                             barrierColor: Colors.black54,
-                            barrierLabel: 'Dismiss',
                             transitionDuration: const Duration(
                               milliseconds: 200,
                             ),
@@ -93,6 +99,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                         },
                       ),
                     ],
+                  ),
+
+                  // ---------------------------------------------------------
+                  // 2. DETAIL VIEW ROUTE (Must come AFTER create)
+                  // ---------------------------------------------------------
+                  GoRoute(
+                    path: ':id', // URL: /booking/123
+                    builder: (context, state) {
+                      final String bookingId = state.pathParameters['id']!;
+                      return BookingDetailsScreen(bookingId: bookingId);
+                    },
                   ),
                 ],
               ),

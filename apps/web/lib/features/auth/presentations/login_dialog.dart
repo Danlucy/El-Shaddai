@@ -15,7 +15,7 @@ class GlassLoginDialog extends ConsumerStatefulWidget {
 class _GlassLoginDialogState extends ConsumerState<GlassLoginDialog> {
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
+    final user = ref.watch(userProvider).value;
 
     return Dialog(
       backgroundColor: Colors.transparent,

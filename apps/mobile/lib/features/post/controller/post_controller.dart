@@ -77,14 +77,14 @@ class PostController extends _$PostController {
 
   void addPost({required PostType postType}) {
     try {
-      final user = ref.read(userProvider);
+      final user = ref.read(userProvider).value;
       if (state.title != null && state.description != null) {
         final post = PostModel(
           title: state.title!,
           content: state.description!,
           image: state.image,
           id: FirebaseFirestore.instance.collection('dog').doc().id,
-          userId: user.value!.uid,
+          userId: user!.uid,
           createdAt: DateTime.now(),
         );
         ref

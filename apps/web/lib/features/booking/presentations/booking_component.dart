@@ -26,63 +26,70 @@ class BookingDialogPage extends ConsumerWidget {
 
     // 1. DESKTOP: Render as a Dialog
     if (isDesktop) {
-      return Center(
-        child: Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: GlassmorphicContainer(
-            width: double.infinity,
-            height: double.infinity,
-            borderRadius: 20,
-            blur: 4,
-            border: 2,
-            linearGradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Theme.of(context).colorScheme.onSurface.withOpac(0.1),
-                Theme.of(context).colorScheme.onSurface.withOpac(0.05),
-              ],
-              stops: const [0.1, 1],
-            ),
-            borderGradient: LinearGradient(
-              colors: [Colors.white.withOpac(0.5), Colors.white.withOpac(0.5)],
-            ),
-            // Tighter constraints for a cleaner look on large screens
-            constraints: const BoxConstraints(maxWidth: 900, maxHeight: 950),
-            child: Padding(
-              padding: EdgeInsetsGeometry.all(2),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
+      return Hero(
+        tag: "booking_fab", // Same tag as FAB
 
-                child: Column(
-                  children: [
-                    // Header with Close Button
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            booking == null
-                                ? 'Book Prayer Time'
-                                : 'Edit Prayer Time',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () => context.pop(),
-                          ),
-                        ],
+        child: Center(
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.all(24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: GlassmorphicContainer(
+              width: double.infinity,
+              height: double.infinity,
+              borderRadius: 20,
+              blur: 4,
+              border: 2,
+              linearGradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Theme.of(context).colorScheme.onSurface.withOpac(0.1),
+                  Theme.of(context).colorScheme.onSurface.withOpac(0.05),
+                ],
+                stops: const [0.1, 1],
+              ),
+              borderGradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpac(0.5),
+                  Colors.white.withOpac(0.5),
+                ],
+              ),
+              // Tighter constraints for a cleaner look on large screens
+              constraints: const BoxConstraints(maxWidth: 900, maxHeight: 950),
+              child: Padding(
+                padding: EdgeInsetsGeometry.all(2),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+
+                  child: Column(
+                    children: [
+                      // Header with Close Button
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              booking == null
+                                  ? 'Book Prayer Time'
+                                  : 'Edit Prayer Time',
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () => context.pop(),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    // The Form Content
-                    Expanded(child: BookingFormWidget(bookingModel: booking)),
-                  ],
+                      // The Form Content
+                      Expanded(child: BookingFormWidget(bookingModel: booking)),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -137,11 +144,6 @@ class _BookingFormWidgetState extends ConsumerState<BookingFormWidget>
     );
   }
 
-  // ===========================================================================
-  // LAYOUT STRATEGIES
-  // ===========================================================================
-
-  /// Layout for Mobile: Everything in a single vertical column
   Widget _buildMobileLayout() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

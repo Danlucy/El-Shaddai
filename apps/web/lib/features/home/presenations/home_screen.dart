@@ -8,7 +8,6 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:website/core/widgets/animated_background.dart';
 import 'package:website/core/widgets/footer_widget.dart';
 import 'package:website/core/widgets/glass_button.dart';
-import 'package:website/core/widgets/organization_drop_down_button.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -107,21 +106,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         Gap(50),
 
-        GradientAnimationText(
-          duration: const Duration(seconds: 5),
-          text: Text(
-            'OR',
-            style: const TextStyle(fontFamily: 'FunFont', fontSize: 150),
-          ),
-          colors: [
-            context.colors.primary,
-            context.colors.primary,
-            context.colors.primary,
-            context.colors.secondary,
-          ],
-        ),
         Text(
-          'Download Our App to Join Us',
+          'Download the App to Join Us',
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
         ),
         Gap(20),
@@ -175,13 +161,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-        Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Text('Select Prayer Alter', style: TextStyle(fontSize: 20)),
-          ),
-        ),
-        Center(child: OrganizationSelectionDropdown()),
+
         Gap(30),
         GlassmorphicButton(
           text: '247 Prayer Watch List',
@@ -258,7 +238,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           TextSpan(
-            text: 'Prayer Altar\n\n',
+            text: 'Prayer Altar\n',
             style: TextStyle(
               fontSize: ResponsiveValue<double>(
                 context,
@@ -301,21 +281,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               fontWeight: FontWeight.bold,
               color: context.colors.secondary,
               letterSpacing: 0.5,
-            ),
-          ),
-          TextSpan(
-            text:
-                '\n\nJoin us in our prayers with the \n ${isMobile ? '247 Prayer Watch List' : ' '}',
-            style: TextStyle(
-              fontSize: ResponsiveValue<double>(
-                context,
-                defaultValue: 16.0,
-                conditionalValues: [
-                  Condition.largerThan(name: TABLET, value: 18.0),
-                ],
-              ).value,
-              color: context.colors.secondary.withOpac(0.8),
-              fontWeight: FontWeight.w400,
             ),
           ),
         ],

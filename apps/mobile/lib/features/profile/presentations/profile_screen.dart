@@ -50,7 +50,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     // Renamed context1 to context for consistency
-    final user = ref.watch(userProvider);
+    final user = ref.watch(userProvider).value;
     final userDataState = ref.watch(
       profileControllerProvider(widget.userModel?.uid),
     );
@@ -84,8 +84,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ProfileImage(
                         uid: widget.userModel?.uid,
                         ableToEdit:
-                            user.value?.uid == widget.userModel?.uid ||
-                            user.value?.currentRole(ref) == UserRole.admin,
+                            user?.uid == widget.userModel?.uid ||
+                            user?.currentRole(ref) == UserRole.admin,
                       ),
                       Text(
                         widget.userModel?.name ?? '',
@@ -99,6 +99,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         child: RoleDisplayWidget(
                           role: widget.userModel?.currentRole(ref),
                         ),
+                      ),
+                      Text(
+                        'Changes Made are Autosaved',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
 
                       /// ✅ **Pass `userData` to all fields after loading**
@@ -135,16 +139,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   });
                                 },
                                 ableToEdit:
-                                    user.value?.uid == widget.userModel?.uid ||
-                                    user.value?.currentRole(ref) ==
-                                        UserRole.admin,
+                                    user?.uid == widget.userModel?.uid ||
+                                    user?.currentRole(ref) == UserRole.admin,
                                 userData: userData,
                               ),
                             ),
                           ],
                         );
                       }),
-                      if (user.value?.uid == widget.userModel!.uid)
+                      if (user?.uid == widget.userModel!.uid)
                         OutlinedButton(
                           onPressed: () {
                             showDialog(
@@ -171,7 +174,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                                 authControllerProvider.notifier,
                                               )
                                               .deleteUser(
-                                                user.value!.uid,
+                                                user!.uid,
                                                 context,
                                               ); // Pass screen context
                                           GoRouter.of(
