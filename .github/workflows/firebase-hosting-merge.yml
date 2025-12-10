@@ -1,4 +1,3 @@
-# Deploy to Firebase Hosting on merge to main
 name: Deploy to Firebase Hosting on merge
 on:
   push:
@@ -23,7 +22,15 @@ jobs:
       # Install Flutter
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.1' # set to your Flutter version
+          flutter-version: '3.35.1'
+
+      # ✅ ADDED: Create constants.dart securely before building
+      - name: Create constants.dart from Secrets
+        run: |
+          mkdir -p packages/constants/lib/src/
+          cat << 'EOF' > packages/constants/lib/src/constants.dart
+          ${{ secrets.CONSTANT_FILE }}
+          EOF
 
       # Build Flutter web app
       - run: cd apps/web && flutter build web --release --target=lib/main.dart
