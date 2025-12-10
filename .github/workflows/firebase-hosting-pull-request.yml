@@ -27,12 +27,16 @@ jobs:
         with:
           flutter-version: '3.35.1'
 
-      # ✅ ADDED: Create constants.dart securely before building
+      # Get Flutter dependencies
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      # Create constants.dart securely from Secrets
       - name: Create constants.dart from Secrets
         run: |
           mkdir -p packages/constants/lib/src/
           cat << 'EOF' > packages/constants/lib/src/constants.dart
-          ${{ secrets.CONSTANT_FILE }}
+          ${{ secrets.CONSTANTS_FILE }}
           EOF
 
       # Build Flutter web app

@@ -1,3 +1,4 @@
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -53,15 +54,15 @@ class BookingDialogPage extends ConsumerWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+                    Theme.of(context).colorScheme.onSurface.withOpac(0.1),
+                    Theme.of(context).colorScheme.onSurface.withOpac(0.05),
                   ],
                   stops: const [0.1, 1],
                 ),
                 borderGradient: LinearGradient(
                   colors: [
-                    Colors.white.withOpacity(0.5),
-                    Colors.white.withOpacity(0.5),
+                    Colors.white.withOpac(0.5),
+                    Colors.white.withOpac(0.5),
                   ],
                 ),
                 child: Padding(
