@@ -1,4 +1,3 @@
-import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -24,71 +23,85 @@ class BookingDialogPage extends ConsumerWidget {
     final BookingModel? booking = extraModel;
     final bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
 
+    // -------------------------------------------------------------------------
     // 1. DESKTOP: Render as a Dialog
+    // -------------------------------------------------------------------------
     if (isDesktop) {
-      return Hero(
-        tag: "booking_fab", // Same tag as FAB
-
-        child: Center(
-          child: Dialog(
-            backgroundColor: Colors.transparent,
-            insetPadding: const EdgeInsets.all(24),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: GlassmorphicContainer(
-              width: double.infinity,
-              height: double.infinity,
-              borderRadius: 20,
-              blur: 4,
-              border: 2,
-              linearGradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Theme.of(context).colorScheme.onSurface.withOpac(0.1),
-                  Theme.of(context).colorScheme.onSurface.withOpac(0.05),
-                ],
-                stops: const [0.1, 1],
-              ),
-              borderGradient: LinearGradient(
-                colors: [
-                  Colors.white.withOpac(0.5),
-                  Colors.white.withOpac(0.5),
-                ],
-              ),
-              // Tighter constraints for a cleaner look on large screens
+      return Center(
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          // ✅ FIX: Hero is now INSIDE the Dialog, wrapping the specific visible container
+          child: Hero(
+            tag: "booking_fab",
+            createRectTween: (begin, end) {
+              // Optional: Makes the flight path curved and smoother
+              return MaterialRectCenterArcTween(begin: begin, end: end);
+            },
+            child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 900, maxHeight: 950),
-              child: Padding(
-                padding: EdgeInsetsGeometry.all(2),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(18),
-
-                  child: Column(
-                    children: [
-                      // Header with Close Button
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              booking == null
-                                  ? 'Book Prayer Time'
-                                  : 'Edit Prayer Time',
-                              style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.close),
-                              onPressed: () => context.pop(),
-                            ),
-                          ],
+              child: GlassmorphicContainer(
+                width: double.infinity, // Fills the ConstrainedBox
+                height: double.infinity,
+                borderRadius: 20,
+                blur: 10,
+                border: 2,
+                linearGradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                    Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+                  ],
+                  stops: const [0.1, 1],
+                ),
+                borderGradient: LinearGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.5),
+                    Colors.white.withOpacity(0.5),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: Column(
+                      children: [
+                        // Header
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Need Material here because Hero transition removes inherited Material styles temporarily
+                              Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  booking == null
+                                      ? 'Book Prayer Time'
+                                      : 'Edit Prayer Time',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () => context.pop(),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      // The Form Content
-                      Expanded(child: BookingFormWidget(bookingModel: booking)),
-                    ],
+                        // Form
+                        Expanded(
+                          child: BookingFormWidget(bookingModel: booking),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -98,26 +111,33 @@ class BookingDialogPage extends ConsumerWidget {
       );
     }
 
+    // -------------------------------------------------------------------------
     // 2. MOBILE: Render as a Fullscreen Scaffold
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: Text(
-          booking == null ? 'Book Prayer Time' : 'Edit Prayer Time',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+    // -------------------------------------------------------------------------
+    return Hero(
+      tag: "booking_fab",
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: AppBar(
+          title: Text(
+            booking == null ? 'Book Prayer Time' : 'Edit Prayer Time',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => context.pop(),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => context.pop(),
-        ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
+        body: SafeArea(child: BookingFormWidget(bookingModel: booking)),
       ),
-      body: SafeArea(child: BookingFormWidget(bookingModel: booking)),
     );
   }
 }
 
+// ... BookingFormWidget and state classes remain the same ...
+// Include the rest of your BookingFormWidget code here (no changes needed there)
 class BookingFormWidget extends ConsumerStatefulWidget {
   final BookingModel? bookingModel;
   const BookingFormWidget({super.key, this.bookingModel});
@@ -138,7 +158,7 @@ class _BookingFormWidgetState extends ConsumerState<BookingFormWidget>
       key: _formKey,
       child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
-        padding: const EdgeInsets.all(24), // Unified padding
+        padding: const EdgeInsets.all(24),
         child: isDesktop ? _buildDesktopLayout() : _buildMobileLayout(),
       ),
     );
@@ -163,19 +183,15 @@ class _BookingFormWidgetState extends ConsumerState<BookingFormWidget>
     );
   }
 
-  /// Layout for Desktop: Horizontal Split for Date/Time, Vertical for the rest
   Widget _buildDesktopLayout() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Horizontal Date & Time Section
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Calendar on the left
             const Expanded(flex: 3, child: BookingDateRangePickerComponent()),
             const SizedBox(width: 24),
-            // Time & Recurrence on the right
             Expanded(
               flex: 2,
               child: Column(
@@ -190,22 +206,14 @@ class _BookingFormWidgetState extends ConsumerState<BookingFormWidget>
         ),
         const SizedBox(height: 24),
         const SizedBox(height: 24),
-
-        // Form Fields (Theme, Points, Venue)
         _buildTextFieldsSection(),
         const SizedBox(height: 16),
         _buildVenueSection(),
         const SizedBox(height: 24),
-
-        // Button aligned to right on desktop for better UX
         Align(alignment: Alignment.center, child: _buildSubmitButton()),
       ],
     );
   }
-
-  // ===========================================================================
-  // REUSABLE SECTIONS
-  // ===========================================================================
 
   Widget _buildTextFieldsSection() {
     final bookingReader = ref.watch(bookingControllerProvider);
@@ -279,7 +287,6 @@ class _BookingFormWidgetState extends ConsumerState<BookingFormWidget>
   }
 
   Widget _buildRecurrenceSection() {
-    // Only show recurrence if creating a new booking
     return const RecurrenceComponent();
   }
 

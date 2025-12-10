@@ -58,7 +58,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                         opaque: false,
                         barrierDismissible: true,
                         barrierColor: Colors.black54,
-                        transitionDuration: const Duration(milliseconds: 200),
+                        transitionDuration: const Duration(milliseconds: 300),
                       );
                     },
                     routes: [

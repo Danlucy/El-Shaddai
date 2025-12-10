@@ -34,8 +34,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Gap(50),
-
+            const Gap(50),
             Center(
               child: Text(
                 'Prayer Event Calendar',
@@ -47,11 +46,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            // Calendar fills remaining space
-            _MonthlyCalendarWidget(aspectRatio: 1),
-            Gap(15),
+            const _MonthlyCalendarWidget(aspectRatio: 1),
+            const Gap(15),
             _CalendarDisplaySection(viewMode: CalendarView.timelineDay),
-            Gap(50),
+            const Gap(50),
           ],
         ),
       ],
@@ -129,12 +127,11 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
       height: double.infinity,
       child: Column(
         children: [
-          _MonthlyCalendarWidget(aspectRatio: 0.8),
-
-          Spacer(),
+          const _MonthlyCalendarWidget(aspectRatio: 0.8),
+          const Spacer(),
+          // ✅ Desktop Source Hero
           Hero(
-            tag: "booking_fab", // Same tag as FAB
-
+            tag: "booking_fab",
             child: OutlinedButton(
               onPressed: () {
                 if (user?.currentRole(ref) == UserRole.intercessor ||
@@ -144,11 +141,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   context.go('/booking/create');
                 }
               },
-              child: Padding(
-                padding: EdgeInsetsGeometry.symmetric(
-                  horizontal: 10,
-                  vertical: 10,
-                ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Text(
                   "Create Prayer Watch",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
@@ -176,24 +170,26 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               isDesktop)
           ? null
           : SizedBox(
-              width: isMobile ? 50 : 80, // ✅ 1. Set your desired WIDTH here
-              height: isMobile ? 50 : 80, // ✅ 2. Set your desired HEIGHT here
+              width: isMobile ? 50 : 80,
+              height: isMobile ? 50 : 80,
               child: GestureDetector(
                 onTap: () {
                   ref.read(bookingControllerProvider.notifier).clearState();
                   context.go('/booking/create');
                 },
-                // ✅ 3. Your GlassContainer fills the SizedBox
-                child: GlassContainer(
-                  width: double.infinity,
-                  height: double.infinity,
-                  blur: 10,
-
-                  child: Center(
-                    child: Icon(
-                      Icons.add,
-                      color: context.colors.secondary,
-                      size: 35,
+                // ✅ ADDED: Mobile Source Hero
+                child: Hero(
+                  tag: "booking_fab",
+                  child: GlassContainer(
+                    width: double.infinity,
+                    height: double.infinity,
+                    blur: 10,
+                    child: Center(
+                      child: Icon(
+                        Icons.add,
+                        color: context.colors.secondary,
+                        size: 35,
+                      ),
                     ),
                   ),
                 ),
@@ -239,10 +235,10 @@ class _MonthlyCalendarWidget extends ConsumerWidget {
     return Column(
       children: [
         DateHeaderWidget(selectedDate: selectedDate),
-        Gap(10),
+        const Gap(10),
         AspectRatio(
           aspectRatio: aspectRatio,
-          child: MonthlyCalendarComponent(),
+          child: const MonthlyCalendarComponent(),
         ),
       ],
     );
