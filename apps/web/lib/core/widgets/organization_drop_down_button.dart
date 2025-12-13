@@ -10,7 +10,7 @@ class OrganizationSelectionDropdown extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GlassmorphicContainer(
-      width: 300,
+      width: 200,
       height: 40,
       borderRadius: 12,
       blur: 10, // The blur intensity

@@ -16,7 +16,7 @@ final userProvider = NotifierProvider<UserNotifier, AsyncValue<UserModel?>>(
 class UserNotifier extends Notifier<AsyncValue<UserModel?>> {
   @override
   AsyncValue<UserModel?> build() {
-    return const AsyncValue.loading(); // instead of null
+    return const AsyncValue.loading();
   }
 
   void setUser(UserModel user) {
@@ -25,6 +25,12 @@ class UserNotifier extends Notifier<AsyncValue<UserModel?>> {
 
   void clearUser() {
     state = const AsyncValue.data(null);
+  }
+
+  // ✅ ADDED: Helper getter to check if logged in
+  bool get isLoggedIn {
+    // Returns true only if we have data and the user model is not null
+    return state.value != null;
   }
 }
 

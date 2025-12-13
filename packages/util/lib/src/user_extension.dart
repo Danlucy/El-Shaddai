@@ -3,8 +3,31 @@ import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 
 extension UserModelX on UserModel {
+
+
+  // ✅ 1. Admin Only
+  bool get onlyAdmin => this == UserRole.admin;
+
+  // ✅ 2. Watchman and Above
+  // Includes: Admin, Watchman
+  bool get isWatchLeaderOrHigher => [UserRole.admin, UserRole.watchman, UserRole.watchLeader].contains(this);
+
+  // ✅ 3. Special: Not Intercessor or Observer
+  // Includes: Admin, Watchman, WatchLeader
+  bool get isWatchmanOrHigher => [UserRole.admin, UserRole.watchman, ].contains(this);
+
+  // ✅ 4. Intercessor and Above (Commonly used for "Write" access vs Read-Only)
+  // Includes: Admin, Watchman, WatchLeader, Intercessor
+  // Excludes: Observer
+  bool get isIntercessorOrHigher =>
+      [UserRole.admin, UserRole.watchman,    UserRole.watchLeader, UserRole.intercessor ].contains(this);
+  // ✅ 5. Explicit "Not Intercessor or Observer" (As requested)
+  bool get isNotIntercessorOrObserver =>
+      this != UserRole.intercessor && this != UserRole.observer;
   UserRole currentRole(WidgetRef ref, {UserRole fallback = UserRole.observer}) {
+    
     final orgAsync = ref.watch(organizationControllerProvider);
+
 
     return orgAsync.when(
       data: (org) {
@@ -13,8 +36,8 @@ extension UserModelX on UserModel {
       loading: () => fallback,
       error: (_, __) => fallback,
     );
-  }
 
+  }
   UserRole getRoleForOrg(
     String orgId, {
     UserRole fallback = UserRole.observer,

@@ -28,6 +28,7 @@ class BookingScreen extends ConsumerStatefulWidget {
 
 class _BookingScreenState extends ConsumerState<BookingScreen> {
   // ✅ 1. Mobile Layout
+
   Widget _buildMobileLayout(BuildContext context) {
     return Stack(
       children: [
@@ -57,7 +58,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   }
 
   // ✅ 2. Updated Desktop Layout
-  Widget _buildDesktopLayout(BuildContext context) {
+  Widget _buildDesktopLayout(BuildContext context, bool canCreate) {
     return Stack(
       children: [
         Column(
@@ -79,7 +80,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               child: Row(
                 children: [
                   // --- LEFT SIDEBAR (Monthly Calendar) ---
-                  _DesktopCalendarToolSection(),
+                  _DesktopCalendarToolSection(canCreate),
                   const Gap(15), // Spacing between panels
                   _CalendarDisplaySection(viewMode: CalendarView.week),
                 ],
@@ -118,7 +119,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     );
   }
 
-  SizedBox _DesktopCalendarToolSection() {
+  SizedBox _DesktopCalendarToolSection(bool canCreate) {
     final user = ref.read(userProvider).value;
     bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
 
@@ -130,26 +131,27 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
           const _MonthlyCalendarWidget(aspectRatio: 0.8),
           const Spacer(),
           // ✅ Desktop Source Hero
-          Hero(
-            tag: "booking_fab",
-            child: OutlinedButton(
-              onPressed: () {
-                if (user?.currentRole(ref) == UserRole.intercessor ||
-                    user?.currentRole(ref) == UserRole.observer ||
-                    isDesktop) {
-                  ref.read(bookingControllerProvider.notifier).clearState();
-                  context.go('/booking/create');
-                }
-              },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Text(
-                  "Create Prayer Watch",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
+          if (canCreate)
+            Hero(
+              tag: "booking_fab",
+              child: OutlinedButton(
+                onPressed: () {
+                  if (user?.currentRole(ref) == UserRole.intercessor ||
+                      user?.currentRole(ref) == UserRole.observer ||
+                      isDesktop) {
+                    ref.read(bookingControllerProvider.notifier).clearState();
+                    context.go('/booking/create');
+                  }
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Text(
+                    "Create Prayer Watch",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -158,16 +160,13 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.read(userProvider).value;
-
+    final canCreate = user?.isWatchLeaderOrHigher ?? false;
     ref.watch(calendarDateNotifierProvider);
     bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
     bool isMobile = ResponsiveBreakpoints.of(context).smallerThan(TABLET);
 
     return Scaffold(
-      floatingActionButton:
-          (user?.currentRole(ref) == UserRole.intercessor ||
-              user?.currentRole(ref) == UserRole.observer ||
-              isDesktop)
+      floatingActionButton: (!canCreate || isDesktop)
           ? null
           : SizedBox(
               width: isMobile ? 50 : 80,
@@ -214,7 +213,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                 child: isDesktop
-                    ? _buildDesktopLayout(context)
+                    ? _buildDesktopLayout(context, canCreate)
                     : _buildMobileLayout(context),
               ),
             ),

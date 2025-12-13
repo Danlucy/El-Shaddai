@@ -8,6 +8,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:website/core/widgets/animated_background.dart';
 import 'package:website/core/widgets/footer_widget.dart';
 import 'package:website/core/widgets/glass_button.dart';
+import 'package:website/core/widgets/organization_drop_down_button.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -103,7 +104,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-
+        Center(
+          child: Column(
+            children: [
+              Text('Select Prayer Alter', style: TextStyle(fontSize: 12)),
+              OrganizationSelectionDropdown(),
+            ],
+          ),
+        ),
         Gap(50),
 
         Text(

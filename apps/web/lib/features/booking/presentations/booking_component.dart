@@ -115,24 +115,21 @@ class BookingDialogPage extends ConsumerWidget {
     // -------------------------------------------------------------------------
     // 2. MOBILE: Render as a Fullscreen Scaffold
     // -------------------------------------------------------------------------
-    return Hero(
-      tag: "booking_fab",
-      child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: AppBar(
-          title: Text(
-            booking == null ? 'Book Prayer Time' : 'Edit Prayer Time',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => context.pop(),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        title: Text(
+          booking == null ? 'Book Prayer Time' : 'Edit Prayer Time',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        body: SafeArea(child: BookingFormWidget(bookingModel: booking)),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => context.pop(),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
+      body: SafeArea(child: BookingFormWidget(bookingModel: booking)),
     );
   }
 }

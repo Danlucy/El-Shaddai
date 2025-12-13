@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
 import 'package:website/core/widgets/glass_button.dart';
-import 'package:website/core/widgets/organization_drop_down_button.dart';
 import 'package:website/features/auth/presentations/login_dialog.dart';
 
 import '../../auth/controller/auth_controller.dart';
@@ -46,6 +45,9 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                 break;
               case '/list':
                 navigationShell.goBranch(2);
+              case '/settings':
+                navigationShell.goBranch(3);
+
                 // This one can use context.go since it's in the same branch
                 break;
             }
@@ -108,6 +110,25 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                 ),
               ),
             ),
+            PopupMenuItem<String>(
+              value: '/settings',
+              child: ListTile(
+                leading: Icon(
+                  Icons.list,
+                  color: currentLocation == '/settings'
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                title: Text(
+                  'Settings',
+                  style: TextStyle(
+                    color: currentLocation == '/settings'
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
         title: Text('Welcome ${userName ?? ''}'),
@@ -137,30 +158,26 @@ class ScaffoldWithNavBar extends ConsumerWidget {
         ),
         // ✅ Right side empty
         actions: [
-          Center(
-            child: Column(
-              children: [
-                Text('Select Prayer Alter', style: TextStyle(fontSize: 12)),
-                OrganizationSelectionDropdown(),
-              ],
+          if (!ref.read(userProvider.notifier).isLoggedIn)
+            Padding(
+              padding: EdgeInsetsGeometry.symmetric(
+                horizontal: 16,
+                vertical: 4,
+              ),
+              child: GlassmorphicButton(
+                constraints: const BoxConstraints(maxWidth: 180),
+                text: 'Log In',
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return GlassLoginDialog();
+                    },
+                  );
+                },
+                icon: Icons.key,
+              ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 4),
-            child: GlassmorphicButton(
-              constraints: const BoxConstraints(maxWidth: 180),
-              text: userName == null ? 'Log In' : 'Log Out',
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return GlassLoginDialog();
-                  },
-                );
-              },
-              icon: Icons.key,
-            ),
-          ),
         ],
       ),
       body: navigationShell,
