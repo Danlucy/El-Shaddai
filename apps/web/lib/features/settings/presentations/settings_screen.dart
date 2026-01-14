@@ -1,8 +1,8 @@
-import 'package:constants/constants.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:glassmorphism/glassmorphism.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:website/core/widgets/animated_background.dart';
 import 'package:website/core/widgets/organization_drop_down_button.dart';
@@ -22,7 +22,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
-    final bool isLoggedIn = ref.read(userProvider.notifier).isLoggedIn;
+
+    // FIX: Use ref.watch(userProvider) instead of ref.read(...)
+    // This ensures the widget rebuilds immediately when login state changes.
+    final user = ref.watch(userProvider); // This gives you User? directly
+    final bool isLoggedIn = user != null;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -33,7 +37,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
       body: Stack(
         children: [
-          // Background
           Positioned.fill(
             child: AnimatedBackground(
               surfaceColor: Theme.of(context).colorScheme.surface,
@@ -41,8 +44,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: const SizedBox.expand(),
             ),
           ),
-
-          // Content
           SafeArea(
             bottom: false,
             child: Center(
@@ -69,8 +70,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   ),
                             ),
                             const Gap(16),
-
-                            // 1. STANDARD TOGGLE EXAMPLE
                             SettingsTile(
                               title: "Select Prayer Alter",
                               subtitle:
@@ -78,32 +77,53 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               icon: Icons.notifications_active_outlined,
                               trailing: OrganizationSelectionDropdown(),
                             ),
-
                             const Gap(16),
 
-                            // 4. CUSTOM WIDGET EXAMPLE (Navigation Arrow)
+                            // Log In/Out Tile
                             SettingsTile(
                               title: "Log In/Out",
                               subtitle: "Log in or out your gmail account",
                               icon: Icons.key,
-                              // ✅ Custom Widget: Simple Icon Button
                               trailing: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   backgroundColor: isLoggedIn
-                                      ? context.colors.errorContainer.withOpac(
-                                          0.3,
-                                        )
+                                      ? Theme.of(context)
+                                            .colorScheme
+                                            .errorContainer
+                                            .withOpacity(0.3)
                                       : null,
+                                  side: BorderSide(
+                                    color: isLoggedIn
+                                        ? Theme.of(context).colorScheme.error
+                                        : Theme.of(context).colorScheme.primary,
+                                  ),
                                 ),
-                                child: Text(isLoggedIn ? 'Log Out' : "Log In"),
                                 onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return const GlassLoginDialog();
-                                    },
-                                  );
+                                  if (isLoggedIn) {
+                                    // Handle Logout directly here if needed, or open dialog
+                                    // ref.read(authControllerProvider.notifier).signOut();
+                                    // For now, keeping your dialog logic:
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          const GlassLoginDialog(),
+                                    );
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          const GlassLoginDialog(),
+                                    );
+                                  }
                                 },
+                                child: Text(
+                                  isLoggedIn ? 'Log Out' : "Log In",
+                                  style: TextStyle(
+                                    color: isLoggedIn
+                                        ? Theme.of(context).colorScheme.error
+                                        : Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -123,16 +143,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
 /// A generic settings tile that acts as a Toggle by default,
 /// but accepts a [trailing] widget to override that behavior.
+
 class SettingsTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final IconData icon;
 
-  // Toggle specific (Optional)
+  // Toggle specific
   final bool? value;
   final ValueChanged<bool>? onChanged;
 
-  // Custom Override (Optional)
+  // Custom Override
   final Widget? trailing;
 
   const SettingsTile({
@@ -147,67 +168,75 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassmorphicContainer(
-      width: double.infinity,
-      height: 90,
-      borderRadius: 16,
-      blur: 15,
-      border: 1,
-      linearGradient: LinearGradient(
-        colors: [
-          Theme.of(context).colorScheme.surface.withOpac(0.12),
-          Theme.of(context).colorScheme.surface.withOpac(0.07),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      borderGradient: LinearGradient(
-        colors: [
-          Colors.white.withOpac(0.5),
-          Colors.white.withOpac(0.3),
-          Colors.white.withOpac(0.2),
-
-          Colors.white.withOpac(0.1),
-        ],
-      ),
-      child: Center(
-        child: ListTile(
-          leading: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpac(0.1),
-              shape: BoxShape.circle,
+    // 1. Use ClipRRect + BackdropFilter to create the glass effect
+    // This allows the container to grow dynamically with content (unlike GlassmorphicContainer)
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          width: double.infinity,
+          // 2. Replicate the gradient styles from your original code
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Colors.white.withOpacity(
+                0.3,
+              ), // Approx average of your border gradient
+              width: 1,
             ),
-            child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.surface.withOpacity(0.12),
+                Theme.of(context).colorScheme.surface.withOpacity(0.07),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-          title: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          subtitle: subtitle != null
-              ? Text(
-                  subtitle!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpac(0.6),
-                  ),
-                )
-              : null,
-
-          // ✅ LOGIC: If 'trailing' exists, use it.
-          // Otherwise, if 'value' is provided, render the Switch.
-          trailing:
-              trailing ??
-              (value != null
-                  ? Switch.adaptive(
-                      value: value!,
-                      activeThumbColor: Theme.of(context).colorScheme.primary,
-                      onChanged: onChanged,
+          child: Padding(
+            // 3. Add vertical padding so multi-line text doesn't touch the edges
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+              ),
+              title: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              subtitle: subtitle != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        subtitle!,
+                        // 4. Remove 'maxLines' and 'overflow' to allow wrapping
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                      ),
                     )
-                  : null),
+                  : null,
+              trailing:
+                  trailing ??
+                  (value != null
+                      ? Switch.adaptive(
+                          value: value!,
+                          activeThumbColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          onChanged: onChanged,
+                        )
+                      : null),
+            ),
+          ),
         ),
       ),
     );

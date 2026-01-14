@@ -50,28 +50,30 @@ class CustomInterceptor extends Interceptor {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? decodedMap = prefs.getString('accessToken');
 
-    if (decodedMap == null) {
-      if (kDebugMode) {
-        print('No access token found');
-      }
-      return super.onRequest(options, handler);
-    }
+    if (decodedMap == null) return handler.next(options);
 
     try {
       Map<String, dynamic> accessTokenData = json.decode(decodedMap);
-      if (DateTime.now().isAfter(DateTime.parse(accessTokenData['duration']))) {
-        if (kDebugMode) {
-          print('Token expired, refreshing...');
-        }
-        await refreshToken(accessTokenData['refreshToken'], options);
+      DateTime expiry = DateTime.parse(accessTokenData['duration']);
+
+      String token = accessTokenData['token'];
+
+      if (DateTime.now().isAfter(expiry)) {
+        // Refresh logic
+        final response = await refreshToken(
+          accessTokenData['refreshToken'],
+          options,
+        );
+        token = response.data['access_token'];
       }
+
+      // Set the token for EVERY request handled by this Dio instance
+      options.headers['Authorization'] = 'Bearer $token';
     } catch (e) {
-      if (kDebugMode) {
-        print('Error parsing access token: $e');
-      }
+      if (kDebugMode) print('Error in interceptor: $e');
     }
 
-    return super.onRequest(options, handler);
+    return handler.next(options);
   }
 
   @override

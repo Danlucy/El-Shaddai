@@ -482,6 +482,12 @@ class _ZoomComponent extends StatelessWidget {
   final AsyncValue<UserModel?> user;
   final WidgetRef ref;
   final BookingModel booking;
+  void joinMeeting() {
+    if (user.value?.currentRole(ref) == UserRole.observer) {
+      return;
+    }
+    launchURL(booking.location.web!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -489,13 +495,7 @@ class _ZoomComponent extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            if (user.value?.currentRole(ref) == UserRole.observer) {
-              return;
-            }
-            launchURL(booking.location.web!);
-            if (booking.password != null) {
-              Clipboard.setData(ClipboardData(text: booking.password!));
-            }
+            joinMeeting();
           },
           child: CircleAvatar(
             backgroundColor: Theme.of(context).colorScheme.primary,
@@ -504,38 +504,46 @@ class _ZoomComponent extends StatelessWidget {
           ),
         ),
         const Gap(5),
+
         GestureDetector(
           onTap: () {
-            Clipboard.setData(
-              ClipboardData(text: booking.location.meetingID()),
-            );
+            user.value?.uid == booking.userId
+                ? Clipboard.setData(
+                    ClipboardData(text: booking.location.meetingID()),
+                  )
+                : joinMeeting();
           },
-          child: Text(booking.location.meetingID(spaced: true)),
+          child: Text(
+            user.value?.uid == booking.userId
+                ? "Click to Copy Zoom ID"
+                : "Click to Join Meeting",
+          ),
         ),
         const Spacer(),
-        IconButton(
-          onPressed: () {
-            if (user.value?.currentRole(ref) == UserRole.observer) {
-              return;
-            }
+        if (user.value?.uid == booking.userId)
+          IconButton(
+            onPressed: () {
+              if (user.value?.currentRole(ref) == UserRole.observer) {
+                return;
+              }
 
-            showDialog(
-              context: context,
-              barrierDismissible: true,
-              builder: (BuildContext dialogContext) {
-                return AlertDialog(
-                  backgroundColor: Colors.transparent,
-                  contentPadding: EdgeInsets.zero,
-                  content: GlassmorphismPasswordDialog(
-                    initialPassword: booking.password,
-                    isDisplay: true,
-                  ),
-                );
-              },
-            );
-          },
-          icon: const Icon(Icons.key),
-        ),
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext dialogContext) {
+                  return AlertDialog(
+                    backgroundColor: Colors.transparent,
+                    contentPadding: EdgeInsets.zero,
+                    content: GlassmorphismPasswordDialog(
+                      initialPassword: booking.password,
+                      isDisplay: true,
+                    ),
+                  );
+                },
+              );
+            },
+            icon: const Icon(Icons.key),
+          ),
       ],
     );
   }

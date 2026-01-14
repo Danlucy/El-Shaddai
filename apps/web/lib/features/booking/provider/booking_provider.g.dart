@@ -57,6 +57,110 @@ final class GetCurrentOrgBookingsStreamProvider
 String _$getCurrentOrgBookingsStreamHash() =>
     r'600bba250611ab0cdfede82804453ec873ef0b59';
 
+@ProviderFor(BookingListSearchQuery)
+const bookingListSearchQueryProvider = BookingListSearchQueryProvider._();
+
+final class BookingListSearchQueryProvider
+    extends $NotifierProvider<BookingListSearchQuery, String> {
+  const BookingListSearchQueryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'bookingListSearchQueryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$bookingListSearchQueryHash();
+
+  @$internal
+  @override
+  BookingListSearchQuery create() => BookingListSearchQuery();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
+  }
+}
+
+String _$bookingListSearchQueryHash() =>
+    r'e0e7e4e623ef8032926bbca57c1a1f1d54b0a411';
+
+abstract class _$BookingListSearchQuery extends $Notifier<String> {
+  String build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<String, String>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String, String>,
+              String,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
+@ProviderFor(filteredBookingLists)
+const filteredBookingListsProvider = FilteredBookingListsProvider._();
+
+final class FilteredBookingListsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<BookingModel>>,
+          AsyncValue<List<BookingModel>>,
+          AsyncValue<List<BookingModel>>
+        >
+    with $Provider<AsyncValue<List<BookingModel>>> {
+  const FilteredBookingListsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'filteredBookingListsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$filteredBookingListsHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<List<BookingModel>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<List<BookingModel>> create(Ref ref) {
+    return filteredBookingLists(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<List<BookingModel>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<List<BookingModel>>>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$filteredBookingListsHash() =>
+    r'091a337469b792f32850be55a4451b1cd3887859';
+
 @ProviderFor(getSingleCurrentOrgBookingStream)
 const getSingleCurrentOrgBookingStreamProvider =
     GetSingleCurrentOrgBookingStreamFamily._();

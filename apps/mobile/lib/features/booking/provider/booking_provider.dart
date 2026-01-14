@@ -23,6 +23,14 @@ final currentOrgRepositoryProvider = Provider<BookingRepository>((ref) {
 });
 
 @riverpod
+class BookingListSearchQuery extends _$BookingListSearchQuery {
+  @override
+  String build() => '';
+
+  void update(String query) => state = query;
+}
+
+@riverpod
 AsyncValue<List<BookingModel>> getCurrentOrgBookingsStream(Ref ref) {
   final orgAsync = ref.watch(organizationControllerProvider);
   return orgAsync.when(
@@ -31,6 +39,23 @@ AsyncValue<List<BookingModel>> getCurrentOrgBookingsStream(Ref ref) {
     loading: () => const AsyncValue.loading(),
     error: (err, stack) => AsyncValue.error(err, stack),
   );
+}
+
+@riverpod
+AsyncValue<List<BookingModel>> filteredBookingLists(Ref ref) {
+  final bookingsAsync = ref.watch(getCurrentOrgBookingsStreamProvider);
+  final searchQuery = ref.watch(bookingListSearchQueryProvider).toLowerCase();
+
+  return bookingsAsync.whenData((bookings) {
+    if (searchQuery.isEmpty) return bookings;
+    return bookings
+        .where(
+          (booking) =>
+              booking.title.toLowerCase().contains(searchQuery) ||
+              booking.host.toLowerCase().contains(searchQuery),
+        )
+        .toList();
+  });
 }
 
 @riverpod

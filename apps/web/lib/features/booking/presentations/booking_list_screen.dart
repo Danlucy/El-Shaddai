@@ -17,8 +17,6 @@ import 'package:website/features/booking/controller/data_source.dart';
 import 'package:website/features/booking/provider/booking_provider.dart';
 import 'package:website/features/booking/widget/booking_details_widget.dart';
 
-// Provider to hold the currently selected booking ID
-
 class BookingListScreen extends ConsumerStatefulWidget {
   const BookingListScreen({super.key});
 
@@ -58,9 +56,11 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bookingStream = ref.watch(getCurrentOrgBookingsStreamProvider);
+    // UPDATED: Watch the filtered provider instead of the raw stream
+    final filteredBookingsAsync = ref.watch(filteredBookingListsProvider);
     final selectedBookingId = ref.watch(selectedBookingIDNotifierProvider);
     final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: AnimatedBackground(
@@ -95,7 +95,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
-                  child: bookingStream.when(
+                  child: filteredBookingsAsync.when(
                     data: (bookings) {
                       // Automatically select the first booking if none is selected
                       if (selectedBookingId == null && bookings.isNotEmpty) {
@@ -107,18 +107,14 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                       }
 
                       BookingModel? selectedBooking;
-                      if (selectedBookingId != null) {
-                        try {
-                          selectedBooking = bookings.firstWhere(
-                            (b) => b.id == selectedBookingId,
-                          );
-                        } catch (e) {
-                          selectedBooking = bookings.isNotEmpty
-                              ? bookings.first
-                              : null;
-                        }
-                      } else if (bookings.isNotEmpty) {
-                        selectedBooking = bookings.first;
+                      try {
+                        selectedBooking = bookings.firstWhere(
+                          (b) => b.id == selectedBookingId,
+                        );
+                      } catch (e) {
+                        selectedBooking = bookings.isNotEmpty
+                            ? bookings.first
+                            : null;
                       }
 
                       if (isDesktop) {
@@ -165,16 +161,36 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
   }
 }
 
-// ✅ This widget now uses SfCalendar for a better UI.
-class _BookingList extends ConsumerWidget {
+// UPDATED: Converted to ConsumerStatefulWidget to handle Controller
+class _BookingList extends ConsumerStatefulWidget {
   const _BookingList({required this.bookings});
   final List<BookingModel> bookings;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_BookingList> createState() => _BookingListState();
+}
+
+class _BookingListState extends ConsumerState<_BookingList> {
+  late TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final today = DateTime.now();
     final selectedBookingId = ref.watch(selectedBookingIDNotifierProvider);
     final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
+    final searchQuery = ref.watch(bookingListSearchQueryProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,6 +214,49 @@ class _BookingList extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
+
+        // NEW: Search Field with Controller & Clear Logic
+        TextField(
+          controller: _searchController,
+          onChanged: (val) =>
+              ref.read(bookingListSearchQueryProvider.notifier).update(val),
+          decoration: InputDecoration(
+            hintText: 'Search Prayer Watch or Host ..',
+            prefixIcon: const Icon(Icons.search),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface.withOpac(0.5),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withOpac(0.2),
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withOpac(0.2),
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 0,
+              horizontal: 16,
+            ),
+            suffixIcon: searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchController.clear();
+                      ref
+                          .read(bookingListSearchQueryProvider.notifier)
+                          .update('');
+                      FocusScope.of(context).unfocus();
+                    },
+                  )
+                : null,
+          ),
+        ),
+        const SizedBox(height: 16),
+
         Expanded(
           child: SfCalendar(
             scheduleViewMonthHeaderBuilder:
@@ -205,14 +264,11 @@ class _BookingList extends ConsumerWidget {
                   return GlassmorphicContainer(
                     width: double.infinity,
                     height: double.infinity,
-                    constraints: BoxConstraints(maxHeight: 50),
-
+                    constraints: const BoxConstraints(maxHeight: 50),
                     borderRadius: 20,
                     alignment: Alignment.center,
                     blur: 10,
-
                     border: 2,
-                    // 🔥 your original gradients unchanged
                     linearGradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -236,9 +292,7 @@ class _BookingList extends ConsumerWidget {
                     ),
                     child: Center(
                       child: Text(
-                        DateFormat(
-                          'MMMM yyyy',
-                        ).format(details.date), // e.g. "August 2025"
+                        DateFormat('MMMM yyyy').format(details.date),
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
                               fontWeight: FontWeight.bold,
@@ -249,7 +303,7 @@ class _BookingList extends ConsumerWidget {
                   );
                 },
             view: CalendarView.schedule,
-            dataSource: getCalendarDataSource(bookings),
+            dataSource: getCalendarDataSource(widget.bookings),
             scheduleViewSettings: ScheduleViewSettings(
               monthHeaderSettings: MonthHeaderSettings(
                 height: ResponsiveValue<double>(
@@ -320,6 +374,7 @@ class _BookingList extends ConsumerWidget {
                     },
                     child: Material(
                       elevation: isSelected && isDesktop ? 8 : 2,
+                      color: Colors.transparent, // Important for glassmorphism
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         margin: const EdgeInsets.symmetric(vertical: 4),
@@ -329,14 +384,10 @@ class _BookingList extends ConsumerWidget {
                             BoxShadow(
                               color: Colors.white.withOpac(
                                 (isSelected && isDesktop) ? 0.4 : 0.15,
-                              ), // Light color for the glow
-                              spreadRadius:
-                                  1, // How much the box shadow expands
-                              blurRadius: 7, // How diffused the shadow is
-                              offset: const Offset(
-                                0,
-                                4,
-                              ), // Shadow position (x, y) - slightly below
+                              ),
+                              spreadRadius: 1,
+                              blurRadius: 7,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                           color: color,

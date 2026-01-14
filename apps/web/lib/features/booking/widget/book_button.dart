@@ -48,7 +48,6 @@ class _BookButtonState extends ConsumerState<BookButton> {
                 await apiRepository
                     .createMeeting(
                       bookingFunction.instantiateZoomMeetingModel(),
-                      ref.watch(accessTokenNotifierProvider).value!.token,
                     )
                     .then((value) {
                       bookingFunction.setWeb(value.data['join_url']);

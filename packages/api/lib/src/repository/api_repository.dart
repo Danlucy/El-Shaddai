@@ -4,7 +4,6 @@ import 'package:api/api.dart';
 import 'package:constants/constants.dart';
 import 'package:dio/dio.dart';
 
-
 class ApiRepository {
   String getEncodedString() {
     String combinedString = '$clientId:$clientSecret';
@@ -51,26 +50,19 @@ class ApiRepository {
   //       }));
   // }
 
-  Future<Response> createMeeting(
-      ZoomMeetingModel meetingData,
-      String accessToken,
-      ) {
+  Future<Response> createMeeting(ZoomMeetingModel meetingData) {
+    // Removed accessToken param
     return _functionDio.post(
       'https://api.zoom.us/v2/users/me/meetings',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
-      ),
       data: meetingData.toJson(),
+      // Interceptor will add the Authorization header
     );
   }
 
   Future<Map<String, dynamic>> exchangeAuthorizationCode(
-      String authorizationCode,
-      String codeVerifier,
-      ) async {
+    String authorizationCode,
+    String codeVerifier,
+  ) async {
     final Dio dio = Dio();
 
     try {
@@ -80,7 +72,7 @@ class ApiRepository {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization':
-            'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
+                'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
           },
         ),
         data: {

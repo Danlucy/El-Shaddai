@@ -11,16 +11,16 @@ import 'package:website/features/booking/controller/data_source.dart';
 
 import '../provider/booking_provider.dart';
 
-class WeeklyCalendarComponent extends ConsumerStatefulWidget {
-  const WeeklyCalendarComponent({required this.view, super.key});
+class DailyOrWeeklyCalendarComponent extends ConsumerStatefulWidget {
+  const DailyOrWeeklyCalendarComponent({required this.view, super.key});
   final CalendarView view;
   @override
-  ConsumerState<WeeklyCalendarComponent> createState() =>
+  ConsumerState<DailyOrWeeklyCalendarComponent> createState() =>
       _WebCalendarComponentState();
 }
 
 class _WebCalendarComponentState
-    extends ConsumerState<WeeklyCalendarComponent> {
+    extends ConsumerState<DailyOrWeeklyCalendarComponent> {
   late CalendarController _calendarController;
   bool _isUpdatingFromProvider = false;
 
@@ -127,11 +127,8 @@ class _WebCalendarComponentState
                         ),
 
                         appointmentBuilder: (context, details) {
-                          final dynamic data = details.appointments.first;
-                          String subject = 'Booked';
-                          if (data is BookingModel) {
-                            subject = data.description;
-                          }
+                          final appointment =
+                              details.appointments.first as BookingModel;
 
                           final Color cardColor =
                               context.colors.secondaryContainer;
@@ -150,7 +147,7 @@ class _WebCalendarComponentState
                             ),
                             alignment: Alignment.center,
                             child: Text(
-                              subject,
+                              appointment.title,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 11,

@@ -13,9 +13,9 @@ import 'package:website/core/widgets/animated_background.dart';
 import 'package:website/core/widgets/glass_container.dart';
 import 'package:website/features/auth/controller/auth_controller.dart';
 import 'package:website/features/booking/controller/booking_controller.dart';
+import 'package:website/features/booking/presentations/daily_or_weekly_calendar_widget.dart';
 import 'package:website/features/booking/presentations/date_header_widget.dart';
 import 'package:website/features/booking/presentations/monthly_calendar_widget.dart';
-import 'package:website/features/booking/presentations/weekly_calendar_widget.dart';
 
 class BookingScreen extends ConsumerStatefulWidget {
   const BookingScreen({this.bookingModel, super.key});
@@ -35,7 +35,6 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Gap(50),
             Center(
               child: Text(
                 'Prayer Event Calendar',
@@ -50,7 +49,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
             const _MonthlyCalendarWidget(aspectRatio: 1),
             const Gap(15),
             _CalendarDisplaySection(viewMode: CalendarView.timelineDay),
-            const Gap(50),
+            const Gap(10),
           ],
         ),
       ],
@@ -112,8 +111,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
           colors: [Colors.white.withOpac(0.5), Colors.white.withOpac(0.5)],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: WeeklyCalendarComponent(view: viewMode),
+          padding: const EdgeInsets.all(10.0),
+          child: DailyOrWeeklyCalendarComponent(view: viewMode),
         ),
       ),
     );
