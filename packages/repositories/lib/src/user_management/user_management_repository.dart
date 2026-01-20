@@ -88,6 +88,18 @@ class UserManagementRepository {
     }
   }
 
+  Future<List<UserModel>> fetchAllUsers() async {
+    final snapshot = await _firestore
+        .collection(FirebaseConstants.usersCollection)
+        .orderBy(UserModel.fields.name)
+        .get(); // 👈 Using .get() instead of .snapshots()
+
+    return snapshot.docs.map((doc) {
+      final userData = doc.data();
+      return UserModel.fromJson({...userData, 'id': doc.id});
+    }).toList();
+  }
+
   /// ✅ **usersByRole is now a method of the repository**
 }
 

@@ -156,7 +156,7 @@ class _DailyCalendarComponentState
             Navigator.of(context).push(
               PageRouteBuilder(
                 opaque: false, // Important for transparent background
-                barrierColor: Colors.black.withOpacity(0.5),
+                barrierColor: Colors.black.withOpac(0.5),
                 pageBuilder: (context, animation, secondaryAnimation) {
                   return BookingDialog(context);
                 },

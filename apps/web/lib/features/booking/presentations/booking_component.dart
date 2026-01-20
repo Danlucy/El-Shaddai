@@ -134,8 +134,6 @@ class BookingDialogPage extends ConsumerWidget {
   }
 }
 
-// ... BookingFormWidget and state classes remain the same ...
-// Include the rest of your BookingFormWidget code here (no changes needed there)
 class BookingFormWidget extends ConsumerStatefulWidget {
   final BookingModel? bookingModel;
   const BookingFormWidget({super.key, this.bookingModel});
@@ -251,6 +249,7 @@ class _BookingFormWidgetState extends ConsumerState<BookingFormWidget>
                   .setVenue(BookingVenueComponent.values[index]);
             },
             borderRadius: BorderRadius.circular(8),
+
             constraints: const BoxConstraints(
               minHeight: 35,
               maxHeight: 40,

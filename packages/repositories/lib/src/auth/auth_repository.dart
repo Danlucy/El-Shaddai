@@ -55,29 +55,49 @@ class AuthRepository {
     }
   }
 
-  // EXTRACTED METHOD - Handles user creation/retrieval logic
+  // ✅ FIX: Robust User Handling
   Future<UserModel> handleUserCreationOrRetrieval({
     required UserCredential userCredential,
   }) async {
-    // Get a reference to the user document
     final docRef = _users.doc(userCredential.user!.uid);
     final docSnapshot = await docRef.get();
 
-    // Check if the document exists OR if it's a brand new user
+    // 1. Extract data safely
+    final data = docSnapshot.data() as Map<String, dynamic>?;
+
+    // 2. Check if the CRITICAL field 'createdAt' actually exists
+    final bool hasValidData =
+        data != null &&
+        data.containsKey('createdAt') &&
+        data['createdAt'] != null;
+
+    // 3. UPDATED LOGIC:
+    // Create/Update if:
+    // - Doc doesn't exist OR
+    // - Auth says it's a new user OR
+    // - The existing doc is broken (missing createdAt)
     if (!docSnapshot.exists ||
-        userCredential.additionalUserInfo?.isNewUser == true) {
-      // If it doesn't exist or is new, create it.
+        userCredential.additionalUserInfo?.isNewUser == true ||
+        !hasValidData) {
+      print("Creating or Repairing User Data..."); // Debug log
+
       final userModel = UserModel(
-        createdAt: DateTime.now(),
+        // Keep existing createdAt if available (repair mode), else use now
+        createdAt: hasValidData
+            ? (data!['createdAt'] as Timestamp).toDate()
+            : DateTime.now(),
         name: userCredential.user?.displayName ?? 'Nameless',
         uid: userCredential.user!.uid,
         roles: {},
+        // You might want to merge other existing fields here if repairing
       );
+
+      // Use merge to avoid overwriting other fields if this is a repair
       await docRef.set(userModel.toJson(), SetOptions(merge: true));
       return userModel;
     } else {
-      // If it exists, parse and return the existing data.
-      return UserModel.fromJson(docSnapshot.data() as Map<String, dynamic>);
+      // Logic is now safe: We know data exists and has createdAt
+      return UserModel.fromJson(data!);
     }
   }
 

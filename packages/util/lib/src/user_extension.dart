@@ -24,6 +24,7 @@ extension UserModelX on UserModel {
   // ✅ 5. Explicit "Not Intercessor or Observer" (As requested)
   bool get isNotIntercessorOrObserver =>
       this != UserRole.intercessor && this != UserRole.observer;
+  bool isHost (String userid) { return userid == this.uid; }
   UserRole currentRole(WidgetRef ref, {UserRole fallback = UserRole.observer}) {
     
     final orgAsync = ref.watch(organizationControllerProvider);

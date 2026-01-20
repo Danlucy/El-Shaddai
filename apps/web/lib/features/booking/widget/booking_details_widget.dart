@@ -36,10 +36,6 @@ class BookingDetailsContent extends ConsumerStatefulWidget {
 class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
   @override
   Widget build(BuildContext context) {
-    final user = ProviderScope.containerOf(
-      context,
-      listen: false,
-    ).read(userProvider);
     final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
 
     // 1. We use a Stack to separate the Glass Background from the Content
@@ -87,34 +83,37 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
               // 1. Left/Top Column: Main Details
               ResponsiveRowColumnItem(
                 rowFlex: 2,
-                child: _MainDetailsColumn(booking: widget.booking),
+                child: KeyedSubtree(
+                  key: const ValueKey('main_details_column'),
+                  child: _MainDetailsColumn(booking: widget.booking),
+                ),
               ),
 
               // 2. Right/Bottom Column: Participants
               ResponsiveRowColumnItem(
                 rowFlex: 1,
                 // IntrinsicHeight ensures the glass container wraps the content snugly
-                child: IntrinsicHeight(
-                  child: Stack(
-                    children: [
-                      // Inner Glass Background
-                      Positioned.fill(
-                        child: GlassmorphicContainer(
-                          width: double.infinity,
-                          height: double.infinity,
-                          borderRadius: 20,
-                          blur: 15,
-                          border: 2,
-                          linearGradient: _glassBg(context),
-                          borderGradient: _glassBorder(),
+                child: KeyedSubtree(
+                  child: IntrinsicHeight(
+                    key: const ValueKey('participants_column'),
+                    child: Stack(
+                      children: [
+                        // Inner Glass Background
+                        Positioned.fill(
+                          child: GlassmorphicContainer(
+                            width: double.infinity,
+                            height: double.infinity,
+                            borderRadius: 20,
+                            blur: 15,
+                            border: 2,
+                            linearGradient: _glassBg(context),
+                            borderGradient: _glassBorder(),
+                          ),
                         ),
-                      ),
-                      // Inner Content
-                      _ParticipantsAndActionsColumn(
-                        booking: widget.booking,
-                        user: user.value,
-                      ),
-                    ],
+                        // Inner Content
+                        _ParticipantsAndActionsColumn(booking: widget.booking),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -281,217 +280,332 @@ class _MainDetailsColumn extends StatelessWidget {
 }
 
 class _ParticipantsAndActionsColumn extends ConsumerWidget {
-  const _ParticipantsAndActionsColumn({required this.booking, this.user});
+  const _ParticipantsAndActionsColumn({super.key, required this.booking});
   final BookingModel booking;
-  final UserModel? user;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider).value;
+
     final participantStream = ref
         .watch(participantRepositoryProvider)
         .getAllParticipants(booking.id);
+
     final participationFunction = ref.watch(
       participantControllerProvider(booking.id).notifier,
     );
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // Shrink to fit content
-        children: [
-          // --- Meeting Info ---
-          if (booking.location.web != null) ...[
-            Text(
-              'Meeting Info',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const Gap(8),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    launchURL(booking.location.web!);
-                    if (booking.password != null) {
-                      Clipboard.setData(ClipboardData(text: booking.password!));
-                    }
-                  },
-                  child: const CircleAvatar(
-                    radius: 20,
-                    backgroundImage: AssetImage('assets/zoom.png'),
-                  ),
+    // 1. If not logged in, show Login lock screen
+    if (user == null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.lock_outline_rounded,
+                size: 48,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
+              const Gap(16),
+              Text(
+                'Login to see details',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.8),
                 ),
-                const Gap(8),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      Clipboard.setData(
-                        ClipboardData(text: booking.location.meetingID()),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Meeting ID copied to clipboard'),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      booking.location.meetingID(spaced: true),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                if (booking.password != null)
-                  IconButton(
-                    icon: const Icon(Icons.key),
-                    onPressed: () => showDialog(
-                      context: context,
-                      builder: (context) => Dialog(
-                        // Inner dialog reusing stack strategy for glass
-                        child: SizedBox(
-                          width: 350,
-                          height: 60,
-                          child: Stack(
-                            children: [
-                              Positioned.fill(
-                                child: GlassmorphicContainer(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  borderRadius: 16,
-                                  blur: 10,
-                                  border: 1,
-                                  linearGradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.white.withOpacity(0.2),
-                                      Colors.white.withOpacity(0.1),
-                                    ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    void joinMeeting() {
+      if (user.currentRole(ref) == UserRole.observer) return;
+      launchURL(booking.location.web!);
+    }
+
+    // 2. Wrap EVERYTHING in StreamBuilder to check participation status first
+    return StreamBuilder<List<UserModel>>(
+      stream: participantStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(height: 200, child: Loader());
+        }
+
+        final participants = snapshot.data ?? [];
+
+        // ✅ Check if user is currently in the list
+        final bool isJoined = participants.any((p) => p.uid == user.uid);
+
+        // ✅ Check if user is the Host
+        final bool isHost = user.uid == booking.userId;
+
+        // ✅ Logic: Show details if Host OR Joined
+        final bool canViewDetails =
+            isHost || isJoined || user.isWatchLeaderOrHigher;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          child: IntrinsicWidth(
+            child: AnimatedSize(
+              duration: Duration(seconds: 1),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // --- SECTION A: MEETING INFO (Conditional) ---
+                  if (canViewDetails) ...[
+                    if (booking.location.web != null) ...[
+                      Text(
+                        'Meeting Info',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const Gap(8),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // 1. JOIN BUTTON
+                          Flexible(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                backgroundColor: Colors.blue,
+                              ),
+                              onPressed: () => joinMeeting(),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.videocam_rounded,
+                                    color: Colors.white,
+                                    size: 20,
                                   ),
-                                  borderGradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.white.withOpacity(0.5),
-                                      Colors.white.withOpacity(0.5),
-                                    ],
+                                  Gap(8),
+                                  Flexible(
+                                    child: Text(
+                                      'Join Zoom',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          // 2. PASSWORD KEY
+                          if (booking.password != null) ...[
+                            const Gap(8),
+                            IconButton(
+                              icon: const Icon(Icons.key),
+                              onPressed: () => showDialog(
+                                context: context,
+                                builder: (context) => Dialog(
+                                  child: SizedBox(
+                                    width: 350,
+                                    height: 60,
+                                    child: Stack(
+                                      children: [
+                                        Positioned.fill(
+                                          child: GlassmorphicContainer(
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            borderRadius: 16,
+                                            blur: 10,
+                                            border: 1,
+                                            linearGradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: [
+                                                Colors.white.withOpacity(0.2),
+                                                Colors.white.withOpacity(0.1),
+                                              ],
+                                            ),
+                                            borderGradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: [
+                                                Colors.white.withOpacity(0.5),
+                                                Colors.white.withOpacity(0.5),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Center(
+                                          child: SelectableText(
+                                            booking.password ?? 'No Password',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                              Center(
-                                child: SelectableText(
-                                  booking.password ?? 'No Password',
-                                ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const Gap(16),
+                    ],
+
+                    // Host Copy Link
+                    if (isHost)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(
+                              ClipboardData(text: booking.location.meetingID()),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Meeting ID copied!'),
                               ),
-                            ],
+                            );
+                          },
+                          child: const Text(
+                            "Click to Copy Zoom ID",
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              fontSize: 12,
+                              color: Colors.white70,
+                            ),
                           ),
                         ),
                       ),
+                  ] else ...[
+                    // --- SECTION B: LOCKED VIEW (If not joined) ---
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white10),
+                      ),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.lock_clock,
+                            size: 30,
+                            color: Colors.white54,
+                          ),
+                          const Gap(8),
+                          Text(
+                            "Join to view  details",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Colors.white70,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const Gap(10),
+                  ],
+                  const Gap(10),
+
+                  // --- SECTION C: PARTICIPANTS LIST ---
+                  Text(
+                    'Intercessors',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    textAlign: TextAlign.center,
                   ),
-              ],
-            ),
-            const Gap(16),
-          ],
+                  const Gap(8),
 
-          // --- Participants Header ---
-          Text('Intercessors', style: Theme.of(context).textTheme.titleMedium),
-          const Gap(8),
-
-          // --- Participants List ---
-          StreamBuilder<List<UserModel>>(
-            stream: participantStream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Loader();
-              }
-
-              final participants = snapshot.data ?? [];
-              final bool isJoined = participants.any(
-                (userModel) => userModel.uid == user?.uid,
-              );
-
-              return Column(
-                children: [
                   if (participants.isEmpty)
                     const Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Text('No intercessors yet.'),
                     )
                   else
-                    // ListView inside a Column requires shrinkWrap + physics physics
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: participants.length,
-                      separatorBuilder: (_, __) => Divider(
-                        height: 1,
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      itemBuilder: (context, index) {
-                        final userModel = participants[index];
-                        return ListTile(
-                          title: Text(userModel.name),
-                          onTap: () {},
-                        );
-                      },
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        for (var i = 0; i < participants.length; i++) ...[
+                          if (i > 0)
+                            Divider(
+                              height: 1,
+                              color: Colors.white.withOpacity(0.5),
+                            ),
+                          ListTile(
+                            title: Text(
+                              textAlign: TextAlign.center,
+                              participants[i].name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            // Highlight current user
+                            tileColor: participants[i].uid == user.uid
+                                ? Colors.white.withOpacity(0.1)
+                                : null,
+                          ),
+                        ],
+                      ],
                     ),
-
                   const SizedBox(height: 16),
 
-                  // Join/Leave Button
-                  if (user?.uid != booking.userId &&
-                      user?.currentRole(ref) != UserRole.observer &&
-                      user != null)
-                    joinButton(user, isJoined, participationFunction, context),
-                ],
-              );
-            },
-          ),
+                  // --- SECTION D: ACTION BUTTONS ---
 
-          // --- Admin Actions ---
-          if ((user?.uid == booking.userId) ||
-              user?.currentRole(ref) == UserRole.admin)
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(
-                    child: GlassmorphicButton(
-                      backgroundColors: [
-                        Theme.of(
-                          context,
-                        ).colorScheme.errorContainer.withOpacity(0.12),
-                        Theme.of(
-                          context,
-                        ).colorScheme.errorContainer.withOpacity(0.2),
-                      ],
-                      borderRadius: 20,
-                      text: 'Delete',
-                      icon: Icons.delete,
-                      onPressed: () => showDialog(
-                        context: context,
-                        builder: (context) => ConfirmDialog(
-                          confirmText: 'Delete',
-                          cancelText: 'Cancel',
-                          description:
-                              'Are you sure you want to delete this booking?',
-                          confirmAction: () {
-                            context.pop();
-                            ref
-                                .read(currentOrgRepositoryProvider)
-                                .deleteBooking(booking.id);
-                            context.pop();
-                          },
-                          title: 'Delete Booking',
+                  // 1. Join/Leave Button
+                  if (!isHost && user.currentRole(ref) != UserRole.observer)
+                    joinButton(user, isJoined, participationFunction, context),
+
+                  // 2. Admin Delete Button
+                  if (isHost || user.currentRole(ref) == UserRole.admin)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: GlassmorphicButton(
+                        backgroundColors: [
+                          Theme.of(
+                            context,
+                          ).colorScheme.errorContainer.withOpacity(0.12),
+                          Theme.of(
+                            context,
+                          ).colorScheme.errorContainer.withOpacity(0.2),
+                        ],
+                        borderRadius: 20,
+                        text: 'Delete',
+                        icon: Icons.delete,
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) => ConfirmDialog(
+                            confirmText: 'Delete',
+                            cancelText: 'Cancel',
+                            description:
+                                'Are you sure you want to delete this booking?',
+                            confirmAction: () {
+                              context.pop();
+                              ref
+                                  .read(currentOrgRepositoryProvider)
+                                  .deleteBooking(booking.id);
+                              context.pop();
+                            },
+                            title: 'Delete Booking',
+                          ),
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 }
