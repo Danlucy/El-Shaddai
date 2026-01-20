@@ -1,7 +1,9 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Required for Clipboard
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:website/core/constants.dart';
 
 class FooterWidget extends StatelessWidget {
   const FooterWidget({super.key, required this.moreInfo});
@@ -62,9 +64,9 @@ class FooterWidget extends StatelessWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildEmailWidget(),
+          _buildEmailWidget(context),
           const SizedBox(width: 24),
-          _buildPhoneWidget(),
+          _buildPhoneWidget(context),
           const SizedBox(width: 24),
           _buildWhatsAppWidget(),
         ],
@@ -73,9 +75,9 @@ class FooterWidget extends StatelessWidget {
       // Mobile: Stack vertically with smaller spacing
       return Column(
         children: [
-          _buildEmailWidget(),
+          _buildEmailWidget(context),
           const SizedBox(height: 12),
-          _buildPhoneWidget(),
+          _buildPhoneWidget(context),
           const SizedBox(height: 12),
           _buildWhatsAppWidget(),
         ],
@@ -87,9 +89,9 @@ class FooterWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildEmailWidget(),
+              _buildEmailWidget(context),
               const SizedBox(width: 24),
-              _buildPhoneWidget(),
+              _buildPhoneWidget(context),
             ],
           ),
           const SizedBox(height: 12),
@@ -99,41 +101,74 @@ class FooterWidget extends StatelessWidget {
     }
   }
 
-  Widget _buildEmailWidget() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(Icons.email, color: Colors.white70, size: 16),
-        const SizedBox(width: 8),
-        const Flexible(
-          child: Text(
-            'elshaddai247prayeraltar@gmail.com',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
-            overflow: TextOverflow.ellipsis,
+  Widget _buildEmailWidget(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Clipboard.setData(ClipboardData(text: emailAddress));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email address copied to clipboard!'),
+            duration: Duration(seconds: 2),
           ),
-        ),
-      ],
+        );
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.email, color: Colors.white70, size: 16),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              emailAddress,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+                decoration:
+                    TextDecoration.underline, // Visual cue it's clickable
+                decorationColor: Colors.white30,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildPhoneWidget() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(Icons.phone, color: Colors.white70, size: 16),
-        const SizedBox(width: 8),
-        const Text(
-          '+60 173044168',
-          style: TextStyle(color: Colors.white70, fontSize: 14),
-        ),
-      ],
+  Widget _buildPhoneWidget(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Clipboard.setData(ClipboardData(text: phoneNumber));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Phone number copied to clipboard!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.phone, color: Colors.white70, size: 16),
+          const SizedBox(width: 8),
+          Text(
+            phoneNumber,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 14,
+              decoration: TextDecoration.underline, // Visual cue it's clickable
+              decorationColor: Colors.white30,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildWhatsAppWidget() {
     return InkWell(
       onTap: () async {
-        final Uri whatsappUrl = Uri.parse("https://wa.me/60173044168");
+        final Uri whatsappUrl = Uri.parse(whatsAppLink);
         if (await canLaunchUrl(whatsappUrl)) {
           await launchUrl(whatsappUrl);
         } else {
@@ -143,12 +178,12 @@ class FooterWidget extends StatelessWidget {
       child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.message, color: Colors.white70, size: 16),
+          Icon(Icons.message, color: Colors.green, size: 16),
           SizedBox(width: 8),
           Text(
             'WhatsApp',
             style: TextStyle(
-              color: Colors.white70,
+              color: Colors.green,
               fontSize: 14,
               decoration: TextDecoration.underline,
               decorationColor: Colors.white70,

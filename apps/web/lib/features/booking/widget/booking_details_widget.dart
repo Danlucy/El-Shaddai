@@ -352,7 +352,7 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: IntrinsicWidth(
             child: AnimatedSize(
-              duration: Duration(seconds: 1),
+              duration: Duration(milliseconds: 300),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,

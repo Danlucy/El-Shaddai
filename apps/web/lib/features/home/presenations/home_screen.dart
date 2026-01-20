@@ -80,12 +80,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildRichText(context),
-                GlassmorphicButton(
-                  text: '247 Prayer Watch List',
-                  icon: Icons.calendar_today,
-                  onPressed: () {
-                    goBooking();
-                  },
+                Gap(40),
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Select Your Prayer Alter',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      OrganizationSelectionDropdown(),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -102,13 +107,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-        Center(
-          child: Column(
-            children: [
-              Text('Select Prayer Alter', style: TextStyle(fontSize: 12)),
-              OrganizationSelectionDropdown(),
-            ],
-          ),
+        GlassmorphicButton(
+          text: 'Go Prayer Sessions',
+          icon: Icons.calendar_today,
+          onPressed: () {
+            goBooking();
+          },
         ),
         Gap(50),
 
@@ -169,8 +173,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
 
         Gap(30),
+        Center(
+          child: Column(
+            children: [
+              Text('Select Your Prayer Alter', style: TextStyle(fontSize: 12)),
+              OrganizationSelectionDropdown(),
+            ],
+          ),
+        ),
+        Gap(40),
         GlassmorphicButton(
-          text: '247 Prayer Watch List',
+          text: 'Go Prayer Sessions',
           icon: Icons.calendar_today,
           onPressed: () {
             goBooking();

@@ -1,3 +1,6 @@
-final String googleAppURL =
+const String googleAppURL =
     'https://play.google.com/store/apps/details?id=com.el.shaddai';
-final String appleAppURL = 'https://apps.apple.com/app/el-shaddai/id6444221234';
+const String appleAppURL = 'https://apps.apple.com/app/el-shaddai/id6444221234';
+const String whatsAppLink = 'https://wa.me/60173044168';
+const String emailAddress = 'elshaddai247prayeraltar@gmail.com';
+const String phoneNumber = '+60 173044168';
