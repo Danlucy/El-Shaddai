@@ -5,13 +5,13 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:repositories/repositories.dart';
 
 class OrganizationSelectionDropdown extends ConsumerWidget {
-  const OrganizationSelectionDropdown({super.key});
-
+  OrganizationSelectionDropdown({super.key, this.bigger});
+  final bool? bigger;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GlassmorphicContainer(
-      width: 200,
-      height: 40,
+      width: bigger == true ? 400 : 200,
+      height: bigger == true ? 60 : 40,
       borderRadius: 12,
       blur: 10, // The blur intensity
       alignment: Alignment.center,
@@ -41,7 +41,10 @@ class OrganizationSelectionDropdown extends ConsumerWidget {
               child: Text(
                 'Select an Organization',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: context.colors.primary),
+                style: TextStyle(
+                  fontSize: bigger == true ? 28 : 16,
+                  color: context.colors.primary,
+                ),
               ),
             ),
             dropdownColor: Colors.black.withOpac(0.7),
@@ -68,7 +71,7 @@ class OrganizationSelectionDropdown extends ConsumerWidget {
                         child: Text(
                           value.displayName, // Use the user-friendly name
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: bigger == true ? 28 : 16,
                             color: context.colors.primary,
                           ),
                         ),

@@ -85,8 +85,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Select Your Prayer Alter',
-                        style: TextStyle(fontSize: 12),
+                        'Step 1: Select the prayer altar to Join',
+                        style: TextStyle(fontSize: 20),
                       ),
                       OrganizationSelectionDropdown(),
                     ],
@@ -107,20 +107,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
+        Gap(40),
+        Text('Step 2: Click here to view the', style: TextStyle(fontSize: 20)),
         GlassmorphicButton(
-          text: 'Go Prayer Sessions',
+          fontSize: 28,
+          textColour: context.colors.primary,
+          text: 'Prayer list',
           icon: Icons.calendar_today,
           onPressed: () {
             goBooking();
           },
         ),
-        Gap(50),
+        Gap(30),
 
-        Text(
-          'Download the App to Join Us',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
+        TextButton(
+          child: Text('Click for Help!'),
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  style: TextStyle(fontSize: 26),
+                  'How to join the 24/7 prayer altar? Click on Step 1 then Step 2. When you see the prayer list, click on the prayer watch you want to join. In order to display the prayer altar detail (Zoom information or physical address), you have to click to join the session.',
+                ),
+              ),
+            );
+          },
         ),
-        Gap(20),
+        const Gap(100),
+        GradientAnimationText(
+          duration: const Duration(seconds: 5),
+          text: Text(
+            'OR',
+            style: const TextStyle(fontFamily: 'FunFont', fontSize: 60),
+          ),
+          colors: [
+            context.colors.primary,
+            context.colors.primary,
+            context.colors.primary,
+            context.colors.secondary,
+          ],
+        ),
+        Text(
+          'If you would like to join EL Shaddai Prayer Altar prayer session through the mobile app, download the Android app. The App Store is not available at time being.',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+        ),
+        Gap(100),
         DownloadButtons(),
       ],
     );
@@ -176,20 +207,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Center(
           child: Column(
             children: [
-              Text('Select Your Prayer Alter', style: TextStyle(fontSize: 12)),
-              OrganizationSelectionDropdown(),
+              Text(
+                'Step 1: Select the prayer altar to Join',
+                style: TextStyle(fontSize: 20),
+              ),
+              OrganizationSelectionDropdown(bigger: true),
             ],
           ),
         ),
         Gap(40),
+        Text('Step 2: Click here to view the', style: TextStyle(fontSize: 20)),
         GlassmorphicButton(
-          text: 'Go Prayer Sessions',
+          fontSize: 28,
+          textColour: context.colors.primary,
+          text: 'Prayer list',
           icon: Icons.calendar_today,
           onPressed: () {
             goBooking();
           },
         ),
-        const Gap(16),
+        Gap(30),
+
+        TextButton(
+          child: Text('Click for Help!'),
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  style: TextStyle(fontSize: 26),
+                  'How to join the 24/7 prayer altar? Click on Step 1 then Step 2. When you see the prayer list, click on the prayer watch you want to join. In order to display the prayer altar detail (Zoom information or physical address), you have to click to join the session.',
+                ),
+              ),
+            );
+          },
+        ),
+        const Gap(100),
         GradientAnimationText(
           duration: const Duration(seconds: 5),
           text: Text(
@@ -204,10 +256,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         Text(
-          'Download Our App to Join Us',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
+          'If you would like to join EL Shaddai Prayer Altar prayer session through the mobile app, download the Android app. The App Store is not available at time being.',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
         ),
-        Gap(20),
+        Gap(100),
         DownloadButtons(),
       ],
     );
@@ -242,7 +294,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           TextSpan(
-            text: 'EL Shaddai 247 ${isMobile ? '\n' : ''}',
+            text: 'EL Shaddai 24/7 ${isMobile ? '\n' : ''}',
             style: TextStyle(
               fontSize: ResponsiveValue<double>(
                 context,

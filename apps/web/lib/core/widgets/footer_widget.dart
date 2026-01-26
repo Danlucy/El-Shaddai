@@ -30,24 +30,18 @@ class FooterWidget extends StatelessWidget {
 
                 // Address Text
                 const Text(
-                  'The 247 website belongs to EL Shaddai Prayer Altar. The physical address: 31A-2, Jalan Reko Sentral 1, Jalan Reko, Reko Sentral, 43000 Kajang, Selangor',
+                  'The 24/7 website belongs to EL Shaddai Prayer Altar. The physical address: 31A-2, Jalan Reko Sentral 1, Jalan Reko, Reko Sentral, 43000 Kajang, Selangor',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
                 const SizedBox(height: 16),
-
-                // Copyright Text
-                const Text(
-                  '© 2024 El Shaddai Prayer Altar. All Rights Reserved.',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
               ]
             : [
                 const SizedBox(height: 16),
 
                 // Copyright Text
                 const Text(
-                  '© 2024 El Shaddai Church. All Rights Reserved.',
+                  '© since 2024 El Shaddai Prayer Altar. All Rights Reserved.',
                   style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],

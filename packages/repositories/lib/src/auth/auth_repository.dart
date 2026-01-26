@@ -55,53 +55,40 @@ class AuthRepository {
     }
   }
 
-  // ✅ FIX: Robust User Handling
   Future<UserModel> handleUserCreationOrRetrieval({
     required UserCredential userCredential,
   }) async {
     final docRef = _users.doc(userCredential.user!.uid);
     final docSnapshot = await docRef.get();
 
-    // 1. Extract data safely
     final data = docSnapshot.data() as Map<String, dynamic>?;
 
-    // 2. Check if the CRITICAL field 'createdAt' actually exists
     final bool hasValidData =
         data != null &&
         data.containsKey('createdAt') &&
         data['createdAt'] != null;
 
-    // 3. UPDATED LOGIC:
-    // Create/Update if:
-    // - Doc doesn't exist OR
-    // - Auth says it's a new user OR
-    // - The existing doc is broken (missing createdAt)
     if (!docSnapshot.exists ||
         userCredential.additionalUserInfo?.isNewUser == true ||
         !hasValidData) {
-      print("Creating or Repairing User Data..."); // Debug log
+      print("Creating or Repairing User Data...");
 
       final userModel = UserModel(
-        // Keep existing createdAt if available (repair mode), else use now
         createdAt: hasValidData
             ? (data!['createdAt'] as Timestamp).toDate()
             : DateTime.now(),
         name: userCredential.user?.displayName ?? 'Nameless',
         uid: userCredential.user!.uid,
         roles: {},
-        // You might want to merge other existing fields here if repairing
       );
 
-      // Use merge to avoid overwriting other fields if this is a repair
       await docRef.set(userModel.toJson(), SetOptions(merge: true));
       return userModel;
     } else {
-      // Logic is now safe: We know data exists and has createdAt
       return UserModel.fromJson(data!);
     }
   }
 
-  // SIMPLIFIED Apple sign-in method
   FutureEither<UserModel> signInWithApple() async {
     try {
       final appleProvider = AppleAuthProvider()..addScope('email');
@@ -119,20 +106,16 @@ class AuthRepository {
     }
   }
 
-  // SIMPLIFIED Google sign-in method
   FutureEither<UserModel> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.authenticate(
         scopeHint: const ['email', 'profile'],
       );
 
-      // 1. Check if user cancelled
       if (account == null) return left(Failure('Google sign-in cancelled'));
 
-      // 2. Await the authentication
       final googleAuth = await account.authentication;
 
-      // 3. NOW get the token
       final idToken = googleAuth.idToken;
 
       if (idToken == null) {
@@ -174,7 +157,6 @@ class AuthRepository {
       if (user.providerData.any(
         (info) => info.providerId == GoogleAuthProvider().providerId,
       )) {
-        // Google re-authentication
         await _googleSignIn.signOut();
 
         try {
@@ -203,7 +185,6 @@ class AuthRepository {
       } else if (user.providerData.any(
         (info) => info.providerId == AppleAuthProvider().providerId,
       )) {
-        // Apple re-authentication
         try {
           final appleResult = await SignInWithApple.getAppleIDCredential(
             scopes: [

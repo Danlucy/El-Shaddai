@@ -17,6 +17,8 @@ class GlassmorphicButton extends StatefulWidget {
 
   /// Custom border radius (defaults to 12 if not provided)
   final double borderRadius;
+  final Color? textColour;
+  final double? fontSize;
 
   /// Optional custom background colors for the blur
   final List<Color>? backgroundColors;
@@ -25,7 +27,9 @@ class GlassmorphicButton extends StatefulWidget {
     Key? key,
     required this.text,
     required this.onPressed,
+    this.fontSize,
     this.icon,
+    this.textColour,
     this.constraints,
     this.borderRadius = 12,
     this.backgroundColors,
@@ -40,7 +44,8 @@ class _GlassmorphicButtonState extends State<GlassmorphicButton> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = widget.backgroundColors ??
+    final colors =
+        widget.backgroundColors ??
         [
           Colors.white.withOpac(_isHovered ? 0.2 : 0.1),
           Colors.white.withOpac(_isHovered ? 0.15 : 0.05),
@@ -79,18 +84,14 @@ class _GlassmorphicButtonState extends State<GlassmorphicButton> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (widget.icon != null) ...[
-                  Icon(
-                    widget.icon,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  Icon(widget.icon, color: Colors.white, size: 20),
                   const SizedBox(width: 8),
                 ],
                 Text(
                   widget.text,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
+                  style: TextStyle(
+                    color: widget.textColour,
+                    fontSize: widget.fontSize ?? 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -133,19 +134,13 @@ class _DownloadButtonsState extends State<DownloadButtons> {
         linearGradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withOpac(0.2),
-            Colors.white.withOpac(0.1),
-          ],
+          colors: [Colors.white.withOpac(0.2), Colors.white.withOpac(0.1)],
           stops: const [0.1, 1.0],
         ),
         borderGradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withOpac(0.5),
-            Colors.white.withOpac(0.5),
-          ],
+          colors: [Colors.white.withOpac(0.5), Colors.white.withOpac(0.5)],
         ),
         child: Row(
           children: [
@@ -206,53 +201,53 @@ class _DownloadButtonsState extends State<DownloadButtons> {
             ),
 
             // App Store side
-            Expanded(
-              child: MouseRegion(
-                onEnter: (_) => setState(() => isHoveredApple = true),
-                onExit: (_) => setState(() => isHoveredApple = false),
-                child: InkWell(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(widget.borderRadius),
-                    bottomRight: Radius.circular(widget.borderRadius),
-                  ), // 👈 use param
-                  onTap: () => launchURL(appleAppURL),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                      color: isHoveredApple
-                          ? Colors.white.withOpac(0.05)
-                          : Colors.transparent,
-                      boxShadow: isHoveredApple
-                          ? [
-                              BoxShadow(
-                                color: Colors.blueAccent.withOpac(0.5),
-                                blurRadius: 8,
-                                spreadRadius: 1,
-                              ),
-                            ]
-                          : [],
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(widget.borderRadius),
-                        bottomRight: Radius.circular(widget.borderRadius),
-                      ), // 👈 use param
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/logo/apple_store.png', height: 24),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'App Store',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // Expanded(
+            //   child: MouseRegion(
+            //     onEnter: (_) => setState(() => isHoveredApple = true),
+            //     onExit: (_) => setState(() => isHoveredApple = false),
+            //     child: InkWell(
+            //       borderRadius: BorderRadius.only(
+            //         topRight: Radius.circular(widget.borderRadius),
+            //         bottomRight: Radius.circular(widget.borderRadius),
+            //       ), // 👈 use param
+            //       onTap: () => launchURL(appleAppURL),
+            //       child: AnimatedContainer(
+            //         duration: const Duration(milliseconds: 200),
+            //         width: double.infinity,
+            //         height: double.infinity,
+            //         decoration: BoxDecoration(
+            //           color: isHoveredApple
+            //               ? Colors.white.withOpac(0.05)
+            //               : Colors.transparent,
+            //           boxShadow: isHoveredApple
+            //               ? [
+            //                   BoxShadow(
+            //                     color: Colors.blueAccent.withOpac(0.5),
+            //                     blurRadius: 8,
+            //                     spreadRadius: 1,
+            //                   ),
+            //                 ]
+            //               : [],
+            //           borderRadius: BorderRadius.only(
+            //             topRight: Radius.circular(widget.borderRadius),
+            //             bottomRight: Radius.circular(widget.borderRadius),
+            //           ), // 👈 use param
+            //         ),
+            //         child: Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             Image.asset('assets/logo/apple_store.png', height: 24),
+            //             const SizedBox(width: 8),
+            //             const Text(
+            //               'App Store',
+            //               style: TextStyle(color: Colors.white, fontSize: 16),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
