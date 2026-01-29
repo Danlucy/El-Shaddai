@@ -45,10 +45,16 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                 break;
               case '/list':
                 navigationShell.goBranch(2);
+                break;
               case '/settings':
                 navigationShell.goBranch(3);
-
-                // This one can use context.go since it's in the same branch
+                break;
+              case '/profile':
+                final user = ref.read(userProvider).value;
+                if (user != null) {
+                  navigationShell.goBranch(4);
+                  context.go('/profile', extra: user);
+                }
                 break;
             }
           },
@@ -114,7 +120,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
               value: '/settings',
               child: ListTile(
                 leading: Icon(
-                  Icons.list,
+                  Icons.settings,
                   color: currentLocation == '/settings'
                       ? Theme.of(context).colorScheme.primary
                       : null,
@@ -129,6 +135,26 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                 ),
               ),
             ),
+            if (ref.watch(userProvider).value != null)
+              PopupMenuItem<String>(
+                value: '/profile',
+                child: ListTile(
+                  leading: Icon(
+                    Icons.person,
+                    color: currentLocation.startsWith('/profile')
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
+                  ),
+                  title: Text(
+                    'Profile',
+                    style: TextStyle(
+                      color: currentLocation.startsWith('/profile')
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
         title: Text('Welcome ${userName ?? ''}'),
@@ -156,9 +182,47 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             ],
           ),
         ),
-        // ✅ Right side empty
         actions: [
-          if (!ref.read(userProvider.notifier).isLoggedIn)
+          if (ref.watch(userProvider.notifier).isLoggedIn)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Tooltip(
+                message: 'View Profile',
+                child: InkWell(
+                  onTap: () {
+                    final user = ref.read(userProvider).value;
+                    if (user != null) {
+                      navigationShell.goBranch(4);
+                      context.go('/profile', extra: user);
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: currentLocation.startsWith('/profile')
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.white.withOpac(0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 16,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primary.withOpac(0.2),
+                      child: Icon(
+                        Icons.person,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          else
             Padding(
               padding: EdgeInsetsGeometry.symmetric(
                 horizontal: 16,

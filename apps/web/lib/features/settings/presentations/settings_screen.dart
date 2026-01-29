@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -25,8 +26,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     // FIX: Use ref.watch(userProvider) instead of ref.read(...)
     // This ensures the widget rebuilds immediately when login state changes.
-    final user = ref.watch(userProvider); // This gives you User? directly
-    final bool isLoggedIn = user != null;
+    final user = ref.watch(userProvider).value; // This gives you User? directly
+    final bool isLoggedIn = null != user;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -90,7 +91,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       ? Theme.of(context)
                                             .colorScheme
                                             .errorContainer
-                                            .withOpacity(0.3)
+                                            .withOpac(0.3)
                                       : null,
                                   side: BorderSide(
                                     color: isLoggedIn
@@ -99,22 +100,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  if (isLoggedIn) {
-                                    // Handle Logout directly here if needed, or open dialog
-                                    // ref.read(authControllerProvider.notifier).signOut();
-                                    // For now, keeping your dialog logic:
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          const GlassLoginDialog(),
-                                    );
-                                  } else {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          const GlassLoginDialog(),
-                                    );
-                                  }
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const GlassLoginDialog(),
+                                  );
                                 },
                                 child: Text(
                                   isLoggedIn ? 'Log Out' : "Log In",

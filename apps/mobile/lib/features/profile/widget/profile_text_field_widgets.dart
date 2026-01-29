@@ -139,6 +139,7 @@ class EditableTextFieldState extends ConsumerState<EditableTextField> {
         autovalidateMode: AutovalidateMode.disabled,
         disableLengthCheck: true,
         readOnly: !widget.isEditable,
+        showCountryFlag: true,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           contentPadding: const EdgeInsets.symmetric(horizontal: 8),

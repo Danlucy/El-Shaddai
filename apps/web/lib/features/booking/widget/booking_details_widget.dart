@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,7 @@ import 'package:website/core/widgets/confirm_button.dart';
 import 'package:website/core/widgets/glass_button.dart';
 import 'package:website/core/widgets/loader.dart';
 import 'package:website/features/auth/controller/auth_controller.dart';
+import 'package:website/features/auth/presentations/login_dialog.dart';
 import 'package:website/features/participant/controller/participant_controller.dart';
 
 import '../provider/booking_provider.dart';
@@ -52,16 +54,19 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
             border: 2,
             linearGradient: LinearGradient(
               colors: [
-                Theme.of(context).colorScheme.surface.withOpacity(0.1),
-                Theme.of(context).colorScheme.surface.withOpacity(0.05),
+                Theme.of(context).colorScheme.surface.withOpac(0.1),
+                Theme.of(context).colorScheme.surface.withOpac(0.05),
+                Theme.of(context).colorScheme.surface.withOpac(0.05),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderGradient: LinearGradient(
               colors: [
-                Colors.white.withOpacity(0.8),
-                Colors.white.withOpacity(0.1),
+                Colors.white.withOpac(0.8),
+
+                Colors.white.withOpac(0.1),
+                Theme.of(context).colorScheme.surface.withOpac(0.05),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -126,15 +131,16 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
 
   LinearGradient _glassBg(BuildContext context) => LinearGradient(
     colors: [
-      Theme.of(context).colorScheme.surface.withOpacity(0.1),
-      Theme.of(context).colorScheme.surface.withOpacity(0.05),
+      Theme.of(context).colorScheme.surface.withOpac(0.07),
+      Theme.of(context).colorScheme.surface.withOpac(0.05),
+      Theme.of(context).colorScheme.surface.withOpac(0.05),
     ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   LinearGradient _glassBorder() => LinearGradient(
-    colors: [Colors.white.withOpacity(0.8), Colors.white.withOpacity(0.1)],
+    colors: [Colors.white.withOpac(0.7), Colors.white.withOpac(0.1)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -204,7 +210,7 @@ class _MainDetailsColumn extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondary.withOpac(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(booking.description),
@@ -306,16 +312,27 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
               Icon(
                 Icons.lock_outline_rounded,
                 size: 48,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                color: Theme.of(context).colorScheme.onSurface.withOpac(0.6),
               ),
-              const Gap(16),
-              Text(
-                'Login to see details',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withOpacity(0.8),
+              Padding(
+                padding: EdgeInsetsGeometry.symmetric(vertical: 15),
+                child: Text(
+                  'Please login to see the Zoom/Address in order to join the prayer session.',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpac(0.8),
+                  ),
                 ),
+              ),
+              OutlinedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const GlassLoginDialog(),
+                  );
+                },
+                child: const Text('Register'),
               ),
             ],
           ),
@@ -328,7 +345,6 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
       launchURL(booking.location.web!);
     }
 
-    // 2. Wrap EVERYTHING in StreamBuilder to check participation status first
     return StreamBuilder<List<UserModel>>(
       stream: participantStream,
       builder: (context, snapshot) {
@@ -346,261 +362,323 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
 
         // ✅ Logic: Show details if Host OR Joined
         final bool canViewDetails =
-            isHost || isJoined || user.isWatchLeaderOrHigher;
+            isHost || isJoined || user.currentRole(ref).isWatchLeaderOrHigher;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-          child: IntrinsicWidth(
-            child: AnimatedSize(
-              duration: Duration(milliseconds: 300),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // --- SECTION A: MEETING INFO (Conditional) ---
-                  if (canViewDetails) ...[
-                    if (booking.location.web != null) ...[
-                      Text(
-                        'Meeting Info',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const Gap(8),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // 1. JOIN BUTTON
-                          Flexible(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                backgroundColor: Colors.blue,
-                              ),
-                              onPressed: () => joinMeeting(),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.videocam_rounded,
-                                    color: Colors.white,
-                                    size: 20,
+        // ✅ KEY FIX: AnimatedSize wraps the content that changes size
+        return AnimatedSize(
+          duration: const Duration(milliseconds: 600), // Smooth duration
+          curve: Curves.fastOutSlowIn, // Natural physics
+          alignment: Alignment.topCenter, // Anchors top, grows down
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: IntrinsicWidth(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // --- SECTION A: MEETING INFO (Conditional) ---
+                    // Use AnimatedSwitcher for smooth fade between Locked/Unlocked
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 400),
+                      child: canViewDetails
+                          ? Column(
+                              key: const ValueKey('unlocked_view'),
+                              children: [
+                                if (booking.location.web != null) ...[
+                                  Text(
+                                    'Session Detail',
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
                                   ),
-                                  Gap(8),
-                                  Flexible(
-                                    child: Text(
-                                      'Join Zoom',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white,
+                                  const Gap(8),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // 1. JOIN BUTTON
+                                      Flexible(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 12,
+                                            ),
+                                            backgroundColor: Colors.blue,
+                                          ),
+                                          onPressed: () => joinMeeting(),
+                                          child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.videocam_rounded,
+                                                color: Colors.white,
+                                                size: 20,
+                                              ),
+                                              Gap(8),
+                                              Flexible(
+                                                child: Text(
+                                                  'Join Zoom',
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.white,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                      overflow: TextOverflow.ellipsis,
+
+                                      // 2. PASSWORD KEY
+                                      if (booking.password != null) ...[
+                                        const Gap(8),
+                                        IconButton(
+                                          icon: const Icon(Icons.key),
+                                          onPressed: () => showDialog(
+                                            context: context,
+                                            builder: (context) => Dialog(
+                                              child: SizedBox(
+                                                width: 350,
+                                                height: 60,
+                                                child: Stack(
+                                                  children: [
+                                                    Positioned.fill(
+                                                      child: GlassmorphicContainer(
+                                                        width: double.infinity,
+                                                        height: double.infinity,
+                                                        borderRadius: 16,
+                                                        blur: 10,
+                                                        border: 1,
+                                                        linearGradient:
+                                                            LinearGradient(
+                                                              begin: Alignment
+                                                                  .topLeft,
+                                                              end: Alignment
+                                                                  .bottomRight,
+                                                              colors: [
+                                                                Colors.white
+                                                                    .withOpac(
+                                                                      0.2,
+                                                                    ),
+                                                                Colors.white
+                                                                    .withOpac(
+                                                                      0.1,
+                                                                    ),
+                                                              ],
+                                                            ),
+                                                        borderGradient:
+                                                            LinearGradient(
+                                                              begin: Alignment
+                                                                  .topLeft,
+                                                              end: Alignment
+                                                                  .bottomRight,
+                                                              colors: [
+                                                                Colors.white
+                                                                    .withOpac(
+                                                                      0.5,
+                                                                    ),
+                                                                Colors.white
+                                                                    .withOpac(
+                                                                      0.5,
+                                                                    ),
+                                                              ],
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    Center(
+                                                      child: SelectableText(
+                                                        booking.password ??
+                                                            'No Password',
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  const Gap(16),
+                                ],
+
+                                // Host Copy Link
+                                if (isHost)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 16.0,
                                     ),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Clipboard.setData(
+                                          ClipboardData(
+                                            text: booking.location.meetingID(),
+                                          ),
+                                        );
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Meeting ID copied!'),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text(
+                                        "Click to Copy Zoom ID",
+                                        style: TextStyle(
+                                          decoration: TextDecoration.underline,
+                                          fontSize: 12,
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            )
+                          : Container(
+                              key: const ValueKey('locked_view'),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.black12,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.white10),
+                              ),
+                              child: Column(
+                                children: [
+                                  const Icon(
+                                    Icons.lock_clock,
+                                    size: 30,
+                                    color: Colors.white54,
+                                  ),
+                                  const Gap(8),
+                                  Text(
+                                    "Join to view details",
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: Colors.white70,
+                                          fontStyle: FontStyle.italic,
+                                        ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
+                    ),
 
-                          // 2. PASSWORD KEY
-                          if (booking.password != null) ...[
-                            const Gap(8),
-                            IconButton(
-                              icon: const Icon(Icons.key),
-                              onPressed: () => showDialog(
-                                context: context,
-                                builder: (context) => Dialog(
-                                  child: SizedBox(
-                                    width: 350,
-                                    height: 60,
-                                    child: Stack(
-                                      children: [
-                                        Positioned.fill(
-                                          child: GlassmorphicContainer(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            borderRadius: 16,
-                                            blur: 10,
-                                            border: 1,
-                                            linearGradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                              colors: [
-                                                Colors.white.withOpacity(0.2),
-                                                Colors.white.withOpacity(0.1),
-                                              ],
-                                            ),
-                                            borderGradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                              colors: [
-                                                Colors.white.withOpacity(0.5),
-                                                Colors.white.withOpacity(0.5),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Center(
-                                          child: SelectableText(
-                                            booking.password ?? 'No Password',
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                    const Gap(10),
+
+                    // --- SECTION C: PARTICIPANTS LIST ---
+                    Text(
+                      'Intercessor',
+                      style: TextStyle(
+                        foreground: Paint()
+                          ..style = PaintingStyle.stroke
+                          ..strokeWidth = 1.5
+                          ..color = context.colors.primary,
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const Gap(8),
+
+                    if (participants.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text('No intercessor yet.'),
+                      )
+                    else
+                      // ✅ KEY FIX 2: Using Column instead of ListView for proper intrinsic sizing
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          for (var i = 0; i < participants.length; i++) ...[
+                            if (i > 0) const Divider(),
+                            // ✅ KEY FIX 3: AnimatedSwitcher for row insertion/removal
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 300),
+                              child: ListTile(
+                                key: ValueKey(
+                                  participants[i].uid,
+                                ), // Important!
+                                title: Text(
+                                  textAlign: TextAlign.start,
+                                  participants[i].name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                // Highlight current user
+                                tileColor: participants[i].uid == user.uid
+                                    ? Colors.white.withOpac(0.1)
+                                    : null,
                               ),
                             ),
                           ],
                         ],
                       ),
-                      const Gap(16),
-                    ],
+                    const SizedBox(height: 16),
 
-                    // Host Copy Link
-                    if (isHost)
+                    // --- SECTION D: ACTION BUTTONS ---
+
+                    // 1. Join/Leave Button
+                    if (!isHost && user.currentRole(ref) != UserRole.observer)
+                      joinButton(
+                        user,
+                        isJoined,
+                        participationFunction,
+                        context,
+                      ),
+
+                    // 2. Admin Delete Button
+                    if (isHost || user.currentRole(ref) == UserRole.admin)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Clipboard.setData(
-                              ClipboardData(text: booking.location.meetingID()),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Meeting ID copied!'),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            "Click to Copy Zoom ID",
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              fontSize: 12,
-                              color: Colors.white70,
+                        padding: const EdgeInsets.only(top: 15),
+                        child: GlassmorphicButton(
+                          backgroundColors: [
+                            Theme.of(
+                              context,
+                            ).colorScheme.errorContainer.withOpac(0.12),
+                            Theme.of(
+                              context,
+                            ).colorScheme.errorContainer.withOpac(0.2),
+                          ],
+                          borderRadius: 20,
+                          text: 'Delete',
+                          icon: Icons.delete,
+                          onPressed: () => showDialog(
+                            context: context,
+                            builder: (context) => ConfirmDialog(
+                              confirmText: 'Delete',
+                              cancelText: 'Cancel',
+                              description:
+                                  'Are you sure you want to delete this booking?',
+                              confirmAction: () {
+                                context.pop();
+                                ref
+                                    .read(currentOrgRepositoryProvider)
+                                    .deleteBooking(booking.id);
+                                context.pop();
+                              },
+                              title: 'Delete Booking',
                             ),
                           ),
                         ),
                       ),
-                  ] else ...[
-                    // --- SECTION B: LOCKED VIEW (If not joined) ---
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.black12,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.white10),
+                    if (user.currentRole(ref).isObserver)
+                      Text(
+                        'Reach out at About Us page for details on joining this booking.',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.lock_clock,
-                            size: 30,
-                            color: Colors.white54,
-                          ),
-                          const Gap(8),
-                          Text(
-                            "Join to view  details",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: Colors.white70,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Gap(10),
                   ],
-                  const Gap(10),
-
-                  // --- SECTION C: PARTICIPANTS LIST ---
-                  Text(
-                    'Intercessors',
-                    style: Theme.of(context).textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const Gap(8),
-
-                  if (participants.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text('No intercessors yet.'),
-                    )
-                  else
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        for (var i = 0; i < participants.length; i++) ...[
-                          if (i > 0)
-                            Divider(
-                              height: 1,
-                              color: Colors.white.withOpacity(0.5),
-                            ),
-                          ListTile(
-                            title: Text(
-                              textAlign: TextAlign.center,
-                              participants[i].name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            // Highlight current user
-                            tileColor: participants[i].uid == user.uid
-                                ? Colors.white.withOpacity(0.1)
-                                : null,
-                          ),
-                        ],
-                      ],
-                    ),
-                  const SizedBox(height: 16),
-
-                  // --- SECTION D: ACTION BUTTONS ---
-
-                  // 1. Join/Leave Button
-                  if (!isHost && user.currentRole(ref) != UserRole.observer)
-                    joinButton(user, isJoined, participationFunction, context),
-
-                  // 2. Admin Delete Button
-                  if (isHost || user.currentRole(ref) == UserRole.admin)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: GlassmorphicButton(
-                        backgroundColors: [
-                          Theme.of(
-                            context,
-                          ).colorScheme.errorContainer.withOpacity(0.12),
-                          Theme.of(
-                            context,
-                          ).colorScheme.errorContainer.withOpacity(0.2),
-                        ],
-                        borderRadius: 20,
-                        text: 'Delete',
-                        icon: Icons.delete,
-                        onPressed: () => showDialog(
-                          context: context,
-                          builder: (context) => ConfirmDialog(
-                            confirmText: 'Delete',
-                            cancelText: 'Cancel',
-                            description:
-                                'Are you sure you want to delete this booking?',
-                            confirmAction: () {
-                              context.pop();
-                              ref
-                                  .read(currentOrgRepositoryProvider)
-                                  .deleteBooking(booking.id);
-                              context.pop();
-                            },
-                            title: 'Delete Booking',
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
+                ),
               ),
             ),
           ),

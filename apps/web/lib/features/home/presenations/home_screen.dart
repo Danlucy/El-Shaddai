@@ -78,21 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // Column containing text and button
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildRichText(context),
-                Gap(40),
-                Center(
-                  child: Column(
-                    children: [
-                      Text(
-                        'Step 1: Select the prayer altar to Join',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      OrganizationSelectionDropdown(),
-                    ],
-                  ),
-                ),
-              ],
+              children: [_buildRichText(context), Gap(40)],
             ),
             const SizedBox(width: 48),
             // Large logo
@@ -108,9 +94,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         Gap(40),
+        Center(
+          child: Column(
+            children: [
+              Text(
+                'Step 1: Select the prayer altar to Join',
+                style: TextStyle(fontSize: 20),
+              ),
+              OrganizationSelectionDropdown(
+                height: 60,
+                width: 300,
+                fontSize: 24,
+              ),
+            ],
+          ),
+        ),
+        Gap(20),
         Text('Step 2: Click here to view the', style: TextStyle(fontSize: 20)),
         GlassmorphicButton(
-          fontSize: 28,
+          fontSize: 24,
           textColour: context.colors.primary,
           text: 'Prayer list',
           icon: Icons.calendar_today,
@@ -121,7 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Gap(30),
 
         TextButton(
-          child: Text('Click for Help!'),
+          child: Text('Click for Help!❓'),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -211,7 +213,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 'Step 1: Select the prayer altar to Join',
                 style: TextStyle(fontSize: 20),
               ),
-              OrganizationSelectionDropdown(bigger: true),
+              OrganizationSelectionDropdown(
+                width: 300,
+                height: 60,
+                fontSize: 24,
+              ),
             ],
           ),
         ),
@@ -229,7 +235,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Gap(30),
 
         TextButton(
-          child: Text('Click for Help!'),
+          child: Text('Click for Help!❓'),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

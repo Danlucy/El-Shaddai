@@ -8,6 +8,7 @@ import 'package:website/features/booking/presentations/booking_list_screen.dart'
 import 'package:website/features/booking/presentations/booking_screen.dart';
 import 'package:website/features/home/presenations/home_screen.dart';
 import 'package:website/features/home/presenations/shell_screen.dart';
+import 'package:website/features/profile/presentations/profile_screen.dart';
 import 'package:website/features/settings/presentations/settings_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -130,6 +131,28 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/settings',
                 builder: (context, state) => const SettingsScreen(),
+              ),
+            ],
+          ),
+          // Profile tab
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) {
+                  final UserModel? userModel = state.extra as UserModel?;
+                  return ProfileScreen(userModel: userModel);
+                },
+                routes: [
+                  // View profile by user ID
+                  GoRoute(
+                    path: ':uid',
+                    builder: (context, state) {
+                      final UserModel? userModel = state.extra as UserModel?;
+                      return ProfileScreen(userModel: userModel);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

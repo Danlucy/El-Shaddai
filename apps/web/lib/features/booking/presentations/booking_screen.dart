@@ -57,11 +57,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   }
 
   // ✅ 2. Updated Desktop Layout
-  Widget _buildDesktopLayout(BuildContext context, bool canCreate) {
+  Widget _buildDesktopLayout(BuildContext context, UserRole user) {
     return Stack(
       children: [
         Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
               child: Text(
@@ -79,7 +78,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               child: Row(
                 children: [
                   // --- LEFT SIDEBAR (Monthly Calendar) ---
-                  _DesktopCalendarToolSection(canCreate),
+                  _DesktopCalendarToolSection(user),
                   const Gap(15), // Spacing between panels
                   _CalendarDisplaySection(viewMode: CalendarView.week),
                 ],
@@ -118,9 +117,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     );
   }
 
-  SizedBox _DesktopCalendarToolSection(bool canCreate) {
-    final user = ref.read(userProvider).value;
+  // Pass the user in as an argument to avoid duplicate watches/reads
+  SizedBox _DesktopCalendarToolSection(UserRole userRole) {
     bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
+    bool canCreate = userRole.isWatchLeaderOrHigher ?? false;
 
     return SizedBox(
       width: 350,
@@ -129,14 +129,14 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         children: [
           const _MonthlyCalendarWidget(aspectRatio: 0.8),
           const Spacer(),
-          // ✅ Desktop Source Hero
           if (canCreate)
             Hero(
               tag: "booking_fab",
               child: OutlinedButton(
                 onPressed: () {
-                  if (user?.currentRole(ref) == UserRole.intercessor ||
-                      user?.currentRole(ref) == UserRole.observer ||
+                  // Now this logic will actually work
+                  if (userRole == UserRole.intercessor ||
+                      userRole == UserRole.observer ||
                       isDesktop) {
                     ref.read(bookingControllerProvider.notifier).clearState();
                     context.go('/booking/create');
@@ -158,8 +158,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.read(userProvider).value;
-    final canCreate = user?.isWatchLeaderOrHigher ?? false;
+    final user = ref.watch(userProvider).value;
+    final canCreate = user?.currentRole(ref).isWatchLeaderOrHigher ?? false;
     ref.watch(calendarDateNotifierProvider);
     bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
     bool isMobile = ResponsiveBreakpoints.of(context).smallerThan(TABLET);
@@ -212,7 +212,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                 child: isDesktop
-                    ? _buildDesktopLayout(context, canCreate)
+                    ? _buildDesktopLayout(context, user.currentRole(ref))
                     : _buildMobileLayout(context),
               ),
             ),

@@ -237,7 +237,7 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                           _ZoomComponent(user: user, ref: ref, booking: booking)
                         else
                           Text(
-                            'Reach out to About Us page for details on joining this booking.',
+                            'Reach out at About Us page for details on joining this booking.',
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.error,
                             ),
