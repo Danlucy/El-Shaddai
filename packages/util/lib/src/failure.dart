@@ -37,6 +37,7 @@ class ErrorText extends StatelessWidget {
   final String error;
   @override
   Widget build(BuildContext context) {
+
     showFailureSnackBar(context, error);
     return Center(
       child: Text(error, style: const TextStyle(fontWeight: FontWeight.bold)),

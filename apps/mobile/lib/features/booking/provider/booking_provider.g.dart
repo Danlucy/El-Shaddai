@@ -112,9 +112,9 @@ String _$getCurrentOrgBookingsStreamHash() =>
     r'600bba250611ab0cdfede82804453ec873ef0b59';
 
 @ProviderFor(filteredBookingLists)
-const filteredBookingsProvider = FilteredBookingsProvider._();
+const filteredBookingListsProvider = FilteredBookingListsProvider._();
 
-final class FilteredBookingsProvider
+final class FilteredBookingListsProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<BookingModel>>,
@@ -122,19 +122,19 @@ final class FilteredBookingsProvider
           AsyncValue<List<BookingModel>>
         >
     with $Provider<AsyncValue<List<BookingModel>>> {
-  const FilteredBookingsProvider._()
+  const FilteredBookingListsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'filteredBookingsProvider',
+        name: r'filteredBookingListsProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$filteredBookingsHash();
+  String debugGetCreateSourceHash() => _$filteredBookingListsHash();
 
   @$internal
   @override
@@ -158,7 +158,8 @@ final class FilteredBookingsProvider
   }
 }
 
-String _$filteredBookingsHash() => r'40a55312c7dcf21be5aa114fab125dc22dbef07b';
+String _$filteredBookingListsHash() =>
+    r'091a337469b792f32850be55a4451b1cd3887859';
 
 @ProviderFor(getSingleCurrentOrgBookingStream)
 const getSingleCurrentOrgBookingStreamProvider =

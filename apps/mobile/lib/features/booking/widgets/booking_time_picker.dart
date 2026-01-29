@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:gap/gap.dart';
@@ -23,54 +22,51 @@ class _BookingTimePickerComponentState
   Widget build(BuildContext context) {
     final eventReader = ref.watch(bookingControllerProvider);
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: _TimePickerLabel(
-              time: eventReader.timeRange?.start,
-              defaultLabel: 'Start Time',
-              onTap: () => _showTimePickerDialog(
-                context,
-                onTimeSelected: (selectedTime) {
-                  ref
-                      .read(bookingControllerProvider.notifier)
-                      .setStartTime(selectedTime, context);
-                },
-                // Pass the current start time as the initial time
-                initialTime: eventReader.timeRange?.start,
-              ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: _TimePickerLabel(
+            time: eventReader.timeRange?.start,
+            defaultLabel: 'Start Time',
+            onTap: () => _showTimePickerDialog(
+              context,
+              onTimeSelected: (selectedTime) {
+                ref
+                    .read(bookingControllerProvider.notifier)
+                    .setStartTime(selectedTime, context);
+              },
+              // Pass the current start time as the initial time
+              initialTime: eventReader.timeRange?.start,
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 3),
-            child: Icon(Icons.access_time),
-          ),
-          const Icon(Icons.arrow_right_alt_outlined),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 3),
-            child: Icon(Icons.access_time_filled),
-          ),
-          Expanded(
-            child: _TimePickerLabel(
-              time: eventReader.timeRange?.end,
-              defaultLabel: 'End Time',
-              onTap: () => _showTimePickerDialog(
-                context,
-                onTimeSelected: (selectedTime) {
-                  ref
-                      .read(bookingControllerProvider.notifier)
-                      .setEndTime(selectedTime, context);
-                },
-                // Pass the current end time as the initial time
-                initialTime: eventReader.timeRange?.end,
-              ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 3),
+          child: Icon(Icons.access_time),
+        ),
+        const Icon(Icons.arrow_right_alt_outlined),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 3),
+          child: Icon(Icons.access_time_filled),
+        ),
+        Expanded(
+          child: _TimePickerLabel(
+            time: eventReader.timeRange?.end,
+            defaultLabel: 'End Time',
+            onTap: () => _showTimePickerDialog(
+              context,
+              onTimeSelected: (selectedTime) {
+                ref
+                    .read(bookingControllerProvider.notifier)
+                    .setEndTime(selectedTime, context);
+              },
+              // Pass the current end time as the initial time
+              initialTime: eventReader.timeRange?.end,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -166,9 +162,13 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
             time: selectedTime,
             is24HourMode: true,
             normalTextStyle: TextStyle(
-                fontSize: 30, color: context.colors.tertiaryContainer),
-            highlightedTextStyle:
-                TextStyle(fontSize: 34, color: context.colors.tertiary),
+              fontSize: 30,
+              color: context.colors.tertiaryContainer,
+            ),
+            highlightedTextStyle: TextStyle(
+              fontSize: 34,
+              color: context.colors.tertiary,
+            ),
             spacing: 0,
             itemHeight: 50,
             itemWidth: 140,
@@ -188,7 +188,9 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
               OutlinedButton(
                 onPressed: () => Navigator.pop(context),
                 child: const SizedBox(
-                    width: 60, child: Center(child: Text('Cancel'))),
+                  width: 60,
+                  child: Center(child: Text('Cancel')),
+                ),
               ),
               const Gap(10),
               OutlinedButton(
@@ -197,7 +199,9 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                   Navigator.pop(context);
                 },
                 child: const SizedBox(
-                    width: 60, child: Center(child: Text('Set'))),
+                  width: 60,
+                  child: Center(child: Text('Set')),
+                ),
               ),
             ],
           ),

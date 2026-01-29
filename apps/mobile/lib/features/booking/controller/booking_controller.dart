@@ -2,6 +2,7 @@ import 'package:api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mobile/features/booking/controller/booking_clipboard.dart';
 import 'package:mobile/features/booking/provider/booking_provider.dart';
 import 'package:mobile/features/booking/state/booking_state.dart';
 import 'package:models/models.dart';
@@ -45,7 +46,7 @@ class BookingController extends _$BookingController {
     return const BookingState();
   }
 
-  clearState() {
+  void clearState() {
     state = const BookingState();
   }
 
@@ -67,6 +68,21 @@ class BookingController extends _$BookingController {
     }
   }
 
+  void pasteFromClipboard(BuildContext context) {
+    // 1. Read the clipboard state
+    final clipboardState = ref.read(bookingClipboardProvider);
+    print(clipboardState);
+    if (clipboardState == null) {
+      showFailureSnackBar(context, 'No Booking is Currently Copied');
+      return;
+    }
+
+    state = clipboardState;
+
+    // 3. Update the Venue Toggle logic (Zoom/Location/Hybrid)
+    switchVenueBasedOnCurrentState();
+  }
+
   void setState(BookingModel newState) {
     state = BookingState(
       password: newState.password,
@@ -79,6 +95,11 @@ class BookingController extends _$BookingController {
       timeRange: newState.timeRange,
       title: newState.title,
     );
+  }
+
+  void copyState(BookingModel booking) {
+    setState(booking);
+    state = state.copyWith(bookingId: null);
   }
 
   void setTitle(String title) => state = state.copyWith(title: title);

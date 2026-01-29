@@ -82,7 +82,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
     }
 
     // Watch the filtered bookings and search query
-    final filteredBookingsAsync = ref.watch(filteredBookingsProvider);
+    final filteredBookingsAsync = ref.watch(filteredBookingListsProvider);
     final searchQuery = ref.watch(bookingListSearchQueryProvider);
 
     return Scaffold(

@@ -6,10 +6,12 @@ class BookingTextField extends StatelessWidget {
   final String validationMessage;
   final void Function(String)? onChanged;
   final int maxLines;
+  final TextEditingController? controller;
 
   const BookingTextField({
     super.key,
     required this.label,
+    required this.controller,
     required this.validationMessage,
     this.initialValue,
     this.onChanged,
@@ -20,15 +22,14 @@ class BookingTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       initialValue: initialValue,
+      controller: controller,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) => (value?.isEmpty ?? true) ? validationMessage : null,
       onChanged: onChanged,
       maxLines: maxLines,
       decoration: InputDecoration(
         label: Text(label),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
