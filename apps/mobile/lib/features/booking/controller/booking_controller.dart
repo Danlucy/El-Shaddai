@@ -1,7 +1,9 @@
 import 'package:api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mobile/features/auth/widgets/confirm_button.dart';
 import 'package:mobile/features/booking/controller/booking_clipboard.dart';
 import 'package:mobile/features/booking/provider/booking_provider.dart';
 import 'package:mobile/features/booking/state/booking_state.dart';
@@ -41,6 +43,8 @@ class BookingVenueState extends _$BookingVenueState {
 
 @riverpod
 class BookingController extends _$BookingController {
+  Map<String, dynamic>? occurrenceIds;
+
   @override
   BookingState build() {
     return const BookingState();
@@ -71,7 +75,6 @@ class BookingController extends _$BookingController {
   void pasteFromClipboard(BuildContext context) {
     // 1. Read the clipboard state
     final clipboardState = ref.read(bookingClipboardProvider);
-    print(clipboardState);
     if (clipboardState == null) {
       showFailureSnackBar(context, 'No Booking is Currently Copied');
       return;
@@ -162,6 +165,8 @@ class BookingController extends _$BookingController {
       );
     }
   }
+
+  void setOccurenceId(Map<String, dynamic>? occurenceId) => occurrenceIds;
 
   void setEventId(String bookingId) =>
       state = state.copyWith(bookingId: bookingId);
@@ -430,6 +435,90 @@ class BookingController extends _$BookingController {
     }
 
     return false;
+  }
+
+  void deleteBooking(BuildContext context, BookingModel bookingModel) {
+    // 1. Permission Check
+    // 2. Show Initial Confirmation
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ConfirmButton(
+          confirmText: 'Delete',
+          cancelText: 'Cancel',
+          description: 'Are you sure you want to delete this booking?',
+          confirmAction: () {
+            // Close the first confirmation dialog
+
+            context.pop();
+            _processDeleteBookingRecursion(context, bookingModel);
+          },
+        );
+      },
+    );
+  }
+
+  /// 🔹 REFACTORED: Recurring Check & Execution
+  void _processDeleteBookingRecursion(
+    BuildContext context,
+    BookingModel bookingModel,
+  ) {
+    // Check if it's recurring (Has an occurrenceId or recurrence rules)
+    final bool isRecurring = bookingModel.groupId != null;
+
+    if (isRecurring) {
+      showDialog(
+        context: context,
+        builder: (innerContext) {
+          return AlertDialog(
+            title: const Text('Recurring Event'),
+            content: const Text(
+              'This is a recurring session. Do you want to delete only this session or the entire series?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  _executeDelete(bookingModel, deleteEntireSeries: false);
+                  innerContext.pop();
+                },
+                child: const Text('This Only'),
+              ),
+              TextButton(
+                onPressed: () {
+                  _executeDelete(bookingModel, deleteEntireSeries: true);
+                  innerContext.pop();
+                },
+                child: const Text(
+                  'Entire Series',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              TextButton(
+                onPressed: () => innerContext.pop(),
+                child: const Text('Cancel'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Not recurring? Just delete.
+      _executeDelete(bookingModel, deleteEntireSeries: false);
+    }
+  }
+
+  /// 🔹 REFACTORED: API Call Wrapper
+  void _executeDelete(BookingModel model, {required bool deleteEntireSeries}) {
+    // This assumes you have the standalone deleteBooking function accessible
+    // or you can call the repository directly like this:
+    ref
+        .read(currentOrgRepositoryProvider)
+        .deleteBooking(
+          bookingModel: model,
+          deleteEntireSeries: deleteEntireSeries,
+        );
+
+    // Optional: Show snackbar here or let the repo handle it
   }
 
   // final booking = bookings.firstWhereOrNull(

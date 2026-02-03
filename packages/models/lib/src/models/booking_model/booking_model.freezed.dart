@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BookingModel {
 
- String get title;@CustomDateTimeRangeConverter() RecurrenceState get recurrenceState; String get host; DateTime get createdAt;@CustomDateTimeRangeConverter() CustomDateTimeRange get timeRange; String get userId; String get id;@LocationDataConverter() LocationData get location; String get description; String? get password;@RecurrenceConfigurationConverter() RecurrenceConfigurationModel? get recurrenceModel;
+ String get title;@CustomDateTimeRangeConverter() RecurrenceState get recurrenceState; String get host; DateTime get createdAt;@CustomDateTimeRangeConverter() CustomDateTimeRange get timeRange; String get userId; String get id;@LocationDataConverter() LocationData get location; String get description; String? get password;@RecurrenceConfigurationConverter() RecurrenceConfigurationModel? get recurrenceModel; String? get occurrenceId; String? get groupId;
 /// Create a copy of BookingModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $BookingModelCopyWith<BookingModel> get copyWith => _$BookingModelCopyWithImpl<B
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BookingModel&&(identical(other.title, title) || other.title == title)&&(identical(other.recurrenceState, recurrenceState) || other.recurrenceState == recurrenceState)&&(identical(other.host, host) || other.host == host)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.timeRange, timeRange) || other.timeRange == timeRange)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.location, location) || other.location == location)&&(identical(other.description, description) || other.description == description)&&(identical(other.password, password) || other.password == password)&&(identical(other.recurrenceModel, recurrenceModel) || other.recurrenceModel == recurrenceModel));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BookingModel&&(identical(other.title, title) || other.title == title)&&(identical(other.recurrenceState, recurrenceState) || other.recurrenceState == recurrenceState)&&(identical(other.host, host) || other.host == host)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.timeRange, timeRange) || other.timeRange == timeRange)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.location, location) || other.location == location)&&(identical(other.description, description) || other.description == description)&&(identical(other.password, password) || other.password == password)&&(identical(other.recurrenceModel, recurrenceModel) || other.recurrenceModel == recurrenceModel)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.groupId, groupId) || other.groupId == groupId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,title,recurrenceState,host,createdAt,timeRange,userId,id,location,description,password,recurrenceModel);
+int get hashCode => Object.hash(runtimeType,title,recurrenceState,host,createdAt,timeRange,userId,id,location,description,password,recurrenceModel,occurrenceId,groupId);
 
 @override
 String toString() {
-  return 'BookingModel(title: $title, recurrenceState: $recurrenceState, host: $host, createdAt: $createdAt, timeRange: $timeRange, userId: $userId, id: $id, location: $location, description: $description, password: $password, recurrenceModel: $recurrenceModel)';
+  return 'BookingModel(title: $title, recurrenceState: $recurrenceState, host: $host, createdAt: $createdAt, timeRange: $timeRange, userId: $userId, id: $id, location: $location, description: $description, password: $password, recurrenceModel: $recurrenceModel, occurrenceId: $occurrenceId, groupId: $groupId)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $BookingModelCopyWith<$Res>  {
   factory $BookingModelCopyWith(BookingModel value, $Res Function(BookingModel) _then) = _$BookingModelCopyWithImpl;
 @useResult
 $Res call({
- String title,@CustomDateTimeRangeConverter() RecurrenceState recurrenceState, String host, DateTime createdAt,@CustomDateTimeRangeConverter() CustomDateTimeRange timeRange, String userId, String id,@LocationDataConverter() LocationData location, String description, String? password,@RecurrenceConfigurationConverter() RecurrenceConfigurationModel? recurrenceModel
+ String title,@CustomDateTimeRangeConverter() RecurrenceState recurrenceState, String host, DateTime createdAt,@CustomDateTimeRangeConverter() CustomDateTimeRange timeRange, String userId, String id,@LocationDataConverter() LocationData location, String description, String? password,@RecurrenceConfigurationConverter() RecurrenceConfigurationModel? recurrenceModel, String? occurrenceId, String? groupId
 });
 
 
@@ -65,7 +65,7 @@ class _$BookingModelCopyWithImpl<$Res>
 
 /// Create a copy of BookingModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? recurrenceState = null,Object? host = null,Object? createdAt = null,Object? timeRange = null,Object? userId = null,Object? id = null,Object? location = null,Object? description = null,Object? password = freezed,Object? recurrenceModel = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? recurrenceState = null,Object? host = null,Object? createdAt = null,Object? timeRange = null,Object? userId = null,Object? id = null,Object? location = null,Object? description = null,Object? password = freezed,Object? recurrenceModel = freezed,Object? occurrenceId = freezed,Object? groupId = freezed,}) {
   return _then(_self.copyWith(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,recurrenceState: null == recurrenceState ? _self.recurrenceState : recurrenceState // ignore: cast_nullable_to_non_nullable
@@ -78,7 +78,9 @@ as String,location: null == location ? _self.location : location // ignore: cast
 as LocationData,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String?,recurrenceModel: freezed == recurrenceModel ? _self.recurrenceModel : recurrenceModel // ignore: cast_nullable_to_non_nullable
-as RecurrenceConfigurationModel?,
+as RecurrenceConfigurationModel?,occurrenceId: freezed == occurrenceId ? _self.occurrenceId : occurrenceId // ignore: cast_nullable_to_non_nullable
+as String?,groupId: freezed == groupId ? _self.groupId : groupId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of BookingModel
@@ -172,10 +174,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title, @CustomDateTimeRangeConverter()  RecurrenceState recurrenceState,  String host,  DateTime createdAt, @CustomDateTimeRangeConverter()  CustomDateTimeRange timeRange,  String userId,  String id, @LocationDataConverter()  LocationData location,  String description,  String? password, @RecurrenceConfigurationConverter()  RecurrenceConfigurationModel? recurrenceModel)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title, @CustomDateTimeRangeConverter()  RecurrenceState recurrenceState,  String host,  DateTime createdAt, @CustomDateTimeRangeConverter()  CustomDateTimeRange timeRange,  String userId,  String id, @LocationDataConverter()  LocationData location,  String description,  String? password, @RecurrenceConfigurationConverter()  RecurrenceConfigurationModel? recurrenceModel,  String? occurrenceId,  String? groupId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BookingModel() when $default != null:
-return $default(_that.title,_that.recurrenceState,_that.host,_that.createdAt,_that.timeRange,_that.userId,_that.id,_that.location,_that.description,_that.password,_that.recurrenceModel);case _:
+return $default(_that.title,_that.recurrenceState,_that.host,_that.createdAt,_that.timeRange,_that.userId,_that.id,_that.location,_that.description,_that.password,_that.recurrenceModel,_that.occurrenceId,_that.groupId);case _:
   return orElse();
 
 }
@@ -193,10 +195,10 @@ return $default(_that.title,_that.recurrenceState,_that.host,_that.createdAt,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title, @CustomDateTimeRangeConverter()  RecurrenceState recurrenceState,  String host,  DateTime createdAt, @CustomDateTimeRangeConverter()  CustomDateTimeRange timeRange,  String userId,  String id, @LocationDataConverter()  LocationData location,  String description,  String? password, @RecurrenceConfigurationConverter()  RecurrenceConfigurationModel? recurrenceModel)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title, @CustomDateTimeRangeConverter()  RecurrenceState recurrenceState,  String host,  DateTime createdAt, @CustomDateTimeRangeConverter()  CustomDateTimeRange timeRange,  String userId,  String id, @LocationDataConverter()  LocationData location,  String description,  String? password, @RecurrenceConfigurationConverter()  RecurrenceConfigurationModel? recurrenceModel,  String? occurrenceId,  String? groupId)  $default,) {final _that = this;
 switch (_that) {
 case _BookingModel():
-return $default(_that.title,_that.recurrenceState,_that.host,_that.createdAt,_that.timeRange,_that.userId,_that.id,_that.location,_that.description,_that.password,_that.recurrenceModel);}
+return $default(_that.title,_that.recurrenceState,_that.host,_that.createdAt,_that.timeRange,_that.userId,_that.id,_that.location,_that.description,_that.password,_that.recurrenceModel,_that.occurrenceId,_that.groupId);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -210,10 +212,10 @@ return $default(_that.title,_that.recurrenceState,_that.host,_that.createdAt,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title, @CustomDateTimeRangeConverter()  RecurrenceState recurrenceState,  String host,  DateTime createdAt, @CustomDateTimeRangeConverter()  CustomDateTimeRange timeRange,  String userId,  String id, @LocationDataConverter()  LocationData location,  String description,  String? password, @RecurrenceConfigurationConverter()  RecurrenceConfigurationModel? recurrenceModel)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title, @CustomDateTimeRangeConverter()  RecurrenceState recurrenceState,  String host,  DateTime createdAt, @CustomDateTimeRangeConverter()  CustomDateTimeRange timeRange,  String userId,  String id, @LocationDataConverter()  LocationData location,  String description,  String? password, @RecurrenceConfigurationConverter()  RecurrenceConfigurationModel? recurrenceModel,  String? occurrenceId,  String? groupId)?  $default,) {final _that = this;
 switch (_that) {
 case _BookingModel() when $default != null:
-return $default(_that.title,_that.recurrenceState,_that.host,_that.createdAt,_that.timeRange,_that.userId,_that.id,_that.location,_that.description,_that.password,_that.recurrenceModel);case _:
+return $default(_that.title,_that.recurrenceState,_that.host,_that.createdAt,_that.timeRange,_that.userId,_that.id,_that.location,_that.description,_that.password,_that.recurrenceModel,_that.occurrenceId,_that.groupId);case _:
   return null;
 
 }
@@ -225,7 +227,7 @@ return $default(_that.title,_that.recurrenceState,_that.host,_that.createdAt,_th
 @JsonSerializable()
 
 class _BookingModel extends BookingModel {
-  const _BookingModel({required this.title, @CustomDateTimeRangeConverter() required this.recurrenceState, required this.host, required this.createdAt, @CustomDateTimeRangeConverter() required this.timeRange, required this.userId, required this.id, @LocationDataConverter() required this.location, required this.description, this.password, @RecurrenceConfigurationConverter() this.recurrenceModel}): super._();
+  const _BookingModel({required this.title, @CustomDateTimeRangeConverter() required this.recurrenceState, required this.host, required this.createdAt, @CustomDateTimeRangeConverter() required this.timeRange, required this.userId, required this.id, @LocationDataConverter() required this.location, required this.description, this.password, @RecurrenceConfigurationConverter() this.recurrenceModel, this.occurrenceId, this.groupId}): super._();
   factory _BookingModel.fromJson(Map<String, dynamic> json) => _$BookingModelFromJson(json);
 
 @override final  String title;
@@ -239,6 +241,8 @@ class _BookingModel extends BookingModel {
 @override final  String description;
 @override final  String? password;
 @override@RecurrenceConfigurationConverter() final  RecurrenceConfigurationModel? recurrenceModel;
+@override final  String? occurrenceId;
+@override final  String? groupId;
 
 /// Create a copy of BookingModel
 /// with the given fields replaced by the non-null parameter values.
@@ -253,16 +257,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BookingModel&&(identical(other.title, title) || other.title == title)&&(identical(other.recurrenceState, recurrenceState) || other.recurrenceState == recurrenceState)&&(identical(other.host, host) || other.host == host)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.timeRange, timeRange) || other.timeRange == timeRange)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.location, location) || other.location == location)&&(identical(other.description, description) || other.description == description)&&(identical(other.password, password) || other.password == password)&&(identical(other.recurrenceModel, recurrenceModel) || other.recurrenceModel == recurrenceModel));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BookingModel&&(identical(other.title, title) || other.title == title)&&(identical(other.recurrenceState, recurrenceState) || other.recurrenceState == recurrenceState)&&(identical(other.host, host) || other.host == host)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.timeRange, timeRange) || other.timeRange == timeRange)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.location, location) || other.location == location)&&(identical(other.description, description) || other.description == description)&&(identical(other.password, password) || other.password == password)&&(identical(other.recurrenceModel, recurrenceModel) || other.recurrenceModel == recurrenceModel)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.groupId, groupId) || other.groupId == groupId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,title,recurrenceState,host,createdAt,timeRange,userId,id,location,description,password,recurrenceModel);
+int get hashCode => Object.hash(runtimeType,title,recurrenceState,host,createdAt,timeRange,userId,id,location,description,password,recurrenceModel,occurrenceId,groupId);
 
 @override
 String toString() {
-  return 'BookingModel(title: $title, recurrenceState: $recurrenceState, host: $host, createdAt: $createdAt, timeRange: $timeRange, userId: $userId, id: $id, location: $location, description: $description, password: $password, recurrenceModel: $recurrenceModel)';
+  return 'BookingModel(title: $title, recurrenceState: $recurrenceState, host: $host, createdAt: $createdAt, timeRange: $timeRange, userId: $userId, id: $id, location: $location, description: $description, password: $password, recurrenceModel: $recurrenceModel, occurrenceId: $occurrenceId, groupId: $groupId)';
 }
 
 
@@ -273,7 +277,7 @@ abstract mixin class _$BookingModelCopyWith<$Res> implements $BookingModelCopyWi
   factory _$BookingModelCopyWith(_BookingModel value, $Res Function(_BookingModel) _then) = __$BookingModelCopyWithImpl;
 @override @useResult
 $Res call({
- String title,@CustomDateTimeRangeConverter() RecurrenceState recurrenceState, String host, DateTime createdAt,@CustomDateTimeRangeConverter() CustomDateTimeRange timeRange, String userId, String id,@LocationDataConverter() LocationData location, String description, String? password,@RecurrenceConfigurationConverter() RecurrenceConfigurationModel? recurrenceModel
+ String title,@CustomDateTimeRangeConverter() RecurrenceState recurrenceState, String host, DateTime createdAt,@CustomDateTimeRangeConverter() CustomDateTimeRange timeRange, String userId, String id,@LocationDataConverter() LocationData location, String description, String? password,@RecurrenceConfigurationConverter() RecurrenceConfigurationModel? recurrenceModel, String? occurrenceId, String? groupId
 });
 
 
@@ -290,7 +294,7 @@ class __$BookingModelCopyWithImpl<$Res>
 
 /// Create a copy of BookingModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? recurrenceState = null,Object? host = null,Object? createdAt = null,Object? timeRange = null,Object? userId = null,Object? id = null,Object? location = null,Object? description = null,Object? password = freezed,Object? recurrenceModel = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? recurrenceState = null,Object? host = null,Object? createdAt = null,Object? timeRange = null,Object? userId = null,Object? id = null,Object? location = null,Object? description = null,Object? password = freezed,Object? recurrenceModel = freezed,Object? occurrenceId = freezed,Object? groupId = freezed,}) {
   return _then(_BookingModel(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,recurrenceState: null == recurrenceState ? _self.recurrenceState : recurrenceState // ignore: cast_nullable_to_non_nullable
@@ -303,7 +307,9 @@ as String,location: null == location ? _self.location : location // ignore: cast
 as LocationData,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String?,recurrenceModel: freezed == recurrenceModel ? _self.recurrenceModel : recurrenceModel // ignore: cast_nullable_to_non_nullable
-as RecurrenceConfigurationModel?,
+as RecurrenceConfigurationModel?,occurrenceId: freezed == occurrenceId ? _self.occurrenceId : occurrenceId // ignore: cast_nullable_to_non_nullable
+as String?,groupId: freezed == groupId ? _self.groupId : groupId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

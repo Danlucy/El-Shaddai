@@ -27,21 +27,13 @@ class _RecurrenceComponentState extends ConsumerState<RecurrenceComponent>
       vsync: this,
     );
 
-    _slideAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _slideAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -90,8 +82,9 @@ class _RecurrenceComponentState extends ConsumerState<RecurrenceComponent>
                   .toList(),
               onPressed: (int index) {
                 setState(() {
-                  bookingFunction
-                      .setRecurrenceState(RecurrenceState.values[index]);
+                  bookingFunction.setRecurrenceState(
+                    RecurrenceState.values[index],
+                  );
                 });
               },
               borderRadius: const BorderRadius.all(Radius.circular(8)),
@@ -119,7 +112,9 @@ class _RecurrenceComponentState extends ConsumerState<RecurrenceComponent>
                     children: [
                       Container(
                         margin: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 2),
+                          vertical: 10,
+                          horizontal: 2,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: const Color(0xFF1f9cd49f)),
@@ -129,7 +124,7 @@ class _RecurrenceComponentState extends ConsumerState<RecurrenceComponent>
                           child: NumberPicker(
                             value: bookingReader.recurrenceFrequency,
                             minValue: 1,
-                            maxValue: 60,
+                            maxValue: 50,
                             itemHeight: 40,
                             haptics: true,
                             onChanged: (value) {
@@ -142,14 +137,15 @@ class _RecurrenceComponentState extends ConsumerState<RecurrenceComponent>
                       Text(
                         'Times',
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary),
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
                       ),
                     ],
                   ),
                 ),
               );
             },
-          )
+          ),
         ],
       ),
     );

@@ -18,6 +18,7 @@ sealed class BookingState with _$BookingState {
     String? description,
     LocationData? location,
     String? password,
+    String? occurrenceId,
     @Default(RecurrenceState.none) RecurrenceState recurrenceState,
     @Default(2) int recurrenceFrequency,
   }) = _BookingState;

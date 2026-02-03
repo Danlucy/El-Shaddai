@@ -50,13 +50,17 @@ class ApiRepository {
   //       }));
   // }
 
-  Future<Response> createMeeting(ZoomMeetingModel meetingData) {
-    // Removed accessToken param
-    return _functionDio.post(
+  Future<Response> createMeeting(ZoomMeetingModel meetingData) async {
+    print('josn data $meetingData');
+    final response = await _functionDio.post(
       'https://api.zoom.us/v2/users/me/meetings',
-      data: meetingData.toJson(),
-      // Interceptor will add the Authorization header
+      data: meetingData.toApiPayload(),
     );
+
+    print('Getting Meeting Response:');
+    print(response);
+
+    return response;
   }
 
   Future<Map<String, dynamic>> exchangeAuthorizationCode(
@@ -95,4 +99,21 @@ class ApiRepository {
       throw Exception('Error exchanging authorization code');
     }
   }
+
+  // Future<Response> deleteMeeting(
+  //   String meetingId, {
+  //   String? occurrenceId,
+  // }) async {
+  //   try {
+  //     final response = await _functionDio.delete(
+  //       'https://api.zoom.us/v2/meetings/$meetingId',
+  //       queryParameters: {
+  //         if (occurrenceId != null) 'occurrence_id': occurrenceId,
+  //       },
+  //     );
+  //     return response;
+  //   } catch (e) {
+  //     throw Exception('Error deleting Zoom meeting: $e');
+  //   }
+  // }
 }

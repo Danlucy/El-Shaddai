@@ -32,6 +32,8 @@ _BookingModel _$BookingModelFromJson(Map<String, dynamic> json) =>
         json['recurrenceModel'],
         const RecurrenceConfigurationConverter().fromJson,
       ),
+      occurrenceId: json['occurrenceId'] as String?,
+      groupId: json['groupId'] as String?,
     );
 
 Map<String, dynamic> _$BookingModelToJson(
@@ -52,6 +54,8 @@ Map<String, dynamic> _$BookingModelToJson(
         instance.recurrenceModel,
         const RecurrenceConfigurationConverter().toJson,
       ),
+  'occurrenceId': instance.occurrenceId,
+  'groupId': instance.groupId,
 };
 
 const _$RecurrenceStateEnumMap = {

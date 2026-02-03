@@ -36,6 +36,8 @@ sealed class BookingModel with _$BookingModel {
     String? password,
     @RecurrenceConfigurationConverter()
     RecurrenceConfigurationModel? recurrenceModel,
+    String? occurrenceId,
+    String? groupId,
   }) = _BookingModel;
 
   factory BookingModel.fromJson(Map<String, dynamic> json) =>

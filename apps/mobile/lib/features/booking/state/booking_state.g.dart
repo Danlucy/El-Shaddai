@@ -22,6 +22,7 @@ _BookingState _$BookingStateFromJson(
     const LocationDataConverter().fromJson,
   ),
   password: json['password'] as String?,
+  occurrenceId: json['occurrenceId'] as String?,
   recurrenceState:
       $enumDecodeNullable(_$RecurrenceStateEnumMap, json['recurrenceState']) ??
       RecurrenceState.none,
@@ -44,6 +45,7 @@ Map<String, dynamic> _$BookingStateToJson(
     const LocationDataConverter().toJson,
   ),
   'password': instance.password,
+  'occurrenceId': instance.occurrenceId,
   'recurrenceState': _$RecurrenceStateEnumMap[instance.recurrenceState]!,
   'recurrenceFrequency': instance.recurrenceFrequency,
 };

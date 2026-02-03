@@ -7,6 +7,7 @@ part 'recurrence_configuration_model.g.dart';
 sealed class RecurrenceConfigurationModel with _$RecurrenceConfigurationModel {
   @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory RecurrenceConfigurationModel({
+
     @JsonKey(name: 'end_times') required int recurrenceFrequency,
     int? weeklyDays,
     required int type,

@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
 import 'package:mobile/core/widgets/snack_bar.dart';
 import 'package:mobile/features/booking/controller/booking_clipboard.dart';
+import 'package:mobile/features/booking/controller/booking_controller.dart';
 import 'package:mobile/features/booking/presentations/booking_screen.dart';
 import 'package:mobile/features/booking/state/booking_state.dart';
 import 'package:mobile/features/booking/widgets/zoom_display_component.dart';
@@ -185,10 +186,12 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                                                   context.pop();
                                                   ref
                                                       .read(
-                                                        currentOrgRepositoryProvider,
+                                                        bookingControllerProvider
+                                                            .notifier,
                                                       )
                                                       .deleteBooking(
-                                                        booking.id,
+                                                        context,
+                                                        booking,
                                                       );
                                                   context.pop();
                                                 },
@@ -374,10 +377,12 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                                   user: user,
                                   ref: ref,
                                   booking: booking,
-                                )
-                              else
+                                ),
+
+                              if (user.value?.currentRole(ref) ==
+                                  UserRole.observer)
                                 Text(
-                                  'Reach out at About Us page for details on joining this booking.',
+                                  'You can only see the Zoom orAddress details if you are accepted as an intercessor.\nPlease go to the About Us page ans contact the admin.',
                                   style: TextStyle(
                                     color: Theme.of(context).colorScheme.error,
                                   ),

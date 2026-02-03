@@ -30,6 +30,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
     final apiRepository = ApiRepository();
     final bookingFunction = ref.watch(bookingControllerProvider.notifier);
     final bookingReader = ref.watch(bookingControllerProvider);
+    List<dynamic>? occurrenceIds;
     return ElevatedButton(
       onPressed: () async {
         String? web = ref.read(bookingControllerProvider).location?.web;
@@ -49,6 +50,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
                   .then((value) {
                     bookingFunction.setWeb(value.data['join_url']);
                     bookingFunction.setPassword(value.data['password']);
+                    occurrenceIds = value.data['occurrences'];
                   });
             } else {}
           }
@@ -56,6 +58,7 @@ class _BookButtonState extends ConsumerState<BookButton> {
           ref
               .read(currentOrgRepositoryProvider)
               .createOrEditBooking(
+                zoomOccurrences: occurrenceIds,
                 // bookingModel: bookingFunction.instantiateBookingModel(
                 //     'https://us02web.zoom.us/j/3128833664?pwd=joy'),
                 //change4

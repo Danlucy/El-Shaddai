@@ -22,19 +22,31 @@ class AuthTokenNotifier extends _$AuthTokenNotifier {
   }
 
   void startTokenListener() {
-    // Start a periodic timer that checks for token changes every 2 seconds
+    // 1. Create the timer
+    final timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      // 2. IMPORTANT: Check if the provider is still mounted before doing async work
+      if (!ref.mounted) {
+        timer.cancel();
+        return;
+      }
 
-    Timer timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? newToken = prefs.getString('userAuthenticationCode');
-      if (newToken != state) {
-        state = newToken; // Update the state
+
+      // 3. Check ref.mounted AGAIN after the async gap (await)
+      if (ref.mounted && newToken != state) {
+        state = newToken;
       }
     });
 
-    // Stop the timer after 1 minute
+    // 4. Register the disposal logic immediately
+    ref.onDispose(() {
+      timer.cancel();
+    });
+
+    // Optional: your existing auto-cancel after 2 minutes
     Future.delayed(const Duration(minutes: 2), () {
-      timer.cancel(); // Cancel the periodic timer
+      if (timer.isActive) timer.cancel();
     });
   }
 }

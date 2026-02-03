@@ -75,7 +75,7 @@ class AuthRepository {
 
       final userModel = UserModel(
         createdAt: hasValidData
-            ? (data!['createdAt'] as Timestamp).toDate()
+            ? (data['createdAt'] as Timestamp).toDate()
             : DateTime.now(),
         name: userCredential.user?.displayName ?? 'Nameless',
         uid: userCredential.user!.uid,
@@ -85,7 +85,7 @@ class AuthRepository {
       await docRef.set(userModel.toJson(), SetOptions(merge: true));
       return userModel;
     } else {
-      return UserModel.fromJson(data!);
+      return UserModel.fromJson(data);
     }
   }
 

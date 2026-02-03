@@ -26,4 +26,20 @@ sealed class ZoomMeetingModel with _$ZoomMeetingModel {
 
   factory ZoomMeetingModel.fromJson(Map<String, dynamic> json) =>
       _$ZoomMeetingModelFromJson(json);
+
+  // 🔹 NEW METHOD: Use this instead of .toJson() for API calls
+  Map<String, dynamic> toApiPayload() {
+    // 1. Get the standard JSON from Freezed
+    // We cast to Map<String, dynamic> to make it mutable
+    final Map<String, dynamic> payload = Map.of(toJson());
+
+    // 2. Inject your fixed settings
+    payload['settings'] = {
+      'join_before_host': true,
+      'jbh_time': 0,
+      'waiting_room': false,
+    };
+
+    return payload;
+  }
 }

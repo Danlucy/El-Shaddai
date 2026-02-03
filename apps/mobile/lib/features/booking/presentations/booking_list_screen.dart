@@ -4,15 +4,14 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/features/booking/controller/booking_controller.dart';
 import 'package:models/models.dart' hide UserModelX;
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:util/util.dart';
 
 import '../../../core/widgets/loader.dart';
 import '../../auth/controller/auth_controller.dart';
-import '../../auth/widgets/confirm_button.dart';
 import '../../calendar/widget/booking_details_dialog.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../provider/booking_provider.dart';
@@ -28,15 +27,11 @@ class BookingListScreen extends ConsumerStatefulWidget {
 class _BookingListScreenState extends ConsumerState<BookingListScreen> {
   Timer? _initialTimer;
   Timer? _periodicTimer;
-
-  // 1. Declare the controller
   late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
-
-    // 2. Initialize the controller
     _searchController = TextEditingController();
 
     final now = DateTime.now();
@@ -59,7 +54,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
 
   @override
   void dispose() {
-    // 3. Dispose the controller to free resources
     _searchController.dispose();
     _initialTimer?.cancel();
     _periodicTimer?.cancel();
@@ -81,10 +75,9 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
       appointmentHeight = 90;
     }
 
-    // Watch the filtered bookings and search query
     final filteredBookingsAsync = ref.watch(filteredBookingListsProvider);
     final searchQuery = ref.watch(bookingListSearchQueryProvider);
-
+    final controllerFunction = ref.watch(bookingControllerProvider.notifier);
     return Scaffold(
       drawer: const GeneralDrawer(),
       appBar: AppBar(title: const Text('Prayer Watch List')),
@@ -93,7 +86,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              // 4. Attach the controller here
               controller: _searchController,
               onChanged: (val) =>
                   ref.read(bookingListSearchQueryProvider.notifier).update(val),
@@ -108,7 +100,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                     ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          // 5. Clear both the text field UI and the Riverpod state
                           _searchController.clear();
                           FocusScope.of(context).unfocus();
                           ref
@@ -162,7 +153,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                         final appointmentColor = isLiveAppointment
                             ? context.colors.errorContainer.withOpac(0.4)
                             : isUpcomingAppointment
-                            ? context.colors.tertiary
+                            ? context.colors.onTertiaryFixedVariant
                             : isPastAppointment
                             ? Theme.of(
                                 context,
@@ -175,22 +166,10 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                                 user?.currentRole(ref) != UserRole.admin) {
                               return;
                             }
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return ConfirmButton(
-                                  confirmText: 'Delete ',
-                                  cancelText: 'Cancel',
-                                  description:
-                                      'Are you sure you want to delete this booking? This action cannot be reversed',
-                                  confirmAction: () {
-                                    context.pop();
-                                    ref
-                                        .read(currentOrgRepositoryProvider)
-                                        .deleteBooking(bookingModel.id);
-                                  },
-                                );
-                              },
+
+                            controllerFunction.deleteBooking(
+                              context,
+                              bookingModel,
                             );
                           },
                           onTap: () {
@@ -334,12 +313,18 @@ _AppointmentDataSource _getCalendarDataSource(List<BookingModel> bookingModel) {
           ),
           description: booking.description,
           title: booking.title,
+          groupId: booking.groupId,
+          password: booking.password,
           recurrenceState: booking.recurrenceState,
           location: booking.location,
           createdAt: booking.createdAt,
           host: booking.host,
           userId: booking.userId,
           id: booking.id,
+          // IMPORTANT: Must copy the occurrenceId so the UI knows it's recurring
+          occurrenceId: booking.occurrenceId,
+          // Copy recurrenceModel if you use it for checks
+          recurrenceModel: booking.recurrenceModel,
         ),
       );
     }
@@ -354,22 +339,22 @@ class _AppointmentDataSource extends CalendarDataSource<BookingModel> {
   }
   @override
   DateTime getStartTime(int index) {
-    return appointments![index].timeRange.start as DateTime;
+    return appointments![index].timeRange.start;
   }
 
   @override
   DateTime getEndTime(int index) {
-    return appointments![index].timeRange.end as DateTime;
+    return appointments![index].timeRange.end;
   }
 
   @override
   String getDescription(int index) {
-    return appointments![index].description as String;
+    return appointments![index].description;
   }
 
   @override
   String getTitle(int index) {
-    return appointments?[index].title as String;
+    return appointments![index].title;
   }
 
   @override
@@ -377,16 +362,6 @@ class _AppointmentDataSource extends CalendarDataSource<BookingModel> {
     BookingModel customData,
     Appointment appointment,
   ) {
-    return BookingModel(
-      timeRange: customData.timeRange,
-      description: customData.description,
-      title: customData.title,
-      recurrenceState: customData.recurrenceState,
-      location: customData.location,
-      createdAt: customData.createdAt,
-      host: customData.host,
-      userId: customData.userId,
-      id: customData.id,
-    );
+    return customData;
   }
 }
