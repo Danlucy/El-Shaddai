@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
@@ -15,6 +14,7 @@ import 'package:mobile/features/booking/controller/booking_controller.dart';
 import 'package:mobile/features/booking/presentations/booking_screen.dart';
 import 'package:mobile/features/booking/state/booking_state.dart';
 import 'package:mobile/features/booking/widgets/zoom_display_component.dart';
+import 'package:mobile/features/profile/widget/profile_text_field_widgets.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
@@ -23,11 +23,10 @@ import '../../../core/router/router.dart';
 import '../../../core/utility/url_launcher.dart';
 import '../../../core/widgets/calendar_widget.dart';
 import '../../auth/controller/auth_controller.dart';
-import '../../auth/widgets/confirm_button.dart';
 import '../../auth/widgets/loader.dart';
-import '../../booking/presentations/booking_dialog.dart';
-import '../../booking/provider/booking_provider.dart';
 import '../../participant/participant_controller/participant_controller.dart';
+import '../provider/booking_provider.dart';
+import 'booking_dialog.dart';
 
 class BookingDetailsDialog extends ConsumerStatefulWidget {
   const BookingDetailsDialog({super.key, required this.bookingModel});
@@ -43,6 +42,7 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
     final textScaler = MediaQuery.textScalerOf(context).scale(1);
+    final controllerFunction = ref.watch(bookingControllerProvider.notifier);
 
     return ref
         .watch(
@@ -81,7 +81,7 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                       height: double.infinity,
                       borderRadius: 20,
                       blur: 4,
-                      border: 2,
+                      border: 1,
                       linearGradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -172,32 +172,9 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                                           .isWatchmanOrHigher)
                                     IconButton(
                                       onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => Scaffold(
-                                            backgroundColor: Colors.transparent,
-                                            body: Center(
-                                              child: ConfirmButton(
-                                                confirmText: 'Delete',
-                                                cancelText: 'Cancel',
-                                                description:
-                                                    'Are you sure you want to delete this booking? This action cannot be reversed',
-                                                confirmAction: () {
-                                                  context.pop();
-                                                  ref
-                                                      .read(
-                                                        bookingControllerProvider
-                                                            .notifier,
-                                                      )
-                                                      .deleteBooking(
-                                                        context,
-                                                        booking,
-                                                      );
-                                                  context.pop();
-                                                },
-                                              ),
-                                            ),
-                                          ),
+                                        controllerFunction.deleteBooking(
+                                          context,
+                                          booking,
                                         );
                                       },
                                       icon: const Icon(Icons.delete),
@@ -495,15 +472,26 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                                     ProfileRoute(userModel).push(context),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 4,
+                                    vertical: 6,
                                   ),
-                                  child: Text(
-                                    userModel.name,
-                                    style: const TextStyle(fontSize: 14),
+                                  child: Row(
+                                    children: [
+                                      ProfileImage(
+                                        radius: 22,
+                                        uid: userModel.uid,
+                                        ableToEdit: false,
+                                      ),
+                                      Gap(6),
+                                      Text(
+                                        userModel.name,
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ),
+                            Gap(5),
                           ],
                         ),
                       ),
@@ -511,8 +499,8 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                   ),
                 ),
               const SizedBox(height: 16),
-              if ((user.value?.uid == booking.userId) ||
-                  user.value?.currentRole(ref) == UserRole.admin)
+              if (!user.value!.currentRole(ref).isObserver &&
+                  (user.value?.uid != booking.userId))
                 joinButton(
                   user.value,
                   isJoined,

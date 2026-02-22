@@ -10,7 +10,6 @@ import 'package:models/models.dart';
 import 'package:util/util.dart';
 
 import '../../../core/router/router.dart';
-import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/confirm_button.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../controller/user_management_controller.dart';
@@ -154,8 +153,8 @@ class _PopMenuButton extends ConsumerWidget {
                     description: 'Delete User? This cannot be reverted.',
                     confirmAction: () {
                       ref
-                          .read(authControllerProvider.notifier)
-                          .deleteUser(user.uid, context);
+                          .read(userManagementControllerProvider.notifier)
+                          .deleteUserAccount(context, user.uid);
                       context.pop();
                     },
                   );

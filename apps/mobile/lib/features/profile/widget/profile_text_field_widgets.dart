@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -189,7 +190,13 @@ class EditableTextFieldState extends ConsumerState<EditableTextField> {
 class ProfileImage extends ConsumerStatefulWidget {
   final String? uid;
   final bool ableToEdit;
-  const ProfileImage({super.key, required this.uid, required this.ableToEdit});
+  final double radius;
+  const ProfileImage({
+    super.key,
+    required this.radius,
+    required this.uid,
+    required this.ableToEdit,
+  });
 
   @override
   ConsumerState<ProfileImage> createState() => _ProfileImageState();
@@ -230,14 +237,25 @@ class _ProfileImageState extends ConsumerState<ProfileImage> {
               setState(() => _localImage = pickedImage);
             }
           },
-          child: CircleAvatar(
-            minRadius: 50,
-            maxRadius: 60,
-            backgroundColor: Colors.grey.shade300,
-            backgroundImage: imageData != null ? MemoryImage(imageData) : null,
-            child: imageData == null
-                ? const Icon(Icons.camera_alt, size: 40, color: Colors.white)
-                : null,
+          // ✅ WRAP WITH CONTAINER FOR BORDER
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.grey.withOpac(0.5), // Change color here
+                width: 1.5, // Change border thickness here
+              ),
+            ),
+            child: CircleAvatar(
+              radius: widget.radius,
+              backgroundColor: Colors.grey.shade300,
+              backgroundImage: imageData != null
+                  ? MemoryImage(imageData)
+                  : null,
+              child: imageData == null
+                  ? Icon(Icons.person, size: widget.radius, color: Colors.white)
+                  : null,
+            ),
           ),
         );
       },

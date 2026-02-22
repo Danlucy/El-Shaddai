@@ -13,8 +13,6 @@ import 'package:models/models.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:util/util.dart';
 
-import '../user_management/user_management_repository.dart';
-
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
     firestore: ref.read(firestoreProvider),
@@ -214,60 +212,6 @@ class AuthRepository {
       }
     } catch (e) {
       return left(Failure(e.toString()));
-    }
-  }
-
-  FutureEither<void> deleteUserAccount(
-    BuildContext context,
-    Ref ref, {
-    Function(BuildContext)? onSuccess,
-  }) async {
-    try {
-      final User? currentUser = _auth.currentUser;
-      if (currentUser == null) {
-        return left(Failure('No user is currently signed in'));
-      }
-
-      final reauthResult = await reauthenticateUser(context);
-
-      return reauthResult.fold(
-        (failure) {
-          showFailureSnackBar(
-            context,
-            (failure.message.contains('credentials do not correspond') ||
-                    failure.message.contains('previously signed in user'))
-                ? 'Sign In With Your OWN Account'
-                : failure.message,
-          );
-          return left(failure);
-        },
-        (success) async {
-          try {
-            await ref
-                .read(userManagementRepositoryProvider(null))
-                .clearUserDataExcept(currentUser.uid);
-
-            await currentUser.delete();
-            await _auth.signOut();
-
-            if (onSuccess != null) {
-              onSuccess(context);
-            }
-
-            return right(null);
-          } on FirebaseException catch (e) {
-            return left(
-              Failure(
-                e.message ?? 'Firebase error occurred during account deletion',
-              ),
-            );
-          } catch (e) {
-            return left(Failure('Failed to delete account: ${e.toString()}'));
-          }
-        },
-      );
-    } catch (e) {
-      return left(Failure('An unexpected error occurred: ${e.toString()}'));
     }
   }
 

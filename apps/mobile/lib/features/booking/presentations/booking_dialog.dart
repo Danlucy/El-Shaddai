@@ -133,7 +133,7 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                 height: double.infinity,
                 borderRadius: 20,
                 blur: 4,
-                border: 2,
+                border: 1,
                 linearGradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,

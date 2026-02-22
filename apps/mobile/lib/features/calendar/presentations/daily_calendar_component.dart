@@ -9,9 +9,9 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:util/util.dart';
 
 import '../../../core/widgets/loader.dart';
+import '../../booking/presentations/booking_details_dialog.dart';
 import '../../booking/presentations/booking_dialog.dart';
 import '../../booking/provider/booking_provider.dart';
-import '../widget/booking_details_dialog.dart';
 
 class DailyCalendarComponent extends ConsumerStatefulWidget {
   const DailyCalendarComponent({

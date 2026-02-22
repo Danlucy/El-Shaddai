@@ -2,8 +2,8 @@ import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart';
 import 'package:mobile/features/profile/widget/role_dsiplay.dart';
+import 'package:mobile/features/user_management/controller/user_management_controller.dart';
 import 'package:models/models.dart';
 import 'package:util/util.dart';
 
@@ -55,7 +55,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final userDataState = ref.watch(
       profileControllerProvider(widget.userModel?.uid),
     );
-final bool ableToEdit = user?.uid == widget.userModel?.uid ||
+    final bool ableToEdit =
+        user?.uid == widget.userModel?.uid ||
         user?.currentRole(ref) == UserRole.admin;
     return Scaffold(
       appBar: AppBar(
@@ -84,6 +85,7 @@ final bool ableToEdit = user?.uid == widget.userModel?.uid ||
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       ProfileImage(
+                        radius: 60,
                         uid: widget.userModel?.uid,
                         ableToEdit:
                             user?.uid == widget.userModel?.uid ||
@@ -140,8 +142,7 @@ final bool ableToEdit = user?.uid == widget.userModel?.uid ||
                                         : index;
                                   });
                                 },
-                                ableToEdit:
-                                   ableToEdit ,
+                                ableToEdit: ableToEdit,
                                 userData: userData,
                               ),
                             ),
@@ -172,11 +173,12 @@ final bool ableToEdit = user?.uid == widget.userModel?.uid ||
                                         confirmAction: () {
                                           ref
                                               .read(
-                                                authControllerProvider.notifier,
+                                                userManagementControllerProvider
+                                                    .notifier,
                                               )
-                                              .deleteUser(
-                                                user!.uid,
+                                              .deleteUserAccount(
                                                 context,
+                                                user!.uid,
                                               ); // Pass screen context
                                           GoRouter.of(
                                             dialogContext,

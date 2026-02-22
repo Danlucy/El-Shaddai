@@ -12,9 +12,9 @@ import 'package:util/util.dart';
 
 import '../../../core/widgets/loader.dart';
 import '../../auth/controller/auth_controller.dart';
-import '../../calendar/widget/booking_details_dialog.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../provider/booking_provider.dart';
+import 'booking_details_dialog.dart';
 import 'booking_screen.dart';
 
 class BookingListScreen extends ConsumerStatefulWidget {

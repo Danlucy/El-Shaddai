@@ -13,7 +13,7 @@ class OrganizationSelectionDropdown extends ConsumerWidget {
       borderRadius: 12,
       blur: 10, // The blur intensity
       alignment: Alignment.center,
-      border: 2,
+      border: 1,
       linearGradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,

@@ -51,39 +51,33 @@ class UserManagementRepository {
     }
   }
 
-  /// ✅ **Delete user**
-  Future<void> deleteUserData(String uid) async {
-    await _user.doc(uid).delete();
-  }
-
-  Future<void> clearUserDataExcept(String uid) async {
+  /// ✅ **Delete user and all their bookings across ALL organizations**
+  Future<void> deleteUserAccount(String uid) async {
     try {
-      // First get the current document
-      DocumentSnapshot doc = await _user.doc(uid).get();
+      final batch = _firestore.batch();
 
-      Map<String, dynamic> userData = doc.data() as Map<String, dynamic>;
-      Map<String, dynamic> updatedData = {};
+      // 1. Find all bookings hosted by this user anywhere in the database
+      // Using collectionGroup searches every subcollection named "bookings"
+      final bookingsQuery = await _firestore
+          .collectionGroup(FirebaseConstants.bookingsCollection)
+          .where('userId', isEqualTo: uid)
+          .get();
 
-      // Set all fields to null except those we want to keep
-      for (String key in userData.keys) {
-        if ([
-          UserModel.fields.name,
-          UserModel.fields.uid,
-          UserModel.fields.roles,
-          UserModel.fields.createdAt,
-        ].contains(key)) {
-          // Keep the original value for fields we want to preserve
-          updatedData[key] = userData[key];
-        } else {
-          // Set all other fields to null
-          updatedData[key] = null;
-        }
+      // 2. Queue all those bookings for deletion
+      for (var doc in bookingsQuery.docs) {
+        batch.delete(doc.reference);
       }
 
-      // Update the document with the new data
-      await _user.doc(uid).update(updatedData);
+      // 3. Queue the actual user document for deletion
+      final userDocRef = _user.doc(
+        uid,
+      ); // Assumes _user is defined as the users collection
+      batch.delete(userDocRef);
+
+      // 4. Commit everything simultaneously
+      await batch.commit();
     } catch (e) {
-      print('Error clearing user data: $e');
+      print('Error deleting user data and bookings: $e');
       rethrow;
     }
   }
