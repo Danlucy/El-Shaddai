@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
@@ -56,7 +57,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // UPDATED: Watch the filtered provider instead of the raw stream
     final filteredBookingsAsync = ref.watch(filteredBookingListsProvider);
     final selectedBookingId = ref.watch(selectedBookingIDNotifierProvider);
     final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
@@ -97,7 +97,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                   padding: const EdgeInsets.all(24.0),
                   child: filteredBookingsAsync.when(
                     data: (bookings) {
-                      // Automatically select the first booking if none is selected
                       if (selectedBookingId == null && bookings.isNotEmpty) {
                         Future.microtask(
                           () => ref
@@ -127,7 +126,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                               rowFlex: 1,
                               child: _BookingList(bookings: bookings),
                             ),
-                            // Right Column: Booking Details
                             ResponsiveRowColumnItem(
                               rowFlex: 2,
                               child: selectedBooking != null
@@ -143,7 +141,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                           ],
                         );
                       } else {
-                        // On mobile, only show the list
                         return _BookingList(bookings: bookings);
                       }
                     },
@@ -161,7 +158,9 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
   }
 }
 
-// UPDATED: Converted to ConsumerStatefulWidget to handle Controller
+// ---------------------------------------------------------------------------
+// Booking List
+// ---------------------------------------------------------------------------
 class _BookingList extends ConsumerStatefulWidget {
   const _BookingList({required this.bookings});
   final List<BookingModel> bookings;
@@ -214,8 +213,6 @@ class _BookingListState extends ConsumerState<_BookingList> {
           ),
         ),
         const SizedBox(height: 16),
-
-        // NEW: Search Field with Controller & Clear Logic
         TextField(
           controller: _searchController,
           onChanged: (val) =>
@@ -256,7 +253,6 @@ class _BookingListState extends ConsumerState<_BookingList> {
           ),
         ),
         const SizedBox(height: 16),
-
         Expanded(
           child: SfCalendar(
             scheduleViewMonthHeaderBuilder:
@@ -350,13 +346,7 @@ class _BookingListState extends ConsumerState<_BookingList> {
                   );
                   final isSelected = booking.id == selectedBookingId;
 
-                  final Color color = isLive
-                      ? Theme.of(
-                          context,
-                        ).colorScheme.errorContainer.withOpac(0.4)
-                      : isUpcoming
-                      ? Theme.of(context).colorScheme.tertiaryContainer
-                      : isPast
+                  final Color baseColor = isPast
                       ? Theme.of(
                           context,
                         ).colorScheme.secondaryContainer.withOpac(0.5)
@@ -372,56 +362,344 @@ class _BookingListState extends ConsumerState<_BookingList> {
                         context.go('/booking/${booking.id}');
                       }
                     },
-                    child: Material(
-                      elevation: isSelected && isDesktop ? 8 : 2,
-                      color: Colors.transparent, // Important for glassmorphism
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white.withOpac(
-                                (isSelected && isDesktop) ? 0.4 : 0.15,
+                    child: isLive
+                        ? _WebLiveAppointmentCard(
+                            booking: booking,
+                            isSelected: isSelected,
+                            isDesktop: isDesktop,
+                          )
+                        : isUpcoming
+                        ? _WebUpcomingAppointmentCard(
+                            booking: booking,
+                            isSelected: isSelected,
+                            isDesktop: isDesktop,
+                          )
+                        : Material(
+                            elevation: isSelected && isDesktop ? 8 : 2,
+                            color: Colors.transparent,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.white.withOpac(
+                                      (isSelected && isDesktop) ? 0.4 : 0.15,
+                                    ),
+                                    spreadRadius: 1,
+                                    blurRadius: 7,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                                color: baseColor,
+                                borderRadius: BorderRadius.circular(12),
+                                border: isSelected
+                                    ? Border.all(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                        width: 2,
+                                      )
+                                    : null,
                               ),
-                              spreadRadius: 1,
-                              blurRadius: 7,
-                              offset: const Offset(0, 4),
+                              child: _AppointmentTileContent(booking: booking),
                             ),
-                          ],
-                          color: color,
-                          borderRadius: BorderRadius.circular(12),
-                          border: isSelected
-                              ? Border.all(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  width: 2,
-                                )
-                              : null,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AutoSizeText(
-                              booking.title,
-                              maxLines: 1,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              '${DateFormat.jm().format(booking.timeRange.start)} - ${DateFormat.jm().format(booking.timeRange.end)}',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                          ),
                   );
                 },
           ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Live card — red glow border, pulsing scale, LIVE badge
+// ---------------------------------------------------------------------------
+class _WebLiveAppointmentCard extends StatelessWidget {
+  const _WebLiveAppointmentCard({
+    required this.booking,
+    required this.isSelected,
+    required this.isDesktop,
+  });
+
+  final BookingModel booking;
+  final bool isSelected;
+  final bool isDesktop;
+
+  static const _liveRed = Color(0xFFFF3B30);
+
+  @override
+  Widget build(BuildContext context) {
+    return Animate(
+      onPlay: (controller) => controller.repeat(reverse: true),
+      effects: [
+        ScaleEffect(
+          begin: const Offset(1.0, 1.0),
+          end: const Offset(1.012, 1.012),
+          duration: 1000.ms,
+          curve: Curves.easeInOut,
+        ),
+      ],
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : _liveRed.withOpac(0.7),
+            width: isSelected ? 2 : 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: _liveRed.withOpac(0.4),
+              blurRadius: 12,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            _AppointmentTileContent(booking: booking),
+            const Positioned(bottom: 0, right: 0, child: _WebLiveBadge()),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WebLiveBadge extends StatelessWidget {
+  const _WebLiveBadge();
+
+  static const _liveRed = Color(0xFFFF3B30);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Animate(
+          onPlay: (controller) => controller.repeat(reverse: true),
+          effects: [
+            FadeEffect(
+              begin: 1.0,
+              end: 0.2,
+              duration: 700.ms,
+              curve: Curves.easeInOut,
+            ),
+            ScaleEffect(
+              begin: const Offset(1.0, 1.0),
+              end: const Offset(1.5, 1.5),
+              duration: 700.ms,
+              curve: Curves.easeInOut,
+            ),
+          ],
+          child: Container(
+            width: 7,
+            height: 7,
+            decoration: const BoxDecoration(
+              color: _liveRed,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+        const SizedBox(width: 4),
+        Animate(
+          onPlay: (controller) => controller.repeat(),
+          effects: [
+            ShimmerEffect(
+              color: Colors.white.withOpac(0.85),
+              duration: 1800.ms,
+              delay: 400.ms,
+            ),
+          ],
+          child: const Text(
+            'LIVE',
+            style: TextStyle(
+              color: _liveRed,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Upcoming card — amber glow border + live countdown timer
+// ---------------------------------------------------------------------------
+class _WebUpcomingAppointmentCard extends StatefulWidget {
+  const _WebUpcomingAppointmentCard({
+    required this.booking,
+    required this.isSelected,
+    required this.isDesktop,
+  });
+
+  final BookingModel booking;
+  final bool isSelected;
+  final bool isDesktop;
+
+  @override
+  State<_WebUpcomingAppointmentCard> createState() =>
+      _WebUpcomingAppointmentCardState();
+}
+
+class _WebUpcomingAppointmentCardState
+    extends State<_WebUpcomingAppointmentCard> {
+  late Timer _countdownTimer;
+  late Duration _remaining;
+
+  static const _amber = Color(0xFFFF9500);
+
+  @override
+  void initState() {
+    super.initState();
+    _remaining = widget.booking.timeRange.start.difference(DateTime.now());
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      final remaining = widget.booking.timeRange.start.difference(
+        DateTime.now(),
+      );
+      setState(() {
+        _remaining = remaining.isNegative ? Duration.zero : remaining;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer.cancel();
+    super.dispose();
+  }
+
+  String get _countdownText {
+    if (_remaining.isNegative || _remaining == Duration.zero) return '0:00';
+    final minutes = _remaining.inMinutes.remainder(60).toString();
+    final seconds = _remaining.inSeconds
+        .remainder(60)
+        .toString()
+        .padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Animate(
+      onPlay: (controller) => controller.repeat(reverse: true),
+      effects: [
+        ScaleEffect(
+          begin: const Offset(1.0, 1.0),
+          end: const Offset(1.008, 1.008),
+          duration: 1200.ms,
+          curve: Curves.easeInOut,
+        ),
+      ],
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: widget.isSelected
+                ? Theme.of(context).colorScheme.primary
+                : _amber.withOpac(0.55),
+            width: widget.isSelected ? 2 : 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: _amber.withOpac(0.35),
+              blurRadius: 10,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            _AppointmentTileContent(booking: widget.booking),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: _WebCountdownBadge(countdownText: _countdownText),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WebCountdownBadge extends StatelessWidget {
+  const _WebCountdownBadge({required this.countdownText});
+
+  final String countdownText;
+
+  static const _amber = Color(0xFFFF9500);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Animate(
+          onPlay: (controller) => controller.repeat(reverse: true),
+          effects: [
+            FadeEffect(
+              begin: 1.0,
+              end: 0.4,
+              duration: 800.ms,
+              curve: Curves.easeInOut,
+            ),
+          ],
+          child: const Icon(Icons.timer_outlined, size: 10, color: _amber),
+        ),
+        const SizedBox(width: 3),
+        Text(
+          countdownText,
+          style: const TextStyle(
+            color: _amber,
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.8,
+            fontFeatures: [FontFeature.tabularFigures()],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shared tile content
+// ---------------------------------------------------------------------------
+class _AppointmentTileContent extends StatelessWidget {
+  const _AppointmentTileContent({required this.booking});
+
+  final BookingModel booking;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        AutoSizeText(
+          booking.title,
+          maxLines: 1,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        Text(
+          '${DateFormat.jm().format(booking.timeRange.start)} - ${DateFormat.jm().format(booking.timeRange.end)}',
+          style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
     );

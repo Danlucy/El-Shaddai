@@ -47,7 +47,7 @@ final class ProfileControllerProvider
   }
 }
 
-String _$profileControllerHash() => r'003d3ea048889e77a03d5ab65b4220c9ba58d8d5';
+String _$profileControllerHash() => r'588522357e4591899db72379e14cee00863b2206';
 
 final class ProfileControllerFamily extends $Family
     with

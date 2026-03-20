@@ -191,7 +191,14 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                                   ],
                                 ),
                                 const BookingDateRangePickerComponent(),
-                                const BookingTimePickerComponent(),
+                                Listener(
+                                  onPointerDown: (_) {
+                                    // This line drops focus from any active text fields, hiding the keyboard
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  child: const BookingTimePickerComponent(),
+                                ),
                                 Center(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(

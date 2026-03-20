@@ -72,6 +72,7 @@ class AuthRepository {
       print("Creating or Repairing User Data...");
 
       final userModel = UserModel(
+        email: userCredential.user?.email ?? '',
         createdAt: hasValidData
             ? (data['createdAt'] as Timestamp).toDate()
             : DateTime.now(),

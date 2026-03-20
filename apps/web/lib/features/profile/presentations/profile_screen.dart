@@ -10,6 +10,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:util/util.dart';
 import 'package:website/core/widgets/animated_background.dart';
 import 'package:website/features/auth/controller/auth_controller.dart';
+import 'package:website/features/user_management/controller/user_management_controller.dart';
 
 import '../controller/profile_controller.dart';
 import '../widget/profile_widgets.dart';
@@ -62,7 +63,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
     final theme = Theme.of(context);
 
-    final canEdit = user?.uid == widget.userModel?.uid ||
+    final canEdit =
+        user?.uid == widget.userModel?.uid ||
         user?.currentRole(ref) == UserRole.admin;
 
     return Scaffold(
@@ -212,10 +214,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           child: isDesktop
               ? Row(
                   children: [
-                    ProfileImage(
-                      uid: widget.userModel?.uid,
-                      size: 140,
-                      canEdit: canEdit,
+                    Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        ProfileImage(
+                          uid: widget.userModel?.uid,
+                          size: 160,
+                          canEdit: canEdit,
+                        ),
+                        Transform.translate(
+                          offset: Offset(0, 10),
+
+                          child: RoleDisplayWidget(
+                            role: widget.userModel?.currentRole(ref),
+                          ),
+                        ),
+                      ],
                     ),
                     const Gap(32),
                     Expanded(
@@ -229,9 +243,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           const Gap(12),
-                          RoleDisplayWidget(
-                            role: widget.userModel?.currentRole(ref),
-                          ),
+
                           const Gap(16),
                           Text(
                             'Changes are autosaved',
@@ -247,10 +259,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 )
               : Column(
                   children: [
-                    ProfileImage(
-                      uid: widget.userModel?.uid,
-                      size: 120,
-                      canEdit: canEdit,
+                    Stack(
+                      alignment: AlignmentGeometry.bottomCenter,
+                      children: [
+                        ProfileImage(
+                          uid: widget.userModel?.uid,
+                          size: 180,
+                          canEdit: canEdit,
+                        ),
+                        Transform.translate(
+                          offset: Offset(0, 10),
+                          child: RoleDisplayWidget(
+                            role: widget.userModel?.currentRole(ref),
+                          ),
+                        ),
+                      ],
                     ),
                     const Gap(16),
                     Text(
@@ -261,9 +284,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const Gap(12),
-                    RoleDisplayWidget(
-                      role: widget.userModel?.currentRole(ref),
-                    ),
                     const Gap(12),
                     Text(
                       'Changes are autosaved',
@@ -279,7 +299,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildEditableField(String field, Map<String, dynamic> userData, bool canEdit) {
+  Widget _buildEditableField(
+    String field,
+    Map<String, dynamic> userData,
+    bool canEdit,
+  ) {
     return EditableTextField(
       uid: widget.userModel?.uid,
       fieldName: field,
@@ -441,8 +465,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               onPressed: () {
                 try {
                   ref
-                      .read(authControllerProvider.notifier)
-                      .deleteUser(user!.uid, context);
+                      .read(userManagementControllerProvider.notifier)
+                      .deleteUserAccount(context, user!.uid);
                   Navigator.of(dialogContext).pop();
                   GoRouter.of(context).go('/');
                 } catch (e) {

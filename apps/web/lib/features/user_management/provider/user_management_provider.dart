@@ -47,8 +47,6 @@ AsyncValue<List<UserModel>> usersByRole(
     },
     loading: () => const AsyncValue.loading(),
     error: (err, stack) {
-      // print(err);
-      // print(stack);
       return AsyncValue.error(err, stack);
     },
   );

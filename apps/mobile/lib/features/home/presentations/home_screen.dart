@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/widgets/glass_container.dart';
+import 'package:mobile/features/auth/controller/auth_controller.dart';
 import 'package:repositories/repositories.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -32,6 +36,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(userProvider);
+    final user = ref.watch(userProvider);
+
     return Scaffold(
       appBar: AppBar(
         actionsPadding: EdgeInsets.all(10),
@@ -125,11 +132,63 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //   icon: const Icon(Icons.settings),
             // ),
             // IconButton(
-            //   onPressed: () {
-            //     ref.watch(authRepositoryProvider).fixAllUsersMissingCreatedAt();
+            //   onPressed: () async {
+            //
             //   },
             //   icon: const Icon(Icons.settings),
             // ),
+            user.when(
+              data: (data) {
+                sleep(Duration(milliseconds: 500));
+                if (data?.phoneNumber == null) {
+                  return Animate(
+                    onPlay: (controller) => controller.repeat(reverse: true),
+                    effects: [
+                      BoxShadowEffect(
+                        begin: BoxShadow(
+                          color: Colors.red.withOpac(0.2),
+                          blurRadius: 6,
+                          spreadRadius: 1,
+                        ),
+
+                        end: BoxShadow(
+                          color: Colors.red.withOpac(0.4),
+                          blurRadius: 10,
+                          spreadRadius: 4,
+                        ),
+
+                        duration: 2000.ms,
+                        curve: Curves.easeInOut,
+                      ),
+                    ],
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: Colors.red.withOpac(0.4),
+                          width: 1,
+                        ),
+                      ),
+                      color: Colors.red.withOpac(0.1),
+                      child: const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'Please add your Phone number at the Profile.',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return SizedBox();
+              },
+              error: (e, x) => SizedBox(),
+              loading: () => SizedBox(),
+            ),
+
             Expanded(
               child: AutoSizeText(
                 minFontSize: 13,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/features/booking/controller/booking_controller.dart';
@@ -150,9 +151,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                           DateTime(today.year, today.month, today.day),
                         );
 
-                        final appointmentColor = isLiveAppointment
-                            ? context.colors.errorContainer.withOpac(0.4)
-                            : isUpcomingAppointment
+                        final appointmentColor = isUpcomingAppointment
                             ? context.colors.onTertiaryFixedVariant
                             : isPastAppointment
                             ? Theme.of(
@@ -166,7 +165,6 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                                 user?.currentRole(ref) != UserRole.admin) {
                               return;
                             }
-
                             controllerFunction.deleteBooking(
                               context,
                               bookingModel,
@@ -175,73 +173,28 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                           onTap: () {
                             showDialog(
                               context: context,
-                              builder: (context) {
-                                return BookingDetailsDialog(
-                                  bookingModel: bookingModel,
-                                );
-                              },
+                              builder: (context) => BookingDetailsDialog(
+                                bookingModel: bookingModel,
+                              ),
                             );
                           },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: appointmentColor,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(5),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 2,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  AutoSizeText(
-                                    maxLines: 1,
-                                    maxFontSize: 16,
-                                    minFontSize: 12,
-                                    overflow: TextOverflow.ellipsis,
-                                    bookingModel.title,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
+                          child: isLiveAppointment
+                              ? _LiveAppointmentCard(bookingModel: bookingModel)
+                              : isUpcomingAppointment
+                              ? _UpcomingAppointmentCard(
+                                  bookingModel: bookingModel,
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                    color: appointmentColor,
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(5),
                                     ),
                                   ),
-                                  AutoSizeText(
-                                    bookingModel.host,
-                                    maxFontSize: 12,
-                                    minFontSize: 8,
-                                    style: const TextStyle(color: Colors.grey),
+                                  child: _AppointmentContent(
+                                    bookingModel: bookingModel,
                                   ),
-                                  Row(
-                                    children: [
-                                      AutoSizeText(
-                                        maxFontSize: 14,
-                                        minFontSize: 10,
-                                        DateFormat(
-                                          'hh:mm a',
-                                        ).format(bookingModel.timeRange.start),
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      const Icon(Icons.arrow_right_alt),
-                                      AutoSizeText(
-                                        maxFontSize: 14,
-                                        minFontSize: 10,
-                                        DateFormat(
-                                          'hh:mm a',
-                                        ).format(bookingModel.timeRange.end),
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                                ),
                         );
                       },
                   dataSource: _getCalendarDataSource(data),
@@ -278,6 +231,302 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Upcoming appointment card — amber glow + live countdown timer
+// ---------------------------------------------------------------------------
+class _UpcomingAppointmentCard extends StatefulWidget {
+  const _UpcomingAppointmentCard({required this.bookingModel});
+
+  final BookingModel bookingModel;
+
+  @override
+  State<_UpcomingAppointmentCard> createState() =>
+      _UpcomingAppointmentCardState();
+}
+
+class _UpcomingAppointmentCardState extends State<_UpcomingAppointmentCard> {
+  late Timer _countdownTimer;
+  late Duration _remaining;
+
+  static const _upcomingAmber = Color(0xFFFF9500);
+
+  @override
+  void initState() {
+    super.initState();
+    _remaining = widget.bookingModel.timeRange.start.difference(DateTime.now());
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      final remaining = widget.bookingModel.timeRange.start.difference(
+        DateTime.now(),
+      );
+      setState(() {
+        _remaining = remaining.isNegative ? Duration.zero : remaining;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer.cancel();
+    super.dispose();
+  }
+
+  String get _countdownText {
+    if (_remaining.isNegative || _remaining == Duration.zero) return '0:00';
+    final minutes = _remaining.inMinutes.remainder(60).toString();
+    final seconds = _remaining.inSeconds
+        .remainder(60)
+        .toString()
+        .padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Animate(
+      onPlay: (controller) => controller.repeat(reverse: true),
+      effects: [
+        ScaleEffect(
+          begin: const Offset(1.0, 1.0),
+          end: const Offset(1.008, 1.008),
+          duration: 1200.ms,
+          curve: Curves.easeInOut,
+        ),
+      ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.colors.secondaryContainer,
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          border: Border.all(
+            color: _upcomingAmber.withOpacity(0.55),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: _upcomingAmber.withOpacity(0.25),
+              blurRadius: 1,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            _AppointmentContent(bookingModel: widget.bookingModel),
+            Positioned(
+              bottom: 4,
+              right: 6,
+              child: _CountdownBadge(
+                countdownText: _countdownText,
+                color: _upcomingAmber,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CountdownBadge extends StatelessWidget {
+  const _CountdownBadge({required this.countdownText, required this.color});
+
+  final String countdownText;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Pulsing clock icon
+        Animate(
+          onPlay: (controller) => controller.repeat(reverse: true),
+          effects: [
+            FadeEffect(
+              begin: 1.0,
+              end: 0.4,
+              duration: 800.ms,
+              curve: Curves.easeInOut,
+            ),
+          ],
+          child: Icon(Icons.timer_outlined, size: 10, color: color),
+        ),
+        const SizedBox(width: 3),
+        Text(
+          countdownText,
+          style: TextStyle(
+            color: color,
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.8,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Live appointment card — glowing red border + pulsing scale + LIVE badge
+// ---------------------------------------------------------------------------
+class _LiveAppointmentCard extends StatelessWidget {
+  const _LiveAppointmentCard({required this.bookingModel});
+
+  final BookingModel bookingModel;
+
+  static const _liveRed = Color(0xFFFF3B30);
+
+  @override
+  Widget build(BuildContext context) {
+    return Animate(
+      onPlay: (controller) => controller.repeat(reverse: true),
+      effects: [
+        ScaleEffect(
+          begin: const Offset(1.0, 1.0),
+          end: const Offset(1.012, 1.012),
+          duration: 1000.ms,
+          curve: Curves.easeInOut,
+        ),
+      ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.colors.secondaryContainer,
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          border: Border.all(color: _liveRed.withOpacity(0.6), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: _liveRed.withOpacity(0.6),
+              blurRadius: 1,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            _AppointmentContent(bookingModel: bookingModel),
+            const Positioned(bottom: 4, right: 6, child: _LiveBadge()),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LiveBadge extends StatelessWidget {
+  const _LiveBadge();
+
+  static const _liveRed = Color(0xFFFF3B30);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Pulsing dot
+        Animate(
+          onPlay: (controller) => controller.repeat(reverse: true),
+          effects: [
+            FadeEffect(
+              begin: 1.0,
+              end: 0.2,
+              duration: 700.ms,
+              curve: Curves.easeInOut,
+            ),
+            ScaleEffect(
+              begin: const Offset(1.0, 1.0),
+              end: const Offset(1.5, 1.5),
+              duration: 700.ms,
+              curve: Curves.easeInOut,
+            ),
+          ],
+          child: Container(
+            width: 7,
+            height: 7,
+            decoration: const BoxDecoration(shape: BoxShape.circle),
+          ),
+        ),
+        const SizedBox(width: 4),
+        // Shimmering LIVE text
+        Animate(
+          onPlay: (controller) => controller.repeat(),
+          effects: [
+            ShimmerEffect(
+              color: Colors.white.withOpac(0.85),
+              duration: 1800.ms,
+              delay: 400.ms,
+            ),
+          ],
+          child: const Text(
+            'LIVE',
+            style: TextStyle(
+              color: _liveRed,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shared appointment content (title, host, time range)
+// ---------------------------------------------------------------------------
+class _AppointmentContent extends StatelessWidget {
+  const _AppointmentContent({required this.bookingModel});
+
+  final BookingModel bookingModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AutoSizeText(
+            maxLines: 1,
+            maxFontSize: 16,
+            minFontSize: 12,
+            overflow: TextOverflow.ellipsis,
+            bookingModel.title,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          AutoSizeText(
+            bookingModel.host,
+            maxFontSize: 12,
+            minFontSize: 8,
+            style: const TextStyle(color: Colors.grey),
+          ),
+          Row(
+            children: [
+              AutoSizeText(
+                maxFontSize: 14,
+                minFontSize: 10,
+                DateFormat('hh:mm a').format(bookingModel.timeRange.start),
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const Icon(Icons.arrow_right_alt),
+              AutoSizeText(
+                maxFontSize: 14,
+                minFontSize: 10,
+                DateFormat('hh:mm a').format(bookingModel.timeRange.end),
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Calendar data source
+// ---------------------------------------------------------------------------
 _AppointmentDataSource _getCalendarDataSource(List<BookingModel> bookingModel) {
   List<BookingModel> appointments = <BookingModel>[];
   for (BookingModel booking in bookingModel) {
@@ -321,9 +570,7 @@ _AppointmentDataSource _getCalendarDataSource(List<BookingModel> bookingModel) {
           host: booking.host,
           userId: booking.userId,
           id: booking.id,
-          // IMPORTANT: Must copy the occurrenceId so the UI knows it's recurring
           occurrenceId: booking.occurrenceId,
-          // Copy recurrenceModel if you use it for checks
           recurrenceModel: booking.recurrenceModel,
         ),
       );
@@ -337,25 +584,18 @@ class _AppointmentDataSource extends CalendarDataSource<BookingModel> {
   _AppointmentDataSource(List<BookingModel> source) {
     appointments = source;
   }
-  @override
-  DateTime getStartTime(int index) {
-    return appointments![index].timeRange.start;
-  }
 
   @override
-  DateTime getEndTime(int index) {
-    return appointments![index].timeRange.end;
-  }
+  DateTime getStartTime(int index) => appointments![index].timeRange.start;
 
   @override
-  String getDescription(int index) {
-    return appointments![index].description;
-  }
+  DateTime getEndTime(int index) => appointments![index].timeRange.end;
 
   @override
-  String getTitle(int index) {
-    return appointments![index].title;
-  }
+  String getDescription(int index) => appointments![index].description;
+
+  @override
+  String getTitle(int index) => appointments![index].title;
 
   @override
   BookingModel convertAppointmentToObject(

@@ -93,6 +93,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                       );
                     },
                     error: (x, s) {
+                      print(x);
+                      print(s);
                       return const Center(child: Text('Error loading users'));
                     },
                     loading: () => const Loader(),

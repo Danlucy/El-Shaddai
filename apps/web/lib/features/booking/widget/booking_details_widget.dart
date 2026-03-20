@@ -662,7 +662,7 @@ class _ParticipantsAndActionsColumn extends ConsumerWidget {
                                 context.pop();
                                 ref
                                     .read(currentOrgRepositoryProvider)
-                                    .deleteBooking(booking.id);
+                                    .deleteBooking(bookingModel: booking);
                                 context.pop();
                               },
                               title: 'Delete Booking',

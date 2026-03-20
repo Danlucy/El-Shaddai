@@ -17,6 +17,7 @@ import 'package:mobile/features/booking/widgets/zoom_display_component.dart';
 import 'package:mobile/features/profile/widget/profile_text_field_widgets.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:util/util.dart';
 
 import '../../../core/router/router.dart';
@@ -165,7 +166,30 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                                       },
                                       icon: const Icon(Icons.edit),
                                     ),
+                                  IconButton(
+                                    padding: const EdgeInsets.all(0),
+                                    onPressed: () async {
+                                      const websiteLink =
+                                          "https://247.elshaddaiprayeraltar.asia/";
+                                      final String bookingId =
+                                          widget.bookingModel.id;
 
+                                      // 4. Concatenate using String Interpolation
+                                      final String linkToShare =
+                                          '$websiteLink#/booking/$bookingId';
+
+                                      // 5. Share the generated link
+
+                                      await SharePlus.instance.share(
+                                        ShareParams(
+                                          text:
+                                              'Join my prayer session here: $linkToShare',
+                                          title: 'Prayer Booking Link',
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.share_rounded),
+                                  ),
                                   if ((user.value.isHost(booking.userId)) ||
                                       user.value
                                           .currentRole(ref)

@@ -105,7 +105,9 @@ class _EditableTextFieldState extends ConsumerState<EditableTextField> {
   }
 
   void _saveField() {
-    final newValue = widget.isPhoneFormat ? _currentValue : _controller.text.trim();
+    final newValue = widget.isPhoneFormat
+        ? _currentValue
+        : _controller.text.trim();
     if (newValue != _initialText && widget.uid != null) {
       ref
           .read(profileControllerProvider(widget.uid!).notifier)
@@ -155,7 +157,9 @@ class _EditableTextFieldState extends ConsumerState<EditableTextField> {
         borderSide: BorderSide(color: theme.colorScheme.primary.withOpac(0.5)),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      hintText: widget.isEditing ? 'Enter ${widget.label.toLowerCase()}' : 'Not set',
+      hintText: widget.isEditing
+          ? 'Enter ${widget.label.toLowerCase()}'
+          : 'Not set',
       hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpac(0.4)),
       counterText: '',
     );
@@ -281,7 +285,8 @@ class _ProfileImageState extends ConsumerState<ProfileImage> {
 
     return userDataState.when(
       data: (userData) {
-        final dbImage = userData[UserModel.fields.image] != null &&
+        final dbImage =
+            userData[UserModel.fields.image] != null &&
                 userData[UserModel.fields.image] is List<dynamic>
             ? Uint8List.fromList(userData[UserModel.fields.image].cast<int>())
             : null;
@@ -346,7 +351,9 @@ class _ProfileImageState extends ConsumerState<ProfileImage> {
                               child: Icon(
                                 Icons.camera_alt,
                                 size: 20,
-                                color: theme.colorScheme.primary.withOpacity(0.8),
+                                color: theme.colorScheme.primary.withOpacity(
+                                  0.8,
+                                ),
                               ),
                             ),
                         ],
@@ -373,9 +380,8 @@ class _ProfileImageState extends ConsumerState<ProfileImage> {
 /// Role display chip
 class RoleDisplayWidget extends StatelessWidget {
   final UserRole? role;
-  final TextStyle? textStyle;
 
-  const RoleDisplayWidget({super.key, required this.role, this.textStyle});
+  const RoleDisplayWidget({super.key, required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -400,18 +406,21 @@ class RoleDisplayWidget extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 5.0),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
           decoration: BoxDecoration(
-            color: Colors.white.withOpac(0.15),
+            color: Colors.white.withOpac(0.3),
             borderRadius: BorderRadius.circular(10.0),
-            border: Border.all(color: Colors.white.withOpac(0.2)),
+            border: Border.all(color: Colors.white.withOpac(0.5)),
           ),
           child: Text(
             role?.displayName ?? 'Unknown Role',
-            style: (textStyle ?? Theme.of(context).textTheme.titleSmall)
-                ?.copyWith(color: roleColor, fontWeight: FontWeight.bold),
+            style: (Theme.of(context).textTheme.titleSmall)?.copyWith(
+              color: roleColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
         ),
       ),

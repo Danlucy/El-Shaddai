@@ -1,6 +1,8 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/features/profile/widget/role_dsiplay.dart';
 import 'package:mobile/features/user_management/controller/user_management_controller.dart';
@@ -29,6 +31,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     // Manually define required fields using constants
     var requiredFields = {
+      UserModel.fields.email,
       UserModel.fields.name,
       UserModel.fields.uid,
       UserModel.fields.roles,
@@ -50,7 +53,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Renamed context1 to context for consistency
     final user = ref.watch(userProvider).value;
     final userDataState = ref.watch(
       profileControllerProvider(widget.userModel?.uid),
@@ -84,29 +86,39 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ProfileImage(
-                        radius: 60,
-                        uid: widget.userModel?.uid,
-                        ableToEdit:
-                            user?.uid == widget.userModel?.uid ||
-                            user?.currentRole(ref) == UserRole.admin,
+                      Stack(
+                        alignment: AlignmentGeometry.bottomCenter,
+                        children: [
+                          ProfileImage(
+                            radius: 70,
+                            uid: widget.userModel?.uid,
+                            ableToEdit:
+                                user?.uid == widget.userModel?.uid ||
+                                user?.currentRole(ref) == UserRole.admin,
+                          ),
+                          Transform.translate(
+                            offset: Offset(0, 15),
+                            child: RoleDisplayWidget(
+                              role: widget.userModel?.currentRole(ref),
+                            ),
+                          ),
+                        ],
                       ),
+                      Gap(20),
                       Text(
-                        widget.userModel?.name ?? '',
+                        widget.userModel!.name,
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: RoleDisplayWidget(
-                          role: widget.userModel?.currentRole(ref),
-                        ),
-                      ),
-                      Text(
-                        'Changes Made are Autosaved',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      TextButton(
+                        onPressed: () {
+                          Clipboard.setData(
+                            ClipboardData(text: widget.userModel!.email),
+                          );
+                        },
+                        child: Text(widget.userModel!.email),
                       ),
 
                       /// ✅ **Pass `userData` to all fields after loading**
@@ -128,8 +140,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               padding: const EdgeInsets.only(bottom: 25.0),
                               child: EditableTextField(
                                 uid: widget
-                                    .userModel
-                                    ?.uid, // Ensure it's the viewed user's uid
+                                    .userModel!
+                                    .uid, // Ensure it's the viewed user's uid
                                 fieldName: field,
                                 isEditable: editableFieldIndex == index,
                                 isPhoneFormat: isPhoneNumber,

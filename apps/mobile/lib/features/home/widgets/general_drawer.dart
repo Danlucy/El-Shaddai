@@ -40,7 +40,6 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider).value;
-
     return Drawer(
       width: width,
       // Step 1: Set the Drawer's background to transparent

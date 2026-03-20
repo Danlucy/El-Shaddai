@@ -9,8 +9,9 @@ sealed class UserModel with _$UserModel {
   const factory UserModel({
     required String name,
     required String uid,
+    required String email,
     @Default({}) Map<String, UserRole> roles,
-
+    @Default(false) bool isPublic,
     @TimestampConverter() required DateTime createdAt,
     String? lastName,
     List<int>? image,
@@ -53,6 +54,8 @@ class _UserFields {
   final String name = 'name';
   final String uid = 'uid';
   final String roles = 'roles';
+  final String email = 'email';
+  final String isPublic = 'isPublic';
   final String createdAt = 'createdAt';
   final String lastName = 'lastName';
   final String image = 'image';

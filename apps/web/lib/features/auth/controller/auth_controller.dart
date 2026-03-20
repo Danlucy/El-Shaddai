@@ -84,17 +84,6 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> deleteUser(String uid, BuildContext context) async {
-    state = const AsyncValue.loading();
-
-    try {
-      await _authRepository.deleteUserAccount(context, ref);
-      state = const AsyncValue.data(null);
-    } catch (e, stackTrace) {
-      state = AsyncValue.error(e, stackTrace);
-    }
-  }
-
   void signInWithGoogle(BuildContext context) async {
     state = const AsyncValue.loading();
     try {

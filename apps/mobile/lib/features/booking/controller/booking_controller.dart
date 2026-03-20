@@ -211,51 +211,57 @@ class BookingController extends _$BookingController {
   //     ),
   //   );
   // }
+
   void setStartTime(DateTime startTime, BuildContext context) {
     final currentRange = state.timeRange;
-    final startDate =
-        currentRange?.start ?? DateTime.now(); // Keep existing date
+    final currentDate = currentRange?.start ?? DateTime.now();
 
-    state = state.copyWith(
-      timeRange: CustomDateTimeRange(
-        start: DateTime(
-          startDate.year,
-          startDate.month,
-          startDate.day,
-          startTime.hour,
-          startTime.minute,
-        ), // ✅ Only updating time
-        end: currentRange?.end ?? startDate, // Keep end time unchanged
-      ),
+    // 1. Construct the new start DateTime with the updated time
+    final newStart = DateTime(
+      currentDate.year,
+      currentDate.month,
+      currentDate.day,
+      startTime.hour,
+      startTime.minute,
     );
-    if (state.timeRange != null) {
-      if (state.timeRange!.end.isBefore(state.timeRange!.start)) {
-        showFailureSnackBar(context, 'Start Time Cannot Be After End Time');
-      }
+
+    // 2. Get the current end time, defaulting to 1 hour after start if it doesn't exist yet
+    DateTime newEnd =
+        currentRange?.end ?? newStart.add(const Duration(hours: 1));
+
+    if (newEnd.isBefore(newStart) || newEnd.isAtSameMomentAs(newStart)) {
+      newEnd = newStart.add(const Duration(hours: 1));
     }
+
+    // 4. Update the state with the validated range
+    state = state.copyWith(
+      timeRange: CustomDateTimeRange(start: newStart, end: newEnd),
+    );
   }
 
   void setEndTime(DateTime endTime, BuildContext context) {
     final currentRange = state.timeRange;
-    final endDate = currentRange?.end ?? DateTime.now(); // Keep existing date
+    final currentDate =
+        currentRange?.end ?? DateTime.now(); // Keep existing date
+    final DateTime newEnd = DateTime(
+      currentDate.year,
+      currentDate.month,
+      currentDate.day,
+      endTime.hour,
+      endTime.minute,
+    );
+    DateTime newStart =
+        currentRange?.start ?? newEnd.add(const Duration(hours: 1));
+    if (newStart.isAfter(newEnd) || newStart.isAtSameMomentAs(newEnd)) {
+      newStart = newEnd.subtract(const Duration(hours: 1));
+    }
 
     state = state.copyWith(
       timeRange: CustomDateTimeRange(
-        start: currentRange?.start ?? endDate, // Keep start time unchanged
-        end: DateTime(
-          endDate.year,
-          endDate.month,
-          endDate.day,
-          endTime.hour,
-          endTime.minute,
-        ), // ✅ Only updating time
+        start: newStart, // Keep start time unchanged
+        end: newEnd,
       ),
     );
-    if (state.timeRange != null) {
-      if (state.timeRange!.start.isAfter(state.timeRange!.end)) {
-        showFailureSnackBar(context, 'End Time Cannot Be Before Start Time');
-      }
-    }
   }
 
   BookingModel instantiateBookingModel(String? web) {
