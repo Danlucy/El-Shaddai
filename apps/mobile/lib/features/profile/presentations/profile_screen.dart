@@ -9,8 +9,8 @@ import 'package:mobile/features/user_management/controller/user_management_contr
 import 'package:models/models.dart';
 import 'package:util/util.dart';
 
+import '../../../core/widgets/confirm_dialog.dart';
 import '../../auth/controller/auth_controller.dart';
-import '../../auth/widgets/confirm_button.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../controller/profile_controller.dart';
 import '../widget/profile_text_field_widgets.dart';
@@ -177,7 +177,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     content: GestureDetector(
                                       onTap:
                                           () {}, // Prevent dialog from closing on content tap
-                                      child: ConfirmButton(
+                                      child: ConfirmDialog(
+                                        title: 'Delete Account',
                                         confirmText: 'Delete',
                                         description:
                                             'Are you sure you want to delete your Account?',

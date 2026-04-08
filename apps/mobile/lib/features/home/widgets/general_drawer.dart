@@ -1,6 +1,7 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/widgets/confirm_dialog.dart';
 import 'package:models/models.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:util/util.dart';
@@ -8,7 +9,6 @@ import 'package:util/util.dart';
 import '../../../core/router/router.dart';
 import '../../../core/widgets/glass_container.dart'; // Make sure you have this import
 import '../../auth/controller/auth_controller.dart';
-import '../../auth/widgets/confirm_button.dart';
 
 class GeneralDrawer extends ConsumerStatefulWidget {
   const GeneralDrawer({super.key});
@@ -105,7 +105,8 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                     barrierColor: Colors.black.withOpac(0.2),
                     context: context,
                     builder: (context) {
-                      return ConfirmButton(
+                      return ConfirmDialog(
+                        title: 'Log Out',
                         confirmText: 'Log out',
                         confirmAction: () {
                           ref.read(authControllerProvider.notifier).signOut();

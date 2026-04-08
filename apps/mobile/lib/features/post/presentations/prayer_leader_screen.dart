@@ -11,8 +11,8 @@ import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
 
+import '../../../core/widgets/confirm_dialog.dart';
 import '../../auth/controller/auth_controller.dart';
-import '../../auth/widgets/confirm_button.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../controller/post_controller.dart';
 import '../widget/add_post_dialog.dart';
@@ -108,7 +108,8 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
                                                   Colors.transparent,
                                               content: GestureDetector(
                                                 onTap: () {},
-                                                child: ConfirmButton(
+                                                child: ConfirmDialog(
+                                                  title: 'Delete Post',
                                                   confirmText: 'Delete',
                                                   description:
                                                       'Are you sure you want to delete this post?',

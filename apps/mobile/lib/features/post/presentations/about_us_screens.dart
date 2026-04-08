@@ -12,8 +12,8 @@ import 'package:repositories/repositories.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:util/util.dart';
 
+import '../../../core/widgets/confirm_dialog.dart';
 import '../../auth/controller/auth_controller.dart';
-import '../../auth/widgets/confirm_button.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../controller/post_controller.dart';
 import '../widget/add_post_dialog.dart';
@@ -136,7 +136,8 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
                                                   Colors.transparent,
                                               content: GestureDetector(
                                                 onTap: () {},
-                                                child: ConfirmButton(
+                                                child: ConfirmDialog(
+                                                  title: 'Delete Post',
                                                   confirmText: 'Delete',
                                                   description:
                                                       'Are you sure you want to delete this post?',

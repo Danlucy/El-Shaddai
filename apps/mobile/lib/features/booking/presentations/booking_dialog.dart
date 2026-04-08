@@ -150,7 +150,7 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                   ],
                 ),
                 child: GestureDetector(
-                  onTap: () {}, // Prevents tap bubbling to Scaffold
+                  onTap: () {},
                   child: Form(
                     key: formKey,
                     child: Center(
@@ -168,14 +168,13 @@ class BookingDialogState extends ConsumerState<BookingDialog> {
                                   children: [
                                     Text(
                                       isUpdating
-                                          ? 'Edit Your Prayer Time '
-                                          : 'Book Your Prayer Time ',
+                                          ? 'Edit Your Prayer Session '
+                                          : 'Book Your Prayer Session ',
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    // 5. Paste Button (Only visible if clipboard has data)
                                     IconButton(
                                       tooltip: "Paste last copied booking",
                                       onPressed: () {

@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mobile/features/auth/widgets/confirm_button.dart';
 import 'package:mobile/features/booking/controller/booking_clipboard.dart';
 import 'package:mobile/features/booking/provider/booking_provider.dart';
 import 'package:mobile/features/booking/state/booking_state.dart';
@@ -11,6 +10,7 @@ import 'package:models/models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:util/util.dart';
 
+import '../../../core/widgets/confirm_dialog.dart' show ConfirmDialog;
 import '../../auth/controller/auth_controller.dart';
 
 part 'booking_controller.g.dart';
@@ -449,7 +449,7 @@ class BookingController extends _$BookingController {
     showDialog(
       context: context,
       builder: (context) {
-        return ConfirmButton(
+        return ConfirmDialog(
           confirmText: 'Delete',
           cancelText: 'Cancel',
           description: 'Are you sure you want to delete this booking?',
@@ -459,6 +459,7 @@ class BookingController extends _$BookingController {
             context.pop();
             _processDeleteBookingRecursion(context, bookingModel);
           },
+          title: 'Delete Booking',
         );
       },
     );

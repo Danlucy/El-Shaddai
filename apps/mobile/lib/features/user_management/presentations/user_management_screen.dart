@@ -10,7 +10,7 @@ import 'package:models/models.dart';
 import 'package:util/util.dart';
 
 import '../../../core/router/router.dart';
-import '../../auth/widgets/confirm_button.dart';
+import '../../../core/widgets/confirm_dialog.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../controller/user_management_controller.dart';
 
@@ -28,7 +28,6 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   Widget build(BuildContext context) {
     final controller = ref.read(userManagementControllerProvider.notifier);
 
-    // Use a DefaultTabController to manage the TabBar and TabBarView state
     return DefaultTabController(
       length: UserRole.values.length, // Number of tabs equals number of roles
       child: Scaffold(
@@ -149,7 +148,8 @@ class _PopMenuButton extends ConsumerWidget {
                 barrierColor: Colors.black.withOpac(0.3),
                 context: context,
                 builder: (context) {
-                  return ConfirmButton(
+                  return ConfirmDialog(
+                    title: 'Delete User',
                     confirmText: 'Delete',
                     cancelText: 'Cancel',
                     description: 'Delete User? This cannot be reverted.',
