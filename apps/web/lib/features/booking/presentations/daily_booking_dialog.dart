@@ -160,10 +160,7 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
           linearGradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withOpacity(0.2),
-              Colors.white.withOpacity(0.1),
-            ],
+            colors: [Colors.white.withOpac(0.2), Colors.white.withOpac(0.1)],
             stops: const [0.1, 1],
           ),
           border: 2,
@@ -171,10 +168,7 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
           borderGradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withOpacity(0.5),
-              Colors.white.withOpacity(0.5),
-            ],
+            colors: [Colors.white.withOpac(0.5), Colors.white.withOpac(0.5)],
           ),
           child: Column(
             children: [

@@ -293,12 +293,12 @@ class _MyAppState extends ConsumerState<_MyWebApp> with WidgetsBindingObserver {
         }
       } catch (e) {
         if (!_disposed) {
-          print('Generic Error updating user data: $e');
+          // print('Generic Error updating user data: $e');
         }
       }
     } catch (e) {
       if (!_disposed) {
-        print('Connectivity check error during user data update: $e');
+        // print('Connectivity check error during user data update: $e');
         hasConnectivity.value = false; // Assume no connectivity on error
       }
     }

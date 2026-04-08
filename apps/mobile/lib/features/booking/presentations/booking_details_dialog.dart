@@ -171,19 +171,26 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                                     onPressed: () async {
                                       const websiteLink =
                                           "https://247.elshaddaiprayeraltar.asia/";
-                                      final String bookingId =
-                                          widget.bookingModel.id;
-
-                                      // 4. Concatenate using String Interpolation
+                                      final String bookingId = booking.id;
                                       final String linkToShare =
                                           '$websiteLink#/booking/$bookingId';
 
-                                      // 5. Share the generated link
+                                      // Format: "24 March at 9pm"
+                                      // 'd MMMM' = 24 March
+                                      // 'ha' = 9pm (h for 12-hour, a for am/pm)
+                                      final String formattedDate =
+                                          DateFormat(
+                                            'd MMMM',
+                                          ).format(booking.timeRange.start) +
+                                          " at " +
+                                          DateFormat('ha')
+                                              .format(booking.timeRange.start)
+                                              .toLowerCase();
 
                                       await SharePlus.instance.share(
                                         ShareParams(
                                           text:
-                                              'Join my prayer session here: $linkToShare',
+                                              'You are invited to join EL Shaddai Prayer Altar 24/7 session on $formattedDate\n$linkToShare',
                                           title: 'Prayer Booking Link',
                                         ),
                                       );

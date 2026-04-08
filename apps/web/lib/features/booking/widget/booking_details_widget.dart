@@ -11,11 +11,12 @@ import 'package:intl/intl.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:util/util.dart';
 import 'package:website/core/utility/launch_google_map.dart';
 import 'package:website/core/utility/utility.dart';
 import 'package:website/core/widgets/calendar_widget.dart';
-import 'package:website/core/widgets/confirm_button.dart';
+import 'package:website/core/widgets/confirm_dialog.dart';
 import 'package:website/core/widgets/glass_button.dart';
 import 'package:website/core/widgets/loader.dart';
 import 'package:website/features/auth/controller/auth_controller.dart';
@@ -159,10 +160,42 @@ class _MainDetailsColumn extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AutoSizeText(
-          booking.title,
-          style: Theme.of(context).textTheme.headlineLarge,
-          maxLines: 2,
+        Row(
+          children: [
+            AutoSizeText(
+              booking.title,
+              style: Theme.of(context).textTheme.headlineLarge,
+              maxLines: 2,
+            ),
+            Spacer(),
+            IconButton(
+              padding: const EdgeInsets.all(0),
+              onPressed: () async {
+                const websiteLink = "https://247.elshaddaiprayeraltar.asia/";
+                final String bookingId = booking.id;
+                final String linkToShare = '$websiteLink#/booking/$bookingId';
+
+                // Format: "24 March at 9pm"
+                // 'd MMMM' = 24 March
+                // 'ha' = 9pm (h for 12-hour, a for am/pm)
+                final String formattedDate =
+                    DateFormat('d MMMM').format(booking.timeRange.start) +
+                    " at " +
+                    DateFormat(
+                      'ha',
+                    ).format(booking.timeRange.start).toLowerCase();
+
+                await SharePlus.instance.share(
+                  ShareParams(
+                    text:
+                        'You are invited to join EL Shaddai Prayer Altar 24/7 session on $formattedDate\n$linkToShare',
+                    title: 'Prayer Booking Link',
+                  ),
+                );
+              },
+              icon: const Icon(Icons.share_rounded),
+            ),
+          ],
         ),
         Text(
           'Hosted by: ${booking.host}',
