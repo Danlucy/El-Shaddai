@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile/features/profile/widget/role_dsiplay.dart';
+import 'package:mobile/features/profile/widget/role_display.dart';
 import 'package:mobile/features/user_management/controller/user_management_controller.dart';
 import 'package:models/models.dart';
 import 'package:util/util.dart';

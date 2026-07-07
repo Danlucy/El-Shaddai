@@ -7,10 +7,10 @@ import 'package:models/models.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:website/features/booking/controller/booking_controller.dart';
 import 'package:website/features/booking/widget/book_button.dart';
+import 'package:website/features/booking/widget/booking_date_range_component.dart';
 import 'package:website/features/booking/widget/booking_location_component.dart';
 import 'package:website/features/booking/widget/booking_text_field.dart';
 import 'package:website/features/booking/widget/booking_time_picker_component.dart';
-import 'package:website/features/booking/widget/bookng_date_range_component.dart';
 import 'package:website/features/booking/widget/recurrence_component.dart';
 import 'package:website/features/booking/widget/zoom_display_component.dart';
 

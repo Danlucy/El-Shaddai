@@ -6,8 +6,8 @@ import 'package:website/features/booking/presentations/booking_component.dart';
 import 'package:website/features/booking/presentations/booking_details_screen.dart';
 import 'package:website/features/booking/presentations/booking_list_screen.dart';
 import 'package:website/features/booking/presentations/booking_screen.dart';
-import 'package:website/features/home/presenations/home_screen.dart';
-import 'package:website/features/home/presenations/shell_screen.dart';
+import 'package:website/features/home/presentations/home_screen.dart';
+import 'package:website/features/home/presentations/shell_screen.dart';
 import 'package:website/features/profile/presentations/profile_screen.dart';
 import 'package:website/features/settings/presentations/settings_screen.dart';
 
