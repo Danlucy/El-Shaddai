@@ -1,10 +1,32 @@
-# Compiled JavaScript files
-lib/**/*.js
-lib/**/*.js.map
+# Bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyright/
+.cache/
 
-# TypeScript v1 declaration files
-typings/
+# Virtual environments
+.venv/
+venv/
+env/
 
-# Node.js dependency directory
-node_modules/
+# Test and coverage output
+.coverage
+.coverage.*
+htmlcov/
+
+# Build and package output
+build/
+dist/
+*.egg-info/
+
+# Local tooling and generated runtimes
+Python/
 *.local
+
+# Firebase debug logs
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
