@@ -8,8 +8,9 @@ class CustomDateTimeRangeConverter
   CustomDateTimeRange fromJson(Map<String, dynamic> json) {
     if (json['start'] is Timestamp) {
       return CustomDateTimeRange(
-          start: (json['start'] as Timestamp).toDate(),
-          end: (json['end'] as Timestamp).toDate());
+        start: (json['start'] as Timestamp).toDate(),
+        end: (json['end'] as Timestamp).toDate(),
+      );
     } else {
       return CustomDateTimeRange(start: json['start'], end: json['end']);
     }
@@ -21,12 +22,32 @@ class CustomDateTimeRangeConverter
   }
 }
 
+class EpochMillisecondsDateTimeRangeConverter
+    implements JsonConverter<CustomDateTimeRange, Map<String, dynamic>> {
+  const EpochMillisecondsDateTimeRangeConverter();
+
+  @override
+  CustomDateTimeRange fromJson(Map<String, dynamic> json) {
+    return CustomDateTimeRange(
+      start: DateTime.fromMillisecondsSinceEpoch(
+        (json['start'] as num).toInt(),
+      ),
+      end: DateTime.fromMillisecondsSinceEpoch((json['end'] as num).toInt()),
+    );
+  }
+
+  @override
+  Map<String, int> toJson(CustomDateTimeRange object) {
+    return {
+      'start': object.start.millisecondsSinceEpoch,
+      'end': object.end.millisecondsSinceEpoch,
+    };
+  }
+}
+
 class CustomDateTimeRange {
   /// Creates a date range for the given start and end [DateTime].
-  CustomDateTimeRange({
-    required this.start,
-    required this.end,
-  });
+  CustomDateTimeRange({required this.start, required this.end});
 
   /// The start of the range of dates.
   final DateTime start;

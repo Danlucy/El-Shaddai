@@ -86,7 +86,9 @@ class UserManagementController extends _$UserManagementController {
         // deletes their own account! The target user's Auth credential remains
         // intact unless handled via a Cloud Function.
         try {
-          final HttpsCallable callable = FirebaseFunctions.instance
+          final HttpsCallable callable = FirebaseFunctions.instanceFor(
+            region: 'asia-southeast1',
+          )
               .httpsCallable('deleteUserAuth');
           await callable.call(<String, dynamic>{'uid': targetUid});
         } catch (e) {

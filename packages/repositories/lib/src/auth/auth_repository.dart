@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:constants/constants.dart';
 import 'package:firebase/firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
@@ -32,26 +29,11 @@ class AuthRepository {
     required GoogleSignIn googleSignIn,
   }) : _firestore = firestore,
        _auth = auth,
-       _googleSignIn = googleSignIn {
-    _initializeGoogleSignIn();
-  }
+       _googleSignIn = googleSignIn;
 
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstants.usersCollection);
   Stream<User?> get authStateChange => _auth.authStateChanges();
-
-  Future<void> _initializeGoogleSignIn() async {
-    try {
-      await _googleSignIn.initialize(
-        clientId:
-            kIsWeb || Platform.isMacOS || Platform.isWindows || Platform.isLinux
-            ? '5347198504-mv7hsnnvvca4k7keda0410t262f95q8q.apps.googleusercontent.com'
-            : null,
-      );
-    } catch (e) {
-      print('Failed to initialize Google Sign-In: $e');
-    }
-  }
 
   Future<UserModel> handleUserCreationOrRetrieval({
     required UserCredential userCredential,

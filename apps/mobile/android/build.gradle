@@ -1,11 +1,11 @@
 buildscript {
-    ext.kotlin_version = '2.1.0'  // Latest Kotlin with full Java 21 support
+    ext.kotlin_version = '2.2.20'  // Latest Kotlin with full Java 21 support
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.8.1'  // ADD THIS - AGP for Java 21
+        classpath 'com.android.tools.build:gradle:8.13.2'  // ADD THIS - AGP for Java 21
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"  // ADD THIS
         classpath 'com.google.gms:google-services:4.4.3'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.4'

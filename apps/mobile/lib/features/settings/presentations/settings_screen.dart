@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile/core/router/router.dart';
 import 'package:mobile/core/widgets/glass_list_tile.dart';
+import 'package:mobile/features/auth/services/zoom_oauth_service.dart';
 import 'package:mobile/features/home/widgets/general_drawer.dart';
-import 'package:mobile/features/notifications/controller/notifications_controller.dart';
-import 'package:mobile/features/settings/state/settings_state.dart';
 import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
 
@@ -20,52 +18,37 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  final SettingsState _settings = SettingsState.instance;
+  bool _isZoomAuthenticating = false;
 
-  bool _isLoading = true;
-  bool _notifications = false;
-  Future<void> _loadSettings() async {
-    await _settings.init(); // Initialize SharedPreferences
+  Future<void> _signInToZoom() async {
+    if (_isZoomAuthenticating) return;
 
-    setState(() {
-      _notifications = _settings.getNotifications();
-      _isLoading = false;
-    });
-  }
+    setState(() => _isZoomAuthenticating = true);
+    try {
+      final accessToken = await ZoomOAuthService().signIn();
+      await ref
+          .read(accessTokenNotifierProvider.notifier)
+          .saveAccessToken(accessToken);
 
-  Future<void> _updateSetting(String settingName, bool value) async {
-    switch (settingName) {
-      case 'notifications':
-        if (value) {
-          // Request permission
-          bool granted = await NotificationsController.instance
-              .requestPermission();
-
-          // Only turn toggle on if permission granted
-          if (granted) {
-            setState(() => _notifications = true);
-            await _settings.setNotifications(true);
-          } else {
-            setState(() => _notifications = false); // show toggle as off
-            await _settings.setNotifications(false);
-          }
-        } else {
-          // User manually toggled off
-          setState(() => _notifications = false);
-          await _settings.setNotifications(false);
-        }
-        break;
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Signed in to Zoom successfully.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showFailureSnackBar(context, e.toString());
+    } finally {
+      if (mounted) {
+        setState(() => _isZoomAuthenticating = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (_isLoading) {
-    //   return const Scaffold(
-    //     backgroundColor: Color(0xFF0F1115),
-    //     body: Center(child: CircularProgressIndicator()),
-    //   );
-    // }
     return Scaffold(
       drawer: const GeneralDrawer(),
       appBar: AppBar(
@@ -106,16 +89,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             // ),
             (ref.watch(accessTokenNotifierProvider).value == null)
                 ? GlassListTile(
-                    onTap: () {
-                      try {
-                        const ZoomRoute(zoomLoginRoute).push(context);
-                      } catch (e, s) {
-                        showFailureSnackBar(
-                          context,
-                          e.toString() + s.toString(),
-                        );
-                      }
-                    },
+                    onTap: _isZoomAuthenticating ? null : _signInToZoom,
                     leading: Image.asset(
                       'assets/logo/zoom_cam.png',
                       width: 25,
@@ -123,7 +97,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     title: Row(
                       children: [
-                        const Text('Sign In'),
+                        Text(_isZoomAuthenticating ? 'Signing In…' : 'Sign In'),
                         const Gap(5),
                         Image.asset(
                           'assets/logo/zoom.png',

@@ -75,21 +75,32 @@ class PostController extends _$PostController {
     }
   }
 
-  void addPost({required PostType postType}) {
+  void addPost({required PostType postType, PostModel? post}) {
     try {
       final user = ref.read(userProvider).value;
-      if (state.title != null && state.description != null) {
-        final post = PostModel(
-          title: state.title!,
-          content: state.description!,
-          image: state.image,
+      final title = state.title ?? post?.title;
+      final description = state.description ?? post?.content;
+
+      if (title != null && description != null) {
+        final updatedPost = PostModel(
+          title: title,
+          content: description,
+          image: state.image ?? post?.image,
           id: FirebaseFirestore.instance.collection('dog').doc().id,
-          userId: user!.uid,
-          createdAt: DateTime.now(),
+          userId: post?.userId ?? user!.uid,
+          createdAt: post?.createdAt ?? DateTime.now(),
         );
-        ref
-            .read(currentOrgPostRepositoryProvider)
-            .addPost(post, postType: postType);
+        final repository = ref.read(currentOrgPostRepositoryProvider);
+
+        if (post != null) {
+          repository.updatePost(
+            updatedPost,
+            postType: postType,
+            postId: post.id,
+          );
+        } else {
+          repository.addPost(updatedPost, postType: postType);
+        }
       }
     } catch (e) {
       if (kDebugMode) {

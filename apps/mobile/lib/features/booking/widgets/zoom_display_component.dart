@@ -251,7 +251,7 @@ class _ZoomDisplayComponentState extends ConsumerState<ZoomDisplayComponent> {
                   },
                 );
               },
-              icon: const Icon(Icons.key),
+              icon: const Icon(Icons.key,color: Colors.grey,),
             ),
           ),
         ],

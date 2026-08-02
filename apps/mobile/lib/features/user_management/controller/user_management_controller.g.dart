@@ -39,7 +39,7 @@ final class UserManagementControllerProvider
 }
 
 String _$userManagementControllerHash() =>
-    r'fdb4c152376a7dcb88380c4819a60e1739af514b';
+    r'6558587643da0547f5cc01380885b207c012a68f';
 
 abstract class _$UserManagementController extends $Notifier<void> {
   void build();

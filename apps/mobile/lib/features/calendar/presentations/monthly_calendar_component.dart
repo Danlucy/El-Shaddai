@@ -219,8 +219,8 @@ class _MonthlyCalendarComponentState
     return AnimatedBuilder(
       animation: _gradientAnimation,
       builder: (context, child) {
-        return ref
-            .watch(getCurrentOrgBookingsStreamProvider)
+        return AsyncValueExtensions(ref
+            .watch(getCurrentOrgBookingsStreamProvider))
             .when(
               data: (data) {
                 return Column(
@@ -377,56 +377,53 @@ class _MonthlyCalendarComponentState
                         vertical: 2,
                       ),
                       child: IntrinsicHeight(
-                        child: GlassContainer(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Center(
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                style: DefaultTextStyle.of(context).style,
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: '$dayOfWeek, '.toUpperCase(),
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: context.colors.secondary.withOpac(
-                                        0.8,
-                                      ),
+                        child: Center(
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: '$dayOfWeek, '.toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal,
+                                    color: context.colors.secondary.withOpac(
+                                      0.8,
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: '$dayOfMonth ',
-                                    style: TextStyle(
-                                      fontSize:
-                                          22, // Large font size for the date
-                                      fontWeight:
-                                          FontWeight.bold, // Bold for the date
-                                      color: context.colors.secondary,
+                                ),
+                                TextSpan(
+                                  text: '$dayOfMonth ',
+                                  style: TextStyle(
+                                    fontSize:
+                                        22, // Large font size for the date
+                                    fontWeight:
+                                        FontWeight.bold, // Bold for the date
+                                    color: context.colors.secondary,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: monthOfMonth,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: context.colors.primary.withOpac(
+                                      0.8,
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: monthOfMonth,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: context.colors.primary.withOpac(
-                                        0.8,
-                                      ),
+                                ),
+                                TextSpan(
+                                  text: yearOfMonth,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                    color: context.colors.secondary.withOpac(
+                                      0.8,
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: yearOfMonth,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.normal,
-                                      color: context.colors.secondary.withOpac(
-                                        0.8,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

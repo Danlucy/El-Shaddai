@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:models/models.dart';
+import 'package:repositories/repositories.dart';
 import 'package:util/util.dart';
 
 part 'booking_state.freezed.dart';
@@ -24,4 +25,20 @@ sealed class BookingState with _$BookingState {
   }) = _BookingState;
   factory BookingState.fromJson(Map<String, dynamic> json) =>
       _$BookingStateFromJson(json);
+}
+
+enum BookingSubmissionStatus { idle, submitting, success, failure }
+
+class BookingSubmissionState {
+  const BookingSubmissionState({
+    this.status = BookingSubmissionStatus.idle,
+    this.request,
+    this.message,
+    this.bookingIds = const [],
+  });
+
+  final BookingSubmissionStatus status;
+  final BookingDTO? request;
+  final String? message;
+  final List<String> bookingIds;
 }

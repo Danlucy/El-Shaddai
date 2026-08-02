@@ -30,6 +30,8 @@ class BookingRepository {
   }) : _firestore = firestore,
        _organizationId = organizationId;
 
+  String get organizationId => _organizationId;
+
   CollectionReference get _bookingCollection => _firestore
       .collection(FirebaseConstants.churchesCollection)
       .doc(_organizationId)

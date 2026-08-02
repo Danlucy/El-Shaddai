@@ -1,11 +1,12 @@
 import 'package:api/api.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/utility/url_launcher.dart';
 
 import '../controller/booking_controller.dart';
 import '../provider/booking_provider.dart';
+import '../provider/booking_submission_provider.dart';
 
 class BookButton extends ConsumerStatefulWidget {
   const BookButton({
@@ -40,10 +41,10 @@ class _BookButtonState extends ConsumerState<BookButton> {
             context,
             widget.isUpdating,
             bookingReader.bookingId,
+            checkCachedOverlap: false,
           );
           if (ref.read(bookingVenueStateProvider) !=
               BookingVenueComponent.location) {
-            // change3
             if (parseZoomId(web).isEmpty) {
               await apiRepository
                   .createMeeting(bookingFunction.instantiateZoomMeetingModel())
@@ -52,26 +53,27 @@ class _BookButtonState extends ConsumerState<BookButton> {
                     bookingFunction.setPassword(value.data['password']);
                     occurrenceIds = value.data['occurrences'];
                   });
-            } else {}
+            }
           }
 
+          final repository = ref.read(currentOrgRepositoryProvider);
           ref
-              .read(currentOrgRepositoryProvider)
-              .createOrEditBooking(
-                zoomOccurrences: occurrenceIds,
-                // bookingModel: bookingFunction.instantiateBookingModel(
-                //     'https://us02web.zoom.us/j/3128833664?pwd=joy'),
-                //change4
-                bookingModel: bookingFunction.instantiateBookingModel(web),
-                bookingId: bookingReader.bookingId,
-                call: widget.errorCall,
-                recurrence: bookingFunction
-                    .instantiateRecurrenceConfigurationModel(),
+              .read(bookingSubmissionNotifierProvider.notifier)
+              .submit(
+                bookingFunction.instantiateBookingDTO(
+                  organizationId: repository.organizationId,
+                  isUpdating: widget.isUpdating,
+                  zoomOccurrences: occurrenceIds,
+                ),
               );
 
+          if (!context.mounted) return;
           Navigator.pop(context);
         } on FirebaseException catch (e) {
-          throw e.message!;
+          widget.errorCall(
+            e.message ??
+                'Booking failed because Firebase could not be reached.',
+          );
         } catch (e) {
           widget.errorCall(
             e.toString().contains('Null check operator used on a null value')

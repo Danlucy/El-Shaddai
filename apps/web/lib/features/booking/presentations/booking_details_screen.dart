@@ -23,6 +23,7 @@ class BookingDetailsScreen extends ConsumerWidget {
         surfaceColor: Theme.of(context).colorScheme.surface,
         secondaryColor: Theme.of(context).colorScheme.secondary,
         child: bookingStream.when(
+
           data: (booking) {
             if (booking == null) {
               return const Center(child: Text('Booking not found.'));

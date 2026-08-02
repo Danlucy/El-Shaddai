@@ -40,97 +40,98 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider).value;
-    return Drawer(
+    return Drawer(backgroundColor: Colors.transparent,
       width: width,
       // Step 1: Set the Drawer's background to transparent
-      backgroundColor: Colors.transparent,
-      child: GlassContainer(
+      child: GlassContainer(backgroundColor: Colors.transparent,
         // Step 2: Use GlassContainer to apply the blur effect and semi-transparent background
         // GlassContainer's width and height should match the Drawer's dimensions
         width: width,
         height: double.infinity,
         padding: EdgeInsets.zero,
         margin: EdgeInsets.zero,
-        child: SafeArea(
-          child: Column(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.house),
-                title: const Text('Home'),
-                onTap: () => const HomeRoute().push(context),
-              ),
-              ListTile(
-                leading: const Icon(Icons.list),
-                title: const Text('Prayer Watch List'),
-                onTap: () => const BookingListRoute().push(context),
-              ),
-              ListTile(
-                leading: const Icon(Icons.calendar_month),
-                title: const Text('Book Prayer Watch'),
-                onTap: () => const BookingRoute().push(context),
-              ),
-
-              ListTile(
-                leading: const Icon(Icons.message),
-                title: const Text('Watch Leaders'),
-                onTap: () => const PrayerLeaderRoute().push(context),
-              ),
-              ListTile(
-                leading: const Icon(Icons.account_circle),
-                title: const Text('My Profile'),
-                onTap: () => ProfileRoute(user).push(context),
-              ),
-              if (user?.currentRole(ref) == UserRole.admin)
+        child: Material(color: Colors.transparent,
+          child: SafeArea(
+            child: Column(
+              children: [
                 ListTile(
-                  leading: const Icon(Icons.supervisor_account),
-                  title: const Text('User Management'),
-                  onTap: () => const UserManagementRoute().push(context),
+                  leading: const Icon(Icons.house),
+                  title: const Text('Home'),
+                  onTap: () => const HomeRoute().push(context),
                 ),
-              ListTile(
-                leading: const Icon(Icons.phone),
-                title: const Text('About Us'),
-                onTap: () => const AboutUsRoute().push(context),
-              ),
-              const Spacer(),
+                ListTile(
+                  leading: const Icon(Icons.list),
+                  title: const Text('Prayer Watch List'),
+                  onTap: () => const BookingListRoute().push(context),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.calendar_month),
+                  title: const Text('Book Prayer Watch'),
+                  onTap: () => const BookingRoute().push(context),
+                ),
 
-              // Zoom sign in / out
-              ListTile(
-                leading: const Icon(Icons.transit_enterexit_sharp),
-                title: Text(
-                  'Log out',
-                  style: TextStyle(color: context.colors.error),
+                ListTile(
+                  leading: const Icon(Icons.message),
+                  title: const Text('Watch Leaders'),
+                  onTap: () => const PrayerLeaderRoute().push(context),
                 ),
-                onTap: () {
-                  showDialog(
-                    barrierColor: Colors.black.withOpac(0.2),
-                    context: context,
-                    builder: (context) {
-                      return ConfirmDialog(
-                        title: 'Log Out',
-                        confirmText: 'Log out',
-                        confirmAction: () {
-                          ref.read(authControllerProvider.notifier).signOut();
-                        },
-                        description: 'Are you sure you want to log out?',
-                        cancelText: 'Cancel',
-                      );
-                    },
-                  );
-                },
-              ),
-              ListTile(
-                trailing: Text(
-                  _appVersion,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                ListTile(
+                  leading: const Icon(Icons.account_circle),
+                  title: const Text('My Profile'),
+                  onTap: () => ProfileRoute(user).push(context),
                 ),
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                onTap: () => const SettingsRoute().push(context),
-              ),
-              // 👇 App Version at bottom
-            ],
+                if (user?.currentRole(ref) == UserRole.admin)
+                  ListTile(
+                    leading: const Icon(Icons.supervisor_account),
+                    title: const Text('User Management'),
+                    onTap: () => const UserManagementRoute().push(context),
+                  ),
+                ListTile(
+                  leading: const Icon(Icons.phone),
+                  title: const Text('About Us'),
+                  onTap: () => const AboutUsRoute().push(context),
+                ),
+                const Spacer(),
+
+                // Zoom sign in / out
+                ListTile(
+                  leading: const Icon(Icons.transit_enterexit_sharp),
+                  title: Text(
+                    'Log out',
+                    style: TextStyle(color: context.colors.error),
+                  ),
+                  onTap: () {
+                    showDialog(
+                      barrierColor: Colors.black.withOpac(0.2),
+                      context: context,
+                      builder: (context) {
+                        return ConfirmDialog(
+                          title: 'Log Out',
+                          confirmText: 'Log out',
+                          confirmAction: () {
+                            ref.read(authControllerProvider.notifier).signOut();
+                          },
+                          description: 'Are you sure you want to log out?',
+                          cancelText: 'Cancel',
+                        );
+                      },
+                    );
+                  },
+                ),
+                ListTile(
+                  trailing: Text(
+                    _appVersion,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  ),
+                  leading: const Icon(Icons.settings),
+                  title: const Text('Settings'),
+                  onTap: () => const SettingsRoute().push(context),
+                ),
+                // 👇 App Version at bottom
+              ],
+            ),
           ),
         ),
       ),

@@ -33,6 +33,66 @@ bool doTimeRangesOverlap(CustomDateTimeRange a, CustomDateTimeRange b) {
   return a.start.isBefore(b.end) && a.end.isAfter(b.start);
 }
 
+List<DateTime> findOverlappingDates({
+  required Iterable<CustomDateTimeRange> candidateRanges,
+  required Iterable<CustomDateTimeRange> existingRanges,
+}) {
+  final existing = existingRanges.toList();
+  final overlappingDates = <DateTime>{};
+
+  for (final candidate in candidateRanges) {
+    for (final booked in existing) {
+      if (!doTimeRangesOverlap(candidate, booked)) continue;
+
+      final overlapStart =
+          (candidate.start.isAfter(booked.start)
+                  ? candidate.start
+                  : booked.start)
+              .toLocal();
+      final overlapEnd =
+          (candidate.end.isBefore(booked.end) ? candidate.end : booked.end)
+              .toLocal();
+      final lastOverlapMoment = overlapEnd.subtract(
+        const Duration(microseconds: 1),
+      );
+
+      var date = DateTime(
+        overlapStart.year,
+        overlapStart.month,
+        overlapStart.day,
+      );
+      final lastDate = DateTime(
+        lastOverlapMoment.year,
+        lastOverlapMoment.month,
+        lastOverlapMoment.day,
+      );
+
+      while (!date.isAfter(lastDate)) {
+        overlappingDates.add(date);
+        date = DateTime(date.year, date.month, date.day + 1);
+      }
+    }
+  }
+
+  return overlappingDates.toList()..sort();
+}
+
+String formatOverlappingDates(
+  Iterable<DateTime> dates, {
+  int maximumVisibleDates = 3,
+}) {
+  assert(maximumVisibleDates > 0);
+
+  final sortedDates = dates.toSet().toList()..sort();
+  final visibleDates = sortedDates.take(maximumVisibleDates).map((date) {
+    final twoDigitYear = (date.year % 100).toString().padLeft(2, '0');
+    return '[${date.day}/${date.month}/$twoDigitYear]';
+  });
+  final suffix = sortedDates.length > maximumVisibleDates ? ' and more' : '';
+
+  return '${visibleDates.join(', ')}$suffix';
+}
+
 bool isOverlapping(DateTime date, CustomDateTimeRange timeRange) {
   // Create DateTime for the start and end of the given date
   final startOfDay = DateTime(date.year, date.month, date.day);

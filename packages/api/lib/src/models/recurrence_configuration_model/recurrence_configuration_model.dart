@@ -5,7 +5,7 @@ part 'recurrence_configuration_model.g.dart';
 
 @freezed
 sealed class RecurrenceConfigurationModel with _$RecurrenceConfigurationModel {
-  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+  @JsonSerializable(fieldRename: FieldRename.snake,)
   const factory RecurrenceConfigurationModel({
 
     @JsonKey(name: 'end_times') required int recurrenceFrequency,
@@ -31,12 +31,12 @@ enum Weekday {
   const Weekday(this.value);
 
   // Optional: A method to get the enum from an integer
-  static Weekday fromValue(int value) {
-    return Weekday.values.firstWhere(
-      (day) => day.value == value,
-      orElse: () => throw ArgumentError('Invalid weekday value: $value'),
-    );
-  }
+  // static Weekday fromValue(int value) {
+  //   return Weekday.values.firstWhere(
+  //     (day) => day.value == value,
+  //     orElse: () => throw ArgumentError('Invalid weekday value: $value'),
+  //   );
+  // }
 
   static int toValue(Weekday day) => day.value;
   static Weekday fromDateTime(DateTime date) {

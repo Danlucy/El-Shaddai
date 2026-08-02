@@ -27,6 +27,7 @@ import '../../auth/controller/auth_controller.dart';
 import '../../auth/widgets/loader.dart';
 import '../../participant/participant_controller/participant_controller.dart';
 import '../provider/booking_provider.dart';
+import 'booking_delete_dialog.dart';
 import 'booking_dialog.dart';
 
 class BookingDetailsDialog extends ConsumerStatefulWidget {
@@ -202,10 +203,36 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                                           .currentRole(ref)
                                           .isWatchmanOrHigher)
                                     IconButton(
-                                      onPressed: () {
-                                        controllerFunction.deleteBooking(
-                                          context,
-                                          booking,
+                                      onPressed: () async {
+                                        final choice =
+                                            await showBookingDeleteConfirmation(
+                                              context: context,
+                                              booking: booking,
+                                            );
+                                        if (choice == null || !mounted) return;
+
+                                        final result = await controllerFunction
+                                            .deleteBooking(
+                                              booking,
+                                              deleteEntireSeries:
+                                                  choice ==
+                                                  BookingDeleteChoice
+                                                      .entireSeries,
+                                            );
+                                        if (!mounted) return;
+
+                                        result.fold(
+                                          (failure) => showFailureSnackBar(
+                                            context,
+                                            failure.message,
+                                          ),
+                                          (_) {
+                                            showSuccessfulSnackBar(
+                                              context,
+                                              'Booking deleted successfully',
+                                            );
+                                            Navigator.of(context).pop();
+                                          },
                                         );
                                       },
                                       icon: const Icon(Icons.delete),
@@ -390,7 +417,7 @@ class _BookingDetailsDialogState extends ConsumerState<BookingDetailsDialog> {
                               if (user.value?.currentRole(ref) ==
                                   UserRole.observer)
                                 Text(
-                                  'You can only see the Zoom orAddress details if you are accepted as an intercessor.\nPlease go to the About Us page ans contact the admin.',
+                                  'You can only see the Zoom or Address details if you are accepted as an intercessor.\nPlease go to the About Us page ans contact the admin.',
                                   style: TextStyle(
                                     color: Theme.of(context).colorScheme.error,
                                   ),
@@ -613,10 +640,16 @@ class _ZoomComponent extends StatelessWidget {
                   )
                 : joinMeeting();
           },
-          child: Text(
-            user.value?.uid == booking.userId
-                ? "Click to Copy Zoom ID"
-                : "Click to Join Meeting",
+          child: Row(
+            children: [
+              Text(
+                user.value?.uid == booking.userId
+                    ? "${booking.location.meetingID()}"
+                    : "Click to Join Meeting",style: TextStyle(fontSize: 18),
+              ),
+              Icon(user.value?.uid == booking.userId
+                  ?Icons.copy: Icons.add_to_home_screen,color: Colors.grey,size: 16,)
+            ],
           ),
         ),
         const Spacer(),

@@ -1,16 +1,15 @@
 import 'package:api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile/features/booking/controller/booking_clipboard.dart';
 import 'package:mobile/features/booking/provider/booking_provider.dart';
 import 'package:mobile/features/booking/state/booking_state.dart';
 import 'package:models/models.dart';
+import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:util/util.dart';
 
-import '../../../core/widgets/confirm_dialog.dart' show ConfirmDialog;
 import '../../auth/controller/auth_controller.dart';
 
 part 'booking_controller.g.dart';
@@ -264,18 +263,29 @@ class BookingController extends _$BookingController {
     );
   }
 
-  BookingModel instantiateBookingModel(String? web) {
+  BookingDTO instantiateBookingDTO({
+    required String organizationId,
+    required bool isUpdating,
+    required List<dynamic>? zoomOccurrences,
+  }) {
     final user = ref.read(userProvider).value;
     final currentVenue = ref.read(bookingVenueStateProvider);
-    return BookingModel(
+    final timeRange = state.timeRange!;
+
+    return BookingDTO(
+      requestId: FirebaseFirestore.instance
+          .collection('bookingRequests')
+          .doc()
+          .id,
+      organizationId: organizationId,
+      isUpdating: isUpdating,
+      bookingId: state.bookingId,
+      timezoneOffsetMinutes: timeRange.start.timeZoneOffset.inMinutes,
       timeRange: state.timeRange!,
-      createdAt: DateTime.now(),
       recurrenceState: state.recurrenceState,
       title: state.title!,
       password: state.password,
       host: user!.lastName ?? user.name,
-      userId: user.uid,
-      id: FirebaseFirestore.instance.collection('dog').doc().id,
       location: LocationData(
         web: currentVenue == BookingVenueComponent.location
             ? null
@@ -288,6 +298,10 @@ class BookingController extends _$BookingController {
             : state.location?.address,
       ),
       description: state.description!,
+      recurrence: instantiateRecurrenceConfigurationModel(),
+      zoomOccurrences: zoomOccurrences
+          ?.map(BookingSubmissionZoomOccurrence.fromZoomResponse)
+          .toList(growable: false),
     );
   }
 
@@ -361,63 +375,63 @@ class BookingController extends _$BookingController {
   bool isTimeRangeInvalid(
     BuildContext context,
     bool isUpdating,
-    String? bookingId,
-  ) {
-    final bookingsAsync = ref.watch(getCurrentOrgBookingsStreamProvider);
-    if (!bookingsAsync.hasValue) {
-      throw 'No bookings found. Ensure internet connection is available.';
-      // or throw an appropriate error
+    String? bookingId, {
+    bool checkCachedOverlap = true,
+  }) {
+    if (isUpdating && bookingId == null) {
+      throw 'Booking update failed. The booking ID is missing. Close this form and reopen the booking before trying again.';
     }
-    final List<BookingModel> bookings = bookingsAsync.value ?? <BookingModel>[];
 
-    // Filter out current booking if updating
-    final List<BookingModel> bookingsWithoutCurrent = bookings
-        .where((element) => element.id != bookingId)
-        .toList();
-
-    // Check for overlap for non-recurring bookings
-    if (state.recurrenceState == RecurrenceState.none) {
-      bool overlaps = bookingsWithoutCurrent.any((booking) {
-        return doTimeRangesOverlap(booking.timeRange, state.timeRange!);
-      });
-      if (overlaps) {
-        throw 'Booking Failed, Date is Already Booked!. Check for Conflicting Dates That Are Already Booked.';
+    if (checkCachedOverlap) {
+      final bookingsAsync = ref.watch(getCurrentOrgBookingsStreamProvider);
+      if (!bookingsAsync.hasValue) {
+        throw 'No bookings found. Ensure internet connection is available.';
       }
-    }
+      final List<BookingModel> bookings =
+          bookingsAsync.value ?? <BookingModel>[];
 
-    CustomDateTimeRange shiftTimeRange(
-      CustomDateTimeRange range, {
-      int days = 0,
-    }) {
-      return CustomDateTimeRange(
-        start: range.start.add(Duration(days: days)),
-        end: range.end.add(Duration(days: days)),
-      );
-    }
+      // Filter out current booking if updating
+      final List<BookingModel> bookingsWithoutCurrent = bookings
+          .where((element) => element.id != bookingId)
+          .toList();
 
-    bool checkOverlap({bool isDaily = false, bool isWeekly = false}) {
-      if (!isDaily && !isWeekly || bookingId != null) return false;
+      CustomDateTimeRange shiftTimeRange(
+        CustomDateTimeRange range, {
+        int days = 0,
+      }) {
+        return CustomDateTimeRange(
+          start: range.start.add(Duration(days: days)),
+          end: range.end.add(Duration(days: days)),
+        );
+      }
 
-      return bookingsWithoutCurrent.any((booking) {
+      final candidateRanges = <CustomDateTimeRange>[];
+      if (state.recurrenceState == RecurrenceState.none || isUpdating) {
+        candidateRanges.add(state.timeRange!);
+      } else {
+        final isDaily = state.recurrenceState == RecurrenceState.daily;
         for (var i = 0; i < state.recurrenceFrequency; i++) {
-          final range = shiftTimeRange(
-            state.timeRange!,
-            days: isDaily ? i : i * 7,
+          candidateRanges.add(
+            shiftTimeRange(state.timeRange!, days: isDaily ? i : i * 7),
           );
-          if (doTimeRangesOverlap(booking.timeRange, range)) return true;
         }
-        return false;
-      });
-    }
+      }
 
-    if (state.recurrenceState == RecurrenceState.daily &&
-        checkOverlap(isDaily: true)) {
-      throw 'Daily Booking Failed, Date is Already Booked!. Check for Conflicting Dates That Are Already Booked.';
-    }
-
-    if (state.recurrenceState == RecurrenceState.weekly &&
-        checkOverlap(isWeekly: true)) {
-      throw 'Weekly Booking Failed, Date is Already Booked!. Check for Conflicting Dates That Are Already Booked';
+      final overlappingDates = findOverlappingDates(
+        candidateRanges: candidateRanges,
+        existingRanges: bookingsWithoutCurrent.map(
+          (booking) => booking.timeRange,
+        ),
+      );
+      if (overlappingDates.isNotEmpty) {
+        final bookingType = switch (state.recurrenceState) {
+          RecurrenceState.none => 'Booking',
+          RecurrenceState.daily => 'Daily booking',
+          RecurrenceState.weekly => 'Weekly booking',
+        };
+        final dateLabel = overlappingDates.length == 1 ? 'date' : 'dates';
+        throw '$bookingType failed. Conflicting $dateLabel: ${formatOverlappingDates(overlappingDates)}.';
+      }
     }
 
     // Validate duration constraints
@@ -443,91 +457,19 @@ class BookingController extends _$BookingController {
     return false;
   }
 
-  void deleteBooking(BuildContext context, BookingModel bookingModel) {
-    // 1. Permission Check
-    // 2. Show Initial Confirmation
-    showDialog(
-      context: context,
-      builder: (context) {
-        return ConfirmDialog(
-          confirmText: 'Delete',
-          cancelText: 'Cancel',
-          description: 'Are you sure you want to delete this booking?',
-          confirmAction: () {
-            // Close the first confirmation dialog
-
-            context.pop();
-            _processDeleteBookingRecursion(context, bookingModel);
-          },
-          title: 'Delete Booking',
+  FutureEither<void> deleteBooking(
+    BookingModel bookingModel, {
+    required bool deleteEntireSeries,
+  }) {
+    return ref
+        .read(currentOrgRepositoryProvider)
+        .deleteBooking(
+          bookingModel: bookingModel,
+          deleteEntireSeries: deleteEntireSeries,
         );
-      },
-    );
   }
 
   /// 🔹 REFACTORED: Recurring Check & Execution
-  void _processDeleteBookingRecursion(
-    BuildContext context,
-    BookingModel bookingModel,
-  ) {
-    // Check if it's recurring (Has an occurrenceId or recurrence rules)
-    final bool isRecurring = bookingModel.groupId != null;
-
-    if (isRecurring) {
-      showDialog(
-        context: context,
-        builder: (innerContext) {
-          return AlertDialog(
-            title: const Text('Recurring Event'),
-            content: const Text(
-              'This is a recurring session. Do you want to delete only this session or the entire series?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  _executeDelete(bookingModel, deleteEntireSeries: false);
-                  innerContext.pop();
-                },
-                child: const Text('This Only'),
-              ),
-              TextButton(
-                onPressed: () {
-                  _executeDelete(bookingModel, deleteEntireSeries: true);
-                  innerContext.pop();
-                },
-                child: const Text(
-                  'Entire Series',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-              TextButton(
-                onPressed: () => innerContext.pop(),
-                child: const Text('Cancel'),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      // Not recurring? Just delete.
-      _executeDelete(bookingModel, deleteEntireSeries: false);
-    }
-  }
-
-  /// 🔹 REFACTORED: API Call Wrapper
-  void _executeDelete(BookingModel model, {required bool deleteEntireSeries}) {
-    // This assumes you have the standalone deleteBooking function accessible
-    // or you can call the repository directly like this:
-    ref
-        .read(currentOrgRepositoryProvider)
-        .deleteBooking(
-          bookingModel: model,
-          deleteEntireSeries: deleteEntireSeries,
-        );
-
-    // Optional: Show snackbar here or let the repo handle it
-  }
-
   // final booking = bookings.firstWhereOrNull(
   //   (element) {
   //     if (state.recurrenceState == RecurrenceState.daily) {

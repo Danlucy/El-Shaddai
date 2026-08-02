@@ -4,7 +4,7 @@
       "android": {
         "default": {
           "projectId": "el-shadd",
-          "appId": "1:5347198504:android:8a9e148585b0e00929571d",
+          "appId": "1:5347198504:android:af2d86554c06e80429571d",
           "fileOutput": "android/app/google-services.json"
         }
       },
@@ -52,19 +52,25 @@
       }
     ]
   },
+  "firestore": {
+    "indexes": "firestore.indexes.json"
+  },
   "functions": [
     {
       "source": "functions",
       "codebase": "default",
+      "runtime": "python313",
       "ignore": [
+        "__pycache__",
+        "*.pyc",
+        ".venv",
+        "venv",
+        "Python",
         "node_modules",
         ".git",
         "firebase-debug.log",
         "firebase-debug.*.log",
         "*.local"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
   ]

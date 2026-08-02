@@ -21,14 +21,12 @@ class ApiRepository {
         data: {
           'grant_type': 'authorization_code',
           'code': code,
-          'redirect_uri': 'https://daniel-ong.com',
+          'redirect_uri': redirectUrl,
           'code_verifier': codeVerifier,
         },
         options: Options(
-          headers: {
-            'Authorization': 'Basic $encodedString',
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+          contentType: Headers.formUrlEncodedContentType,
+          headers: {'Authorization': 'Basic $encodedString'},
         ),
       );
       if (response.statusCode == 200) {
@@ -73,8 +71,8 @@ class ApiRepository {
       final response = await dio.post(
         'https://zoom.us/oauth/token',
         options: Options(
+          contentType: Headers.formUrlEncodedContentType,
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization':
                 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
           },
@@ -99,21 +97,4 @@ class ApiRepository {
       throw Exception('Error exchanging authorization code');
     }
   }
-
-  // Future<Response> deleteMeeting(
-  //   String meetingId, {
-  //   String? occurrenceId,
-  // }) async {
-  //   try {
-  //     final response = await _functionDio.delete(
-  //       'https://api.zoom.us/v2/meetings/$meetingId',
-  //       queryParameters: {
-  //         if (occurrenceId != null) 'occurrence_id': occurrenceId,
-  //       },
-  //     );
-  //     return response;
-  //   } catch (e) {
-  //     throw Exception('Error deleting Zoom meeting: $e');
-  //   }
-  // }
 }

@@ -12,9 +12,11 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:util/util.dart';
 
 import '../../../core/widgets/loader.dart';
+import '../../../core/widgets/snack_bar.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../home/widgets/general_drawer.dart';
 import '../provider/booking_provider.dart';
+import 'booking_delete_dialog.dart';
 import 'booking_details_dialog.dart';
 import 'booking_screen.dart';
 
@@ -81,7 +83,10 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
     final controllerFunction = ref.watch(bookingControllerProvider.notifier);
     return Scaffold(
       drawer: const GeneralDrawer(),
-      appBar: AppBar(title: const Text('Prayer Watch List')),
+      appBar: AppBar(
+        scrolledUnderElevation: 0,backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: const Text('Prayer Watch List'),
+      ),
       body: Column(
         children: [
           Padding(
@@ -160,14 +165,34 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                             : Theme.of(context).colorScheme.secondaryContainer;
 
                         return GestureDetector(
-                          onLongPress: () {
+                          onLongPress: () async {
                             if (bookingModel.userId != user?.uid &&
                                 user?.currentRole(ref) != UserRole.admin) {
                               return;
                             }
-                            controllerFunction.deleteBooking(
-                              context,
-                              bookingModel,
+
+                            final choice = await showBookingDeleteConfirmation(
+                              context: context,
+                              booking: bookingModel,
+                            );
+                            if (choice == null || !mounted) return;
+
+                            final result = await controllerFunction
+                                .deleteBooking(
+                                  bookingModel,
+                                  deleteEntireSeries:
+                                      choice ==
+                                      BookingDeleteChoice.entireSeries,
+                                );
+                            if (!mounted) return;
+
+                            result.fold(
+                              (failure) =>
+                                  showFailureSnackBar(context, failure.message),
+                              (_) => showSuccessfulSnackBar(
+                                context,
+                                'Booking deleted successfully',
+                              ),
                             );
                           },
                           onTap: () {

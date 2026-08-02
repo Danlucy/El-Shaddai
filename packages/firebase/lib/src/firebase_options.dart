@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAvlnyePX5BHvyHP4laYXnS2I0ia9U4jdw',
-    appId: '1:5347198504:android:8a9e148585b0e00929571d',
+    appId: '1:5347198504:android:af2d86554c06e80429571d',
     messagingSenderId: '5347198504',
     projectId: 'el-shadd',
     storageBucket: 'el-shadd.firebasestorage.app',

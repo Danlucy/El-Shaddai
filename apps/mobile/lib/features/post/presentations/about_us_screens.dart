@@ -109,61 +109,118 @@ class _ContactUsScreensState extends ConsumerState<AboutUsScreen> {
                     child: Column(
                       children: [
                         ...data.map(
-                          (post) => ListTile(
-                            leading: CircleAvatar(
-                              maxRadius: 25,
-                              minRadius: 20,
-                              backgroundColor: Colors.grey.shade300,
-                              backgroundImage: post.image != null
-                                  ? MemoryImage(Uint8List.fromList(post.image!))
-                                  : null,
-                            ),
-                            title: Text(post.title),
-                            subtitle: Text(post.content),
-                            trailing: (user?.currentRole(ref) == UserRole.admin)
-                                ? IconButton(
-                                    icon: const Icon(Icons.delete),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              context.pop();
-                                            },
-                                            child: AlertDialog(
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              content: GestureDetector(
-                                                onTap: () {},
-                                                child: ConfirmDialog(
-                                                  title: 'Delete Post',
-                                                  confirmText: 'Delete',
-                                                  description:
-                                                      'Are you sure you want to delete this post?',
-                                                  cancelText: 'Cancel',
-                                                  confirmAction: () {
-                                                    ref
-                                                        .read(
-                                                          postControllerProvider
-                                                              .notifier,
-                                                        )
-                                                        .deletePost(
-                                                          postType: PostType
-                                                              .aboutPost,
-                                                          post.id,
-                                                        );
-                                                    Navigator.pop(context);
-                                                  },
-                                                ),
+                          (post) => Padding(padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Top Row: Avatar, Title, and Admin Menu
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      maxRadius: 15,
+                                      minRadius: 10,
+                                      backgroundColor: Colors.grey.shade300,
+                                      backgroundImage: post.image != null
+                                          ? MemoryImage(
+                                              Uint8List.fromList(post.image!),
+                                            )
+                                          : null,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        post.title,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                    if (user?.currentRole(ref) == UserRole.admin)
+                                      PopupMenuButton<String>(
+                                        icon: const Icon(Icons.more_vert),
+                                        onSelected: (value) {
+                                          if (value == 'edit') {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AddPostDialog(
+                                                postType: PostType.aboutPost,
+                                                post: post,
                                               ),
-                                            ),
+                                            );
+                                            return;
+                                          }
+
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  context.pop();
+                                                },
+                                                child: AlertDialog(
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  content: GestureDetector(
+                                                    onTap: () {},
+                                                    child: ConfirmDialog(
+                                                      title: 'Delete Post',
+                                                      confirmText: 'Delete',
+                                                      description:
+                                                          'Are you sure you want to delete this post?',
+                                                      cancelText: 'Cancel',
+                                                      confirmAction: () {
+                                                        ref
+                                                            .read(
+                                                              postControllerProvider
+                                                                  .notifier,
+                                                            )
+                                                            .deletePost(
+                                                              postType: PostType
+                                                                  .aboutPost,
+                                                              post.id,
+                                                            );
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
                                           );
                                         },
-                                      );
-                                    },
-                                  )
-                                : null,
+                                        itemBuilder: (context) => const [
+                                          PopupMenuItem(
+                                            value: 'edit',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.edit),
+                                                SizedBox(width: 8),
+                                                Text('Edit'),
+                                              ],
+                                            ),
+                                          ),
+                                          PopupMenuItem(
+                                            value: 'delete',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.delete),
+                                                SizedBox(width: 8),
+                                                Text('Delete'),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                  ],
+                                ),
+                                // Bottom Section: Content Text
+                                Text(
+                                  post.content,
+                                  style: TextStyle(color: Colors.grey.shade500),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],

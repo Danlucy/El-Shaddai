@@ -7,11 +7,13 @@ import 'package:firebase_core/firebase_core.dart'; // Added by user's main.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Added by user's main.dart
+import 'package:repositories/repositories.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:util/util.dart'; // Added by user's main.dart
 
 import 'core/router/router.dart'; // Added by user's main.dart
 import 'features/auth/controller/auth_controller.dart'; // Added by user's main.dart
+import 'features/booking/provider/booking_submission_provider.dart';
 
 final ValueNotifier<bool> hasConnectivity = ValueNotifier(true);
 
@@ -177,6 +179,7 @@ class _MyAppState extends ConsumerState<_MyWebApp> with WidgetsBindingObserver {
   Timer? _connectivityTimer;
   Timer? _periodicConnectivityTimer; // New: Periodic background check
   bool _disposed = false;
+  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -307,8 +310,58 @@ class _MyAppState extends ConsumerState<_MyWebApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(goRouterProvider);
+    ref.listen(bookingSubmissionProvider, (previous, next) {
+      if (previous?.status == next.status &&
+          previous?.request?.requestId == next.request?.requestId &&
+          previous?.message == next.message) {
+        return;
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _disposed) return;
+        final messenger = _scaffoldMessengerKey.currentState;
+        if (messenger == null) return;
+
+        messenger.clearSnackBars();
+        switch (next.status) {
+          case BookingSubmissionStatus.idle:
+            break;
+          case BookingSubmissionStatus.submitting:
+            messenger.showSnackBar(
+              const SnackBar(content: Text('Saving booking…')),
+            );
+            break;
+          case BookingSubmissionStatus.success:
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(next.message ?? 'Booking saved.'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            break;
+          case BookingSubmissionStatus.failure:
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(
+                  next.message ?? 'The booking could not be saved.',
+                ),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 12),
+                action: SnackBarAction(
+                  label: 'Retry',
+                  textColor: Colors.white,
+                  onPressed: () {
+                    ref.read(bookingSubmissionProvider.notifier).retry();
+                  },
+                ),
+              ),
+            );
+            break;
+        }
+      });
+    });
 
     return MaterialApp.router(
+      scaffoldMessengerKey: _scaffoldMessengerKey,
       // Updated builder with ResponsiveBreakpoints.builder and autoscale functionality
       builder: (context, child) {
         return ResponsiveBreakpoints.builder(

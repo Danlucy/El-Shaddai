@@ -5,28 +5,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:mobile/features/booking/presentations/booking_screen.dart';
+import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 
 import '../controller/post_controller.dart';
 
 class AddPostDialog extends ConsumerStatefulWidget {
-  const AddPostDialog({super.key, required this.postType});
+  const AddPostDialog({super.key, required this.postType, this.post});
   final PostType postType;
+  final PostModel? post;
   @override
   ConsumerState createState() => _AddPostDialogState();
 }
 
 class _AddPostDialogState extends ConsumerState<AddPostDialog> {
   final _formKey = GlobalKey<FormState>(); // 🔹 Key to track form state
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  late final TextEditingController _titleController;
+  late final TextEditingController _descriptionController;
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with current state if needed,
-    // but usually these are fresh for "Add" post.
-    // If it was "Edit", we'd set them here.
+    _titleController = TextEditingController(text: widget.post?.title ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.post?.content ?? '',
+    );
   }
 
   @override
@@ -34,6 +37,7 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
     final postController = ref.read(postControllerProvider.notifier);
     final postState = ref.watch(postControllerProvider);
     final isFeedPost = widget.postType == PostType.feedPost;
+    final isEditing = widget.post != null;
     final textScaler = MediaQuery.textScalerOf(context).scale(1);
 
     return GestureDetector(
@@ -86,7 +90,9 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                           child: Column(
                             children: [
                               Text(
-                                isFeedPost
+                                isEditing
+                                    ? 'Edit Post'
+                                    : isFeedPost
                                     ? 'Create Watch Leader Post'
                                     : 'Create User Post',
                                 style: const TextStyle(
@@ -103,12 +109,19 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                                 child: CircleAvatar(
                                   radius: 100,
                                   backgroundColor: Colors.grey.shade300,
-                                  backgroundImage: postState.image != null
+                                  backgroundImage:
+                                      (postState.image ?? widget.post?.image) !=
+                                          null
                                       ? MemoryImage(
-                                          Uint8List.fromList(postState.image!),
+                                          Uint8List.fromList(
+                                            postState.image ??
+                                                widget.post!.image!,
+                                          ),
                                         )
                                       : null,
-                                  child: postState.image == null
+                                  child:
+                                      (postState.image ?? widget.post?.image) ==
+                                          null
                                       ? const Icon(
                                           Icons.camera_alt,
                                           size: 40,
@@ -119,6 +132,7 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                               ),
                               const Gap(20),
                               TextFormField(
+                                controller: _titleController,
                                 onChanged: postController.setTitle,
                                 decoration: const InputDecoration(
                                   labelText: 'Name',
@@ -133,6 +147,7 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                               ),
                               const Gap(16),
                               TextFormField(
+                                controller: _descriptionController,
                                 maxLines: null,
                                 onChanged: postController.setDescription,
                                 decoration: InputDecoration(
@@ -157,10 +172,7 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                                 ),
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    minimumSize: const Size(
-                                      double.infinity,
-                                      50,
-                                    ),
+
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -169,11 +181,12 @@ class _AddPostDialogState extends ConsumerState<AddPostDialog> {
                                     if (_formKey.currentState!.validate()) {
                                       postController.addPost(
                                         postType: widget.postType,
+                                        post: widget.post,
                                       );
                                       Navigator.pop(context);
                                     }
                                   },
-                                  child: const Text('Post'),
+                                  child: Text(isEditing ? 'Update' : 'Post'),
                                 ),
                               ),
                             ],

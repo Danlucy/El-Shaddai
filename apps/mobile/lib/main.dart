@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:constants/constants.dart';
-import 'package:firebase/src/firebase_options.dart';
+import 'package:firebase/firebase.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -11,9 +12,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/router/no_internet_screen.dart';
 import 'package:mobile/core/router/router.dart';
 import 'package:mobile/features/auth/controller/auth_controller.dart';
+import 'package:mobile/features/booking/provider/booking_submission_provider.dart';
 import 'package:mobile/features/settings/state/settings_state.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:util/util.dart';
+
+import 'features/booking/state/booking_submission_state.dart';
 
 final ValueNotifier<bool> hasConnectivity = ValueNotifier(true);
 
@@ -23,6 +27,8 @@ void main() async {
   await SettingsState.instance.init();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await _activateFirebaseAppCheck();
+  await initializeGoogleSignIn();
 
   final isConnected = await Backend.checkInternetAccess();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -39,6 +45,36 @@ void main() async {
       },
     ),
   );
+}
+
+Future<void> _activateFirebaseAppCheck() async {
+  if (kIsWeb ||
+      (defaultTargetPlatform != TargetPlatform.android &&
+          defaultTargetPlatform != TargetPlatform.iOS &&
+          defaultTargetPlatform != TargetPlatform.macOS)) {
+    return;
+  }
+
+  await FirebaseAppCheck.instance.activate(
+    providerAndroid: kDebugMode
+        ? const AndroidDebugProvider()
+        : const AndroidPlayIntegrityProvider(),
+    providerApple: kDebugMode
+        ? const AppleDebugProvider()
+        : const AppleDeviceCheckProvider(),
+  );
+
+  if (kDebugMode) {
+    try {
+      final token = await FirebaseAppCheck.instance.getToken(true);
+      debugPrint(
+        'App Check token refresh: present=${token != null}, '
+        'jwtSegments=${token?.split('.').length}',
+      );
+    } catch (error) {
+      debugPrint('App Check token refresh failed: $error');
+    }
+  }
 }
 
 class MobileApp extends StatelessWidget {
@@ -64,6 +100,7 @@ class _MyMobileApp extends ConsumerStatefulWidget {
 class _MyAppState extends ConsumerState<_MyMobileApp>
     with WidgetsBindingObserver {
   Timer? _connectivityTimer;
+  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -142,9 +179,62 @@ class _MyAppState extends ConsumerState<_MyMobileApp>
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(goRouterProvider);
+    ref.listen(bookingSubmissionNotifierProvider, (previous, next) {
+      if (previous?.status == next.status &&
+          previous?.request?.requestId == next.request?.requestId &&
+          previous?.message == next.message) {
+        return;
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final messenger = _scaffoldMessengerKey.currentState;
+        if (messenger == null) return;
+
+        messenger.clearSnackBars();
+        switch (next.status) {
+          case BookingSubmissionStatus.idle:
+            break;
+          case BookingSubmissionStatus.submitting:
+            messenger.showSnackBar(
+              const SnackBar(content: Text('Saving booking…')),
+            );
+            break;
+          case BookingSubmissionStatus.success:
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(next.message ?? 'Booking saved.'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            break;
+          case BookingSubmissionStatus.failure:
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(
+                  next.message ?? 'The booking could not be saved.',
+                ),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 12),
+                action: SnackBarAction(
+                  label: 'Retry',
+                  textColor: Colors.white,
+                  onPressed: () {
+                    ref
+                        .read(bookingSubmissionNotifierProvider.notifier)
+                        .retry();
+                  },
+                ),
+              ),
+            );
+            break;
+        }
+      });
+    });
+
     return ShowCaseWidget(
       builder: (showcaseContext) {
         return MaterialApp.router(
+          scaffoldMessengerKey: _scaffoldMessengerKey,
           title: 'El Shaddai',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(

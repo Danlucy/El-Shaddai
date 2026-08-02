@@ -31,14 +31,12 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
         '$zoomLoginBaseUrl'
         '?response_type=code'
         '&client_id=$clientId'
-        '&redirect_uri=https://daniel-ong.com'
+        '&redirect_uri=$redirectUrl'
         '&code_challenge=$codeChallenge'
         '&code_challenge_method=S256';
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(
-        Uri.parse(urld ?? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'),
-      );
+      ..loadRequest(Uri.parse(urld));
 
     // Setting up the navigation delegate to listen for URL changes
     controller.setNavigationDelegate(
@@ -48,7 +46,7 @@ class _ZoomScreenState extends ConsumerState<ZoomScreen> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           currentUrl.value = url; // Update the current URL
           // Check if the URL contains the specific query parameter
-          if (url.contains('daniel-ong.com')) {
+          if (url.startsWith(redirectUrl)) {
             final Uri uri = Uri.parse(url);
             final String? code = uri.queryParameters['code'];
             if (code != null) {

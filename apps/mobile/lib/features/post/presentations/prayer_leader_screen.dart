@@ -94,8 +94,20 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
                                   ).format(post.createdAt),
                                 ),
                                 if (user?.currentRole(ref) == UserRole.admin)
-                                  IconButton(
-                                    onPressed: () {
+                                  PopupMenuButton<String>(
+                                    icon: const Icon(Icons.more_vert),
+                                    onSelected: (value) {
+                                      if (value == 'edit') {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AddPostDialog(
+                                            postType: PostType.feedPost,
+                                            post: post,
+                                          ),
+                                        );
+                                        return;
+                                      }
+
                                       showDialog(
                                         context: context,
                                         builder: (context) {
@@ -134,7 +146,28 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
                                         },
                                       );
                                     },
-                                    icon: const Icon(Icons.delete),
+                                    itemBuilder: (context) => const [
+                                      PopupMenuItem(
+                                        value: 'edit',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.edit),
+                                            SizedBox(width: 8),
+                                            Text('Edit'),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.delete),
+                                            SizedBox(width: 8),
+                                            Text('Delete'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                               ],
                             ),

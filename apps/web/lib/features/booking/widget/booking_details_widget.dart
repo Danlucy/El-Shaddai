@@ -164,7 +164,7 @@ class _MainDetailsColumn extends StatelessWidget {
           children: [
             AutoSizeText(
               booking.title,
-              style: Theme.of(context).textTheme.headlineLarge,
+              style: Theme.of(context).textTheme.headlineLarge,overflow: TextOverflow.ellipsis,
               maxLines: 2,
             ),
             Spacer(),
