@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 class GlassContainer extends StatelessWidget {
   final Widget child;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final BorderRadiusGeometry? borderRadius;
   final Color backgroundColor;
   final Color borderColor;
@@ -18,8 +18,8 @@ class GlassContainer extends StatelessWidget {
   const GlassContainer({
     super.key,
     required this.child,
-    this.width = double.infinity,
-    this.height = double.infinity,
+    this.width,
+    this.height,
     this.borderRadius,
     this.backgroundColor = const Color.fromARGB(255, 255, 255, 255),
     this.borderColor = const Color.fromARGB(255, 255, 255, 255),

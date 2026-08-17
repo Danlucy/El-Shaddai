@@ -14,6 +14,8 @@ class GlassmorphicButton extends StatefulWidget {
   final IconData? icon;
   final VoidCallback onPressed;
   final BoxConstraints? constraints;
+  final double? width;
+  final double? height;
 
   /// Custom border radius (defaults to 12 if not provided)
   final double borderRadius;
@@ -24,16 +26,18 @@ class GlassmorphicButton extends StatefulWidget {
   final List<Color>? backgroundColors;
 
   const GlassmorphicButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
+    this.width,
+    this.height,
     this.fontSize,
     this.icon,
     this.textColour,
     this.constraints,
     this.borderRadius = 12,
     this.backgroundColors,
-  }) : super(key: key);
+  });
 
   @override
   State<GlassmorphicButton> createState() => _GlassmorphicButtonState();
@@ -47,8 +51,8 @@ class _GlassmorphicButtonState extends State<GlassmorphicButton> {
     final colors =
         widget.backgroundColors ??
         [
-          Colors.white.withOpac(_isHovered ? 0.2 : 0.1),
-          Colors.white.withOpac(_isHovered ? 0.15 : 0.05),
+          Colors.white.withOpac(_isHovered ? 0.25 : 0.15),
+          Colors.white.withOpac(_isHovered ? 0.18 : 0.08),
         ];
 
     return MouseRegion(
@@ -56,8 +60,8 @@ class _GlassmorphicButtonState extends State<GlassmorphicButton> {
       onExit: (_) => setState(() => _isHovered = false),
       child: GlassmorphicContainer(
         constraints: widget.constraints,
-        width: 300,
-        height: 60,
+        width: widget.width ?? 300,
+        height: widget.height ?? 60,
         borderRadius: widget.borderRadius,
         blur: 10,
         alignment: Alignment.center,
@@ -84,13 +88,17 @@ class _GlassmorphicButtonState extends State<GlassmorphicButton> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (widget.icon != null) ...[
-                  Icon(widget.icon, color: Colors.white, size: 20),
+                  Icon(
+                    widget.icon,
+                    color: widget.textColour ?? Colors.white,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                 ],
                 Text(
                   widget.text,
                   style: TextStyle(
-                    color: widget.textColour,
+                    color: widget.textColour ?? Colors.white,
                     fontSize: widget.fontSize ?? 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -108,9 +116,9 @@ class DownloadButtons extends StatefulWidget {
   final double borderRadius; // 👈 new
 
   const DownloadButtons({
-    Key? key,
+    super.key,
     this.borderRadius = 30, // 👈 default
-  }) : super(key: key);
+  });
 
   @override
   State<DownloadButtons> createState() => _DownloadButtonsState();
