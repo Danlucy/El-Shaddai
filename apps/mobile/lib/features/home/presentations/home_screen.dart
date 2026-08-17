@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +34,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(userProvider);
     final user = ref.watch(userProvider);
 
     return Scaffold(
@@ -139,7 +136,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // ),
             user.when(
               data: (data) {
-                sleep(Duration(milliseconds: 500));
                 if (data?.phoneNumber == null) {
                   return Animate(
                     onPlay: (controller) => controller.repeat(reverse: true),

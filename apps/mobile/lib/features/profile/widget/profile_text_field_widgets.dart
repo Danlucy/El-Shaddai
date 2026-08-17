@@ -98,6 +98,10 @@ class EditableTextFieldState extends ConsumerState<EditableTextField> {
   void _onTextChanged(String newValue) {
     _currentValue = newValue; // Store the text value immediately
 
+    _scheduleSave();
+  }
+
+  void _scheduleSave() {
     // Cancel any existing timer
     _debounceTimer?.cancel();
 
@@ -131,9 +135,7 @@ class EditableTextFieldState extends ConsumerState<EditableTextField> {
         onChanged: (number) {
           if (!widget.ableToEdit) return;
           _currentValue = number.completeNumber; // Store the full number
-          // For phone numbers, we can save immediately as changes are less frequent
-          // or you could also apply debouncing if desired.
-          saveField();
+          _scheduleSave();
         },
         initialCountryCode: _initialCountryCode,
         initialValue: _initialPhoneNumber,

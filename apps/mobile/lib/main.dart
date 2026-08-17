@@ -24,6 +24,10 @@ final ValueNotifier<bool> hasConnectivity = ValueNotifier(true);
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.portraitUp,
+  ]);
   await SettingsState.instance.init();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -82,11 +86,7 @@ class MobileApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.portraitUp,
-    ]);
-    return const ProviderScope(child: _MyMobileApp());
+    return const _MyMobileApp();
   }
 }
 
@@ -100,6 +100,7 @@ class _MyMobileApp extends ConsumerStatefulWidget {
 class _MyAppState extends ConsumerState<_MyMobileApp>
     with WidgetsBindingObserver {
   Timer? _connectivityTimer;
+  StreamSubscription<RemoteMessage>? _foregroundMessageSubscription;
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
@@ -111,7 +112,9 @@ class _MyAppState extends ConsumerState<_MyMobileApp>
       _checkConnectivityAndUpdateUser();
     });
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    _foregroundMessageSubscription = FirebaseMessaging.onMessage.listen((
+      RemoteMessage message,
+    ) {
       debugPrint('Foreground message received: ${message.notification?.title}');
       if (message.notification != null) {
         // You can show a local notification here if desired
@@ -140,6 +143,7 @@ class _MyAppState extends ConsumerState<_MyMobileApp>
   @override
   void dispose() {
     _connectivityTimer?.cancel();
+    _foregroundMessageSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

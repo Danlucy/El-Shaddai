@@ -34,6 +34,8 @@ class _MonthlyCalendarComponentState
   late Animation<double> _gradientAnimation;
 
   DateTime? _previousSelectedDate;
+  List<BookingModel>? _indexedBookingsSource;
+  Map<DateTime, List<BookingModel>> _bookingsByDate = const {};
 
   @override
   void initState() {
@@ -56,6 +58,40 @@ class _MonthlyCalendarComponentState
   void dispose() {
     _gradientAnimationController.dispose();
     super.dispose();
+  }
+
+  Map<DateTime, List<BookingModel>> _indexBookingsByDate(
+    List<BookingModel> bookings,
+  ) {
+    if (identical(_indexedBookingsSource, bookings)) {
+      return _bookingsByDate;
+    }
+
+    final indexedBookings = <DateTime, List<BookingModel>>{};
+
+    for (final booking in bookings) {
+      var date = DateTime(
+        booking.timeRange.start.year,
+        booking.timeRange.start.month,
+        booking.timeRange.start.day,
+      );
+      final lastDate = DateTime(
+        booking.timeRange.end.year,
+        booking.timeRange.end.month,
+        booking.timeRange.end.day,
+      );
+
+      while (!date.isAfter(lastDate)) {
+        if (isOverlapping(date, booking.timeRange)) {
+          indexedBookings.putIfAbsent(date, () => []).add(booking);
+        }
+        date = DateTime(date.year, date.month, date.day + 1);
+      }
+    }
+
+    _indexedBookingsSource = bookings;
+    _bookingsByDate = indexedBookings;
+    return indexedBookings;
   }
 
   // --- NEW Helper Methods for Gradient Calculation ---
@@ -219,224 +255,210 @@ class _MonthlyCalendarComponentState
     return AnimatedBuilder(
       animation: _gradientAnimation,
       builder: (context, child) {
-        return AsyncValueExtensions(ref
-            .watch(getCurrentOrgBookingsStreamProvider))
-            .when(
-              data: (data) {
-                return Column(
-                  children: [
-                    Expanded(
-                      child: SfCalendar(
-                        headerHeight: 0,
-                        showNavigationArrow: false,
-                        dataSource: BookingDataSource(data),
-                        controller: widget.monthlyCalendarController,
-                        initialSelectedDate: selectedDate,
-                        monthViewSettings: const MonthViewSettings(
-                          appointmentDisplayCount: 0,
-                        ),
-                        monthCellBuilder:
-                            (BuildContext context, MonthCellDetails details) {
-                              bool isCurrentMonth =
-                                  details.date.month ==
-                                  widget
-                                      .monthlyCalendarController
-                                      .displayDate!
-                                      .month;
-                              bool isSelectedDate =
-                                  details.date == selectedDate;
+        return AsyncValueExtensions(
+          ref.watch(getCurrentOrgBookingsStreamProvider),
+        ).when(
+          data: (data) {
+            final bookingsByDate = _indexBookingsByDate(data);
+            return Column(
+              children: [
+                Expanded(
+                  child: SfCalendar(
+                    headerHeight: 0,
+                    showNavigationArrow: false,
+                    dataSource: BookingDataSource(data),
+                    controller: widget.monthlyCalendarController,
+                    initialSelectedDate: selectedDate,
+                    monthViewSettings: const MonthViewSettings(
+                      appointmentDisplayCount: 0,
+                    ),
+                    monthCellBuilder:
+                        (BuildContext context, MonthCellDetails details) {
+                          bool isCurrentMonth =
+                              details.date.month ==
+                              widget
+                                  .monthlyCalendarController
+                                  .displayDate!
+                                  .month;
+                          bool isSelectedDate = details.date == selectedDate;
 
-                              final gradientInfo = _getCellGradientInfo(
-                                details.date,
-                                selectedDate,
-                                _previousSelectedDate,
-                                _gradientAnimation.value,
-                              );
+                          final gradientInfo = _getCellGradientInfo(
+                            details.date,
+                            selectedDate,
+                            _previousSelectedDate,
+                            _gradientAnimation.value,
+                          );
 
-                              final intensity =
-                                  gradientInfo['intensity'] as double;
-                              final gradientStart =
-                                  gradientInfo['start'] as Alignment;
-                              final gradientEnd =
-                                  gradientInfo['end'] as Alignment;
+                          final intensity = gradientInfo['intensity'] as double;
+                          final gradientStart =
+                              gradientInfo['start'] as Alignment;
+                          final gradientEnd = gradientInfo['end'] as Alignment;
 
-                              List<BookingModel> bookings = data.where((
-                                element,
-                              ) {
-                                return isOverlapping(
-                                  details.date,
-                                  element.timeRange,
-                                );
-                              }).toList();
-                              bool isBooked = bookings.isNotEmpty;
+                          final date = DateTime(
+                            details.date.year,
+                            details.date.month,
+                            details.date.day,
+                          );
+                          final bookings =
+                              bookingsByDate[date] ?? const <BookingModel>[];
+                          bool isBooked = bookings.isNotEmpty;
 
-                              bool fullyBooked = controller.isFullyBooked(
-                                details.date,
-                                bookings,
-                              );
+                          bool fullyBooked = controller.isFullyBooked(
+                            details.date,
+                            bookings,
+                          );
 
-                              return Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  border: isSelectedDate
-                                      ? Border.all(
-                                          color: context.colors.secondary,
-                                          width: 2.0,
-                                        )
-                                      : Border.all(
-                                          width: 0.2,
-                                          color: Colors.grey,
-                                        ),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    if (intensity > 0)
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: gradientStart,
-                                            end: gradientEnd,
-                                            colors: [
-                                              Colors.transparent,
-                                              context.colors.secondary.withOpac(
-                                                intensity * 0.3,
-                                              ),
-                                              context.colors.secondary.withOpac(
-                                                intensity * 0.6,
-                                              ),
-                                              context.colors.secondary.withOpac(
-                                                intensity,
-                                              ),
-                                            ],
-                                            stops: const [0.0, 0.3, 0.7, 1.0],
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              border: isSelectedDate
+                                  ? Border.all(
+                                      color: context.colors.secondary,
+                                      width: 2.0,
+                                    )
+                                  : Border.all(width: 0.2, color: Colors.grey),
+                            ),
+                            child: Stack(
+                              children: [
+                                if (intensity > 0)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: gradientStart,
+                                        end: gradientEnd,
+                                        colors: [
+                                          Colors.transparent,
+                                          context.colors.secondary.withOpac(
+                                            intensity * 0.3,
                                           ),
+                                          context.colors.secondary.withOpac(
+                                            intensity * 0.6,
+                                          ),
+                                          context.colors.secondary.withOpac(
+                                            intensity,
+                                          ),
+                                        ],
+                                        stops: const [0.0, 0.3, 0.7, 1.0],
+                                      ),
+                                    ),
+                                  ),
+                                Column(
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        details.date.day.toString(),
+                                        style: TextStyle(
+                                          fontSize: isSelectedDate
+                                              ? (isOldMan ? 12 : 18)
+                                              : (isOldMan ? 10 : 16),
+                                          fontWeight:
+                                              intensity > 0.15 || isSelectedDate
+                                              ? FontWeight.w500
+                                              : FontWeight.normal,
+                                          color: !isCurrentMonth
+                                              ? Colors.grey
+                                              : isSelectedDate
+                                              ? context.colors.secondary
+                                              : intensity > 0.15
+                                              ? context.colors.secondary
+                                                    .withOpac(0.9)
+                                              : Colors.white,
                                         ),
                                       ),
-                                    Column(
-                                      children: [
-                                        Center(
-                                          child: Text(
-                                            details.date.day.toString(),
-                                            style: TextStyle(
-                                              fontSize: isSelectedDate
-                                                  ? (isOldMan ? 12 : 18)
-                                                  : (isOldMan ? 10 : 16),
-                                              fontWeight:
-                                                  intensity > 0.15 ||
-                                                      isSelectedDate
-                                                  ? FontWeight.w500
-                                                  : FontWeight.normal,
-                                              color: !isCurrentMonth
-                                                  ? Colors.grey
-                                                  : isSelectedDate
-                                                  ? context.colors.secondary
-                                                  : intensity > 0.15
-                                                  ? context.colors.secondary
-                                                        .withOpac(0.9)
-                                                  : Colors.white,
-                                            ),
-                                          ),
+                                    ),
+                                    if (isBooked)
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          top: isSelectedDate
+                                              ? 0
+                                              : (isOldMan ? 2 : 3),
                                         ),
-                                        if (isBooked)
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                              top: isSelectedDate
-                                                  ? 0
-                                                  : (isOldMan ? 2 : 3),
-                                            ),
-                                            child: CircleAvatar(
-                                              radius: isSelectedDate
-                                                  ? (isOldMan ? 3.5 : 4)
-                                                  : 3,
-                                              backgroundColor: fullyBooked
-                                                  ? Colors.red
-                                                  : Colors.green,
-                                            ),
-                                          )
-                                        else
-                                          Container(),
-                                      ],
-                                    ),
+                                        child: CircleAvatar(
+                                          radius: isSelectedDate
+                                              ? (isOldMan ? 3.5 : 4)
+                                              : 3,
+                                          backgroundColor: fullyBooked
+                                              ? Colors.red
+                                              : Colors.green,
+                                        ),
+                                      )
+                                    else
+                                      Container(),
                                   ],
-                                ),
-                              );
-                            },
-                        onTap: (details) {
-                          if (details.date != null) {
-                            ref
-                                .read(calendarDateNotifierProvider.notifier)
-                                .updateSelectedDate(details.date!);
-                          }
-                        },
-                        view: CalendarView.month,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                        vertical: 2,
-                      ),
-                      child: IntrinsicHeight(
-                        child: Center(
-                          child: RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              style: DefaultTextStyle.of(context).style,
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: '$dayOfWeek, '.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
-                                    color: context.colors.secondary.withOpac(
-                                      0.8,
-                                    ),
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: '$dayOfMonth ',
-                                  style: TextStyle(
-                                    fontSize:
-                                        22, // Large font size for the date
-                                    fontWeight:
-                                        FontWeight.bold, // Bold for the date
-                                    color: context.colors.secondary,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: monthOfMonth,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.colors.primary.withOpac(
-                                      0.8,
-                                    ),
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: yearOfMonth,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal,
-                                    color: context.colors.secondary.withOpac(
-                                      0.8,
-                                    ),
-                                  ),
                                 ),
                               ],
                             ),
-                          ),
+                          );
+                        },
+                    onTap: (details) {
+                      if (details.date != null) {
+                        ref
+                            .read(calendarDateNotifierProvider.notifier)
+                            .updateSelectedDate(details.date!);
+                      }
+                    },
+                    view: CalendarView.month,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 2,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Center(
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: '$dayOfWeek, '.toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.normal,
+                                color: context.colors.secondary.withOpac(0.8),
+                              ),
+                            ),
+                            TextSpan(
+                              text: '$dayOfMonth ',
+                              style: TextStyle(
+                                fontSize: 22, // Large font size for the date
+                                fontWeight:
+                                    FontWeight.bold, // Bold for the date
+                                color: context.colors.secondary,
+                              ),
+                            ),
+                            TextSpan(
+                              text: monthOfMonth,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: context.colors.primary.withOpac(0.8),
+                              ),
+                            ),
+                            TextSpan(
+                              text: yearOfMonth,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                                color: context.colors.secondary.withOpac(0.8),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                );
-              },
-              error: (error, stack) {
-                return const Center(child: Text('Error'));
-              },
-              loading: () => const Loader(),
+                  ),
+                ),
+              ],
             );
+          },
+          error: (error, stack) {
+            return const Center(child: Text('Error'));
+          },
+          loading: () => const Loader(),
+        );
       },
     );
   }

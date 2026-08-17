@@ -54,6 +54,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     TypedGoRoute<UserManagementRoute>(path: 'user-management'),
   ],
 )
+
 class HomeRoute extends GoRouteData with _$HomeRoute {
   const HomeRoute();
 

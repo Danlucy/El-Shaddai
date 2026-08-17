@@ -65,135 +65,132 @@ class _IntercessorsFeedScreenState extends ConsumerState<PrayerLeaderScreen> {
                 ),
               );
             }
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-
-                children: data.map((post) {
-                  return Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 50,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: context.colors.secondaryContainer,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(15),
-                            ),
+            return ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                final post = data[index];
+                return Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 50,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: context.colors.secondaryContainer,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(15),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  DateFormat(
-                                    'EEE, MMM d, yyyy ',
-                                  ).format(post.createdAt),
-                                ),
-                                if (user?.currentRole(ref) == UserRole.admin)
-                                  PopupMenuButton<String>(
-                                    icon: const Icon(Icons.more_vert),
-                                    onSelected: (value) {
-                                      if (value == 'edit') {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => AddPostDialog(
-                                            postType: PostType.feedPost,
-                                            post: post,
-                                          ),
-                                        );
-                                        return;
-                                      }
-
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                DateFormat(
+                                  'EEE, MMM d, yyyy ',
+                                ).format(post.createdAt),
+                              ),
+                              if (user?.currentRole(ref) == UserRole.admin)
+                                PopupMenuButton<String>(
+                                  icon: const Icon(Icons.more_vert),
+                                  onSelected: (value) {
+                                    if (value == 'edit') {
                                       showDialog(
                                         context: context,
-                                        builder: (context) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              context.pop();
-                                            },
-                                            child: AlertDialog(
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              content: GestureDetector(
-                                                onTap: () {},
-                                                child: ConfirmDialog(
-                                                  title: 'Delete Post',
-                                                  confirmText: 'Delete',
-                                                  description:
-                                                      'Are you sure you want to delete this post?',
-                                                  cancelText: 'Cancel',
-                                                  confirmAction: () {
-                                                    ref
-                                                        .read(
-                                                          postControllerProvider
-                                                              .notifier,
-                                                        )
-                                                        .deletePost(
-                                                          postType:
-                                                              PostType.feedPost,
-                                                          post.id,
-                                                        );
-                                                    Navigator.pop(context);
-                                                  },
-                                                ),
+                                        builder: (context) => AddPostDialog(
+                                          postType: PostType.feedPost,
+                                          post: post,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            context.pop();
+                                          },
+                                          child: AlertDialog(
+                                            backgroundColor: Colors.transparent,
+                                            content: GestureDetector(
+                                              onTap: () {},
+                                              child: ConfirmDialog(
+                                                title: 'Delete Post',
+                                                confirmText: 'Delete',
+                                                description:
+                                                    'Are you sure you want to delete this post?',
+                                                cancelText: 'Cancel',
+                                                confirmAction: () {
+                                                  ref
+                                                      .read(
+                                                        postControllerProvider
+                                                            .notifier,
+                                                      )
+                                                      .deletePost(
+                                                        postType:
+                                                            PostType.feedPost,
+                                                        post.id,
+                                                      );
+                                                  Navigator.pop(context);
+                                                },
                                               ),
                                             ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    itemBuilder: (context) => const [
-                                      PopupMenuItem(
-                                        value: 'edit',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.edit),
-                                            SizedBox(width: 8),
-                                            Text('Edit'),
-                                          ],
-                                        ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  itemBuilder: (context) => const [
+                                    PopupMenuItem(
+                                      value: 'edit',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.edit),
+                                          SizedBox(width: 8),
+                                          Text('Edit'),
+                                        ],
                                       ),
-                                      PopupMenuItem(
-                                        value: 'delete',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.delete),
-                                            SizedBox(width: 8),
-                                            Text('Delete'),
-                                          ],
-                                        ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'delete',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.delete),
+                                          SizedBox(width: 8),
+                                          Text('Delete'),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                              ],
-                            ),
+                                    ),
+                                  ],
+                                ),
+                            ],
                           ),
                         ),
-                        const Gap(10),
-                        CircleAvatar(
-                          radius: 100,
-                          backgroundColor: Colors.grey.shade300,
-                          backgroundImage: post.image != null
-                              ? MemoryImage(Uint8List.fromList(post.image!))
-                              : null,
+                      ),
+                      const Gap(10),
+                      CircleAvatar(
+                        radius: 100,
+                        backgroundColor: Colors.grey.shade300,
+                        backgroundImage: post.image != null
+                            ? MemoryImage(Uint8List.fromList(post.image!))
+                            : null,
+                      ),
+                      Text(
+                        post.title,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: context.colors.primary,
                         ),
-                        Text(
-                          post.title,
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: context.colors.primary,
-                          ),
-                        ),
-                        Text(post.content),
-                      ],
-                    ),
-                  );
-                }).toList(), // ✅ Convert map() result into a List
-              ),
+                      ),
+                      Text(post.content),
+                    ],
+                  ),
+                );
+              },
             );
           },
           error: (x, s) {

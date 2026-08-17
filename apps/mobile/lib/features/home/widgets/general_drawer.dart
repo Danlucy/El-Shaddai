@@ -40,56 +40,80 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider).value;
-    return Drawer(backgroundColor: Colors.transparent,
+    return Drawer(
+      backgroundColor: Colors.transparent,
       width: width,
       // Step 1: Set the Drawer's background to transparent
-      child: GlassContainer(backgroundColor: Colors.transparent,
+      child: GlassContainer(
+        backgroundColor: Colors.transparent,
         // Step 2: Use GlassContainer to apply the blur effect and semi-transparent background
         // GlassContainer's width and height should match the Drawer's dimensions
         width: width,
         height: double.infinity,
         padding: EdgeInsets.zero,
         margin: EdgeInsets.zero,
-        child: Material(color: Colors.transparent,
+        child: Material(
+          color: Colors.transparent,
           child: SafeArea(
             child: Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.house),
                   title: const Text('Home'),
-                  onTap: () => const HomeRoute().push(context),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    const HomeRoute().go(context);
+                  },
                 ),
                 ListTile(
                   leading: const Icon(Icons.list),
                   title: const Text('Prayer Watch List'),
-                  onTap: () => const BookingListRoute().push(context),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    const BookingListRoute().go(context);
+                  },
                 ),
                 ListTile(
                   leading: const Icon(Icons.calendar_month),
                   title: const Text('Book Prayer Watch'),
-                  onTap: () => const BookingRoute().push(context),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    const BookingRoute().go(context);
+                  },
                 ),
 
                 ListTile(
                   leading: const Icon(Icons.message),
                   title: const Text('Watch Leaders'),
-                  onTap: () => const PrayerLeaderRoute().push(context),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    const PrayerLeaderRoute().go(context);
+                  },
                 ),
                 ListTile(
                   leading: const Icon(Icons.account_circle),
                   title: const Text('My Profile'),
-                  onTap: () => ProfileRoute(user).push(context),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    ProfileRoute(user).go(context);
+                  },
                 ),
                 if (user?.currentRole(ref) == UserRole.admin)
                   ListTile(
                     leading: const Icon(Icons.supervisor_account),
                     title: const Text('User Management'),
-                    onTap: () => const UserManagementRoute().push(context),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      const UserManagementRoute().go(context);
+                    },
                   ),
                 ListTile(
                   leading: const Icon(Icons.phone),
                   title: const Text('About Us'),
-                  onTap: () => const AboutUsRoute().push(context),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    const AboutUsRoute().go(context);
+                  },
                 ),
                 const Spacer(),
 
@@ -127,7 +151,10 @@ class _GeneralDrawerState extends ConsumerState<GeneralDrawer> {
                   ),
                   leading: const Icon(Icons.settings),
                   title: const Text('Settings'),
-                  onTap: () => const SettingsRoute().push(context),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    const SettingsRoute().go(context);
+                  },
                 ),
                 // 👇 App Version at bottom
               ],

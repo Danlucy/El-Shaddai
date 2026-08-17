@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,10 +44,15 @@ final authStateChangeProvider = StreamProvider((ref) {
 // Updated to extend AsyncNotifier instead of StateNotifier
 class AuthController extends AsyncNotifier<void> {
   late AuthRepository _authRepository;
+  StreamSubscription<String>? _fcmTokenRefreshSubscription;
+  String? _fcmTokenListenerUid;
 
   @override
   Future<void> build() async {
     _authRepository = ref.watch(authRepositoryProvider);
+    ref.onDispose(() {
+      unawaited(_fcmTokenRefreshSubscription?.cancel());
+    });
     // Initialize with void/empty state
   }
 
@@ -84,6 +91,7 @@ class AuthController extends AsyncNotifier<void> {
 
     try {
       await _authRepository.signOutGoogleAccount();
+      await _clearFcmTokenListener();
       ref.read(userProvider.notifier).clearUser();
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
@@ -150,22 +158,35 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  void _initAndUpdateFCMToken(String uid) async {
+  void _initAndUpdateFCMToken(String uid) {
+    if (_fcmTokenListenerUid == uid) return;
+
+    unawaited(_fcmTokenRefreshSubscription?.cancel());
+    _fcmTokenListenerUid = uid;
     // Listen for Token Refresh
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-      // ✅ Use the 'uid' passed into this function!
-      ref
-          .read(profileControllerProvider(uid).notifier)
-          .updateUserField('fcmToken', newToken);
-    });
+    _fcmTokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh
+        .listen((newToken) async {
+          // ✅ Use the 'uid' passed into this function!
+          await ref
+              .read(profileControllerProvider(uid).notifier)
+              .updateUserField('fcmToken', newToken);
+        });
 
     // Get Initial Token
-    final initialToken = await FirebaseMessaging.instance.getToken();
-    if (initialToken != null) {
-      // ✅ Use the 'uid' passed into this function!
-      ref
-          .read(profileControllerProvider(uid).notifier)
-          .updateUserField('fcmToken', initialToken);
-    }
+    unawaited(
+      FirebaseMessaging.instance.getToken().then((initialToken) async {
+        if (initialToken == null) return;
+        // ✅ Use the 'uid' passed into this function!
+        await ref
+            .read(profileControllerProvider(uid).notifier)
+            .updateUserField('fcmToken', initialToken);
+      }),
+    );
+  }
+
+  Future<void> _clearFcmTokenListener() async {
+    await _fcmTokenRefreshSubscription?.cancel();
+    _fcmTokenRefreshSubscription = null;
+    _fcmTokenListenerUid = null;
   }
 }
