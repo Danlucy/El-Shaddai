@@ -2,6 +2,7 @@ export 'src/auth/auth_repository.dart';
 export 'src/booking/booking_repository.dart';
 export 'src/booking/booking_submission.dart';
 export 'src/calendar/calendar_repository.dart';
+export 'src/home/home_repository.dart';
 export 'src/participant/participant_repository.dart';
 export 'src/post/post_repository.dart';
 export 'src/provider/organization_provider/organization_controller.dart';

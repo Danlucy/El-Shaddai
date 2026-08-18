@@ -84,6 +84,7 @@ dependencies:
   flutter_time_picker_spinner: ^2.0.0
   image_picker: ^1.1.2
   image: ^4.5.2
+  intl: ^0.20.2
   intl_phone_field: ^3.2.0
   phone_numbers_parser: ^9.0.3
   flutter_launcher_icons: ^0.14.3
