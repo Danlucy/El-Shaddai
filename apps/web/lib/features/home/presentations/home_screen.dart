@@ -1,15 +1,21 @@
+import 'dart:async';
+
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:models/models.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:website/core/widgets/animated_background.dart';
 import 'package:website/core/widgets/footer_widget.dart';
 import 'package:website/core/widgets/glass_button.dart';
 import 'package:website/core/widgets/glass_container.dart';
 import 'package:website/core/widgets/organization_drop_down_button.dart';
+import 'package:website/features/booking/provider/booking_provider.dart';
+import 'package:website/features/home/home_booking_selector.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +25,24 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  late DateTime _now;
+  Timer? _clock;
+
+  @override
+  void initState() {
+    super.initState();
+    _now = DateTime.now();
+    _clock = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() => _now = DateTime.now());
+    });
+  }
+
+  @override
+  void dispose() {
+    _clock?.cancel();
+    super.dispose();
+  }
+
   void goBooking() {
     context.go('/list');
   }
@@ -29,7 +53,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
             child: GlassContainer(
@@ -487,6 +514,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
 
             const SizedBox(height: 18),
+            Text(
+              'Current prayer watch',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: context.colors.secondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ref
+                .watch(getCurrentOrgBookingsStreamProvider)
+                .when(
+                  data: (bookings) {
+                    final booking = selectCurrentOrUpcomingBooking(
+                      bookings,
+                      _now,
+                    );
+                    if (booking == null) {
+                      return const _BookingStatusMessage(
+                        icon: Icons.event_available_outlined,
+                        message: 'There are no future bookings in sight.',
+                      );
+                    }
+
+                    return _CurrentBookingCard(
+                      booking: booking,
+                      isLive: isBookingLive(booking, _now),
+                      onTap: () => context.go('/booking/${booking.id}'),
+                    );
+                  },
+                  loading: () => const SizedBox(
+                    height: 72,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (error, stack) => const _BookingStatusMessage(
+                    icon: Icons.cloud_off_outlined,
+                    message: 'Unable to load upcoming bookings.',
+                  ),
+                ),
+
+            const SizedBox(height: 18),
 
             // Step 2: Prayer List CTA Button
             Text(
@@ -548,7 +616,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   ) {
     return Column(
       children: [
-
         const Gap(28),
         if (isDesktop)
           Row(
@@ -893,12 +960,156 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Text(
           subtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 13,
-            color: context.colors.secondary,
-          ),
+          style: TextStyle(fontSize: 13, color: context.colors.secondary),
         ),
       ],
+    );
+  }
+}
+
+class _CurrentBookingCard extends StatelessWidget {
+  const _CurrentBookingCard({
+    required this.booking,
+    required this.isLive,
+    required this.onTap,
+  });
+
+  final BookingModel booking;
+  final bool isLive;
+  final VoidCallback onTap;
+
+  String _formattedTimeRange() {
+    final start = booking.timeRange.start;
+    final end = booking.timeRange.end;
+    final date = DateFormat('EEE, d MMM yyyy').format(start);
+    final startTime = DateFormat.jm().format(start);
+    final endTime = DateFormat.jm().format(end);
+    final isSameDay =
+        start.year == end.year &&
+        start.month == end.month &&
+        start.day == end.day;
+
+    if (isSameDay) return '$date • $startTime – $endTime';
+    return '$date, $startTime – '
+        '${DateFormat('EEE, d MMM yyyy').format(end)}, $endTime';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = isLive ? context.colors.error : context.colors.primary;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Ink(
+          width: double.infinity,
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: accent.withOpac(0.08),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: accent.withOpac(0.35)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: accent,
+                  shape: BoxShape.circle,
+                  boxShadow: isLive
+                      ? [
+                          BoxShadow(
+                            color: accent.withOpac(0.45),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                          ),
+                        ]
+                      : null,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isLive ? 'LIVE NOW' : 'UPCOMING',
+                      style: TextStyle(
+                        color: accent,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      booking.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: context.colors.onSurface,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _formattedTimeRange(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: context.colors.secondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.arrow_forward_rounded,
+                size: 20,
+                color: context.colors.primary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BookingStatusMessage extends StatelessWidget {
+  const _BookingStatusMessage({required this.icon, required this.message});
+
+  final IconData icon;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+      decoration: BoxDecoration(
+        color: context.colors.surface.withOpac(0.65),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.colors.outlineVariant),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: context.colors.secondary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(color: context.colors.secondary, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
