@@ -24,9 +24,9 @@ class BookingVenueState extends _$BookingVenueState {
     return BookingVenueComponent.location;
   }
 
-  void setVenue(BookingVenueComponent target) {
-    state = target;
-  }
+void setVenue(BookingVenueComponent target) {
+  state = target;
+}
 
   void switchVenue(BookingModel booking) {
     if (booking.location.web != null && booking.location.address != null) {
@@ -91,6 +91,7 @@ class BookingController extends _$BookingController {
 
   void setLocation(LocationData location) =>
       state = state.copyWith(location: location);
+
   void setPassword(String? password) =>
       state = state.copyWith(password: password);
 

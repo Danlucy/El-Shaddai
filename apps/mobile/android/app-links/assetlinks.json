@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.el.shaddai",
+      "sha256_cert_fingerprints": [
+        "08:A6:B5:A7:13:F0:35:88:0C:78:EF:7F:9A:F5:A5:8D:CB:57:DE:0D:CF:A7:8D:46:25:7D:F3:0C:07:D9:DA:41"
+      ]
+    }
+  }
+]

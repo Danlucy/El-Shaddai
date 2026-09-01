@@ -1,0 +1,4 @@
+# melos_managed_dependency_overrides: analyzer,analyzer_plugin
+dependency_overrides:
+  analyzer: ^7.6.0
+  analyzer_plugin: ^0.13.4

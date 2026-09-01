@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "bookings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeRange.end",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeRange.start",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

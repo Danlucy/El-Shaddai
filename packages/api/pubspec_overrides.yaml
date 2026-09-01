@@ -1,0 +1,14 @@
+# melos_managed_dependency_overrides: constants,firebase,models,repositories,util,analyzer,analyzer_plugin
+dependency_overrides:
+  constants:
+    path: ..\\constants
+  firebase:
+    path: ..\\firebase
+  models:
+    path: ..\\models
+  repositories:
+    path: ..\\repositories
+  util:
+    path: ..\\util
+  analyzer: ^7.6.0
+  analyzer_plugin: 0.13.4
