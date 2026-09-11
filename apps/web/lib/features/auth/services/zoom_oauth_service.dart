@@ -3,6 +3,7 @@ import 'dart:js_interop';
 
 import 'package:api/api.dart';
 import 'package:constants/constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:web/web.dart' as web;
 
 import '../../../api/pkce_utils.dart';
@@ -48,6 +49,7 @@ class ZoomOAuthService {
       }
 
       if (callbackUrl != null && callbackUrl.contains('code=')) {
+        debugPrint('[ZoomOAuth] Received callback with code: $callbackUrl');
         cleanup();
         if (!completer.isCompleted) {
           completer.complete(callbackUrl);
@@ -55,6 +57,7 @@ class ZoomOAuthService {
       }
     });
 
+    debugPrint('[ZoomOAuth] Opening authorization URL: $authorizationUrl');
     final popup = web.window.open(
       authorizationUrl.toString(),
       'ZoomOAuth',
@@ -130,10 +133,16 @@ class ZoomOAuthService {
       );
     }
 
+    final actualRedirect = '${callback.scheme}://${callback.host}${callback.path}';
+    final tokenRedirectUri = actualRedirect.startsWith(_callbackOrigin)
+        ? actualRedirect
+        : redirectUrl;
+    debugPrint('[ZoomOAuth] Exchanging code with redirectUri: $tokenRedirectUri');
+
     final response = await _apiRepository.getAccessToken(
       code,
       codeVerifier,
-      redirectUri: redirectUrl,
+      redirectUri: tokenRedirectUri,
     );
     final data = response.data;
 

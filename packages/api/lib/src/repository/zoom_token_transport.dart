@@ -22,7 +22,8 @@ Future<Response<dynamic>> requestZoomToken(
         statusCode: 200,
         data: response.data,
       );
-    } catch (_) {
+    } catch (e, stack) {
+      debugPrint('[ZoomOAuth] Cloud Function zoomOAuthToken failed: $e\n$stack');
       // Fall through to direct request if Cloud Function is unavailable or throws
     }
   }

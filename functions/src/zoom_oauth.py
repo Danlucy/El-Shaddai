@@ -13,6 +13,9 @@ from firebase_functions import https_fn
 CLIENT_REDIRECTS = {
     "OLnqfeWuS1yQDh2alJOTQ": {
         "https://daniel-ong.com/zoom-login-successful/",
+        "https://daniel-ong.com/zoom-login-successful",
+        "https://daniel-ong.com/",
+        "https://daniel-ong.com",
     },
     "tFVInLKQUez_GgvV3PTg": {"http://127.0.0.1:7537/auth.html"},
     "jotNDwMdQ1uqVCjfqqmz7w": {
