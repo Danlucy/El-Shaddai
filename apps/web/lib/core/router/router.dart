@@ -49,7 +49,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                       return CustomTransitionPage(
                         key: state.pageKey,
                         // No ID passed = Create Mode
-                        child: const BookingDialogPage(extraModel: null),
+                        child: const BookingCreateDialog(extraModel: null),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                               return FadeTransition(
@@ -76,7 +76,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                           return CustomTransitionPage(
                             key: state.pageKey,
                             // ID passed = Edit Mode
-                            child: BookingDialogPage(
+                            child: BookingCreateDialog(
                               extraModel: extra,
                             ), // You might want to pass 'id' here too if fetching
                             transitionsBuilder:

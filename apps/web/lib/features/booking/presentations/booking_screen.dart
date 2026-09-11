@@ -1,5 +1,6 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -47,9 +48,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
             ),
             const SizedBox(height: 10),
             const _MonthlyCalendarWidget(aspectRatio: 1),
-            const Gap(15),
-            _CalendarDisplaySection(viewMode: CalendarView.timelineDay),
-            const Gap(10),
+            Expanded(child: Padding(padding: EdgeInsetsGeometry.symmetric(vertical: 10),child: _CalendarDisplaySection(viewMode: CalendarView.timelineDay))),
+        
           ],
         ),
       ],
@@ -58,101 +58,94 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
 
   // ✅ 2. Updated Desktop Layout
   Widget _buildDesktopLayout(BuildContext context, UserRole user) {
-    return Stack(
-      children: [
-        Column(
-          children: [
-            Center(
-              child: Text(
-                'Prayer Event Calendar',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: context.colors.primary,
+    return SafeArea(
+      child: Column(
+        children: [
+          Text(
+            'Prayer Event Calendar',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: context.colors.primary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Expanded forces it to take all remaining height
+          Expanded(
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // --- LEFT SIDEBAR (Monthly Calendar) ---
+                ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: 400,minHeight: 600,maxHeight: 800,maxWidth: 400),
+                  child: _DesktopCalendarToolSection(user),
                 ),
-              ),
+                const Gap(15), // Spacing between panels
+                Expanded(child: _CalendarDisplaySection(viewMode: CalendarView.week),flex: 4,),
+              ],
             ),
-            const SizedBox(height: 10),
-            // Expanded forces it to take all remaining height
-            Expanded(
-              child: Row(
-                children: [
-                  // --- LEFT SIDEBAR (Monthly Calendar) ---
-                  _DesktopCalendarToolSection(user),
-                  const Gap(15), // Spacing between panels
-                  _CalendarDisplaySection(viewMode: CalendarView.week),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
-  Expanded _CalendarDisplaySection({required CalendarView viewMode}) {
-    return Expanded(
-      child: GlassmorphicContainer(
-        width: double.infinity,
-        height: double.infinity,
-        borderRadius: 20,
-        linearGradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.white.withOpac(0.2), Colors.white.withOpac(0.1)],
-          stops: const [0.1, 1],
-        ),
-        border: 2,
-        blur: 15,
-        borderGradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.white.withOpac(0.5), Colors.white.withOpac(0.5)],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: DailyOrWeeklyCalendarComponent(view: viewMode),
-        ),
+  GlassmorphicContainer _CalendarDisplaySection({required CalendarView viewMode}) {
+    return GlassmorphicContainer(
+      width: double.infinity,
+      height: double.infinity,
+      borderRadius: 20,
+      linearGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Colors.white.withOpac(0.2), Colors.white.withOpac(0.1)],
+        stops: const [0.1, 1],
+      ),
+      border: 2,
+      blur: 15,
+      borderGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Colors.white.withOpac(0.5), Colors.white.withOpac(0.5)],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: DailyOrWeeklyCalendarComponent(view: viewMode),
       ),
     );
   }
 
   // Pass the user in as an argument to avoid duplicate watches/reads
-  SizedBox _DesktopCalendarToolSection(UserRole userRole) {
+  Column _DesktopCalendarToolSection(UserRole userRole) {
     bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
     bool canCreate = userRole.isWatchLeaderOrHigher ?? false;
 
-    return SizedBox(
-      width: 350,
-      height: double.infinity,
-      child: Column(
-        children: [
-          const _MonthlyCalendarWidget(aspectRatio: 0.8),
-          const Spacer(),
-          if (canCreate)
-            Hero(
-              tag: "booking_fab",
-              child: OutlinedButton(
-                onPressed: () {
-                  // Now this logic will actually work
-                  if (userRole == UserRole.intercessor ||
-                      userRole == UserRole.observer ||
-                      isDesktop) {
-                    ref.read(bookingControllerProvider.notifier).clearState();
-                    context.go('/booking/create');
-                  }
-                },
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Text(
-                    "Create Prayer Watch",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
-                  ),
+    return Column(mainAxisSize: MainAxisSize.min,
+      children: [
+        const _MonthlyCalendarWidget(aspectRatio: 0.8),
+        const Spacer(),
+        if (canCreate)
+          Hero(
+            tag: "booking_fab",
+            child: OutlinedButton(
+              onPressed: () {
+                // Now this logic will actually work
+                if (userRole == UserRole.intercessor ||
+                    userRole == UserRole.observer ||
+                    isDesktop) {
+                  ref.read(bookingControllerProvider.notifier).clearState();
+                  context.go('/booking/create');
+                }
+              },
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Text(
+                  "Create Prayer Watch",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
                 ),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 

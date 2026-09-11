@@ -14,10 +14,10 @@ import 'package:website/features/booking/widget/booking_time_picker_component.da
 import 'package:website/features/booking/widget/recurrence_component.dart';
 import 'package:website/features/booking/widget/zoom_display_component.dart';
 
-class BookingDialogPage extends ConsumerWidget {
+class BookingCreateDialog extends ConsumerWidget {
   final BookingModel? extraModel;
 
-  const BookingDialogPage({super.key, this.extraModel});
+  const BookingCreateDialog({super.key, this.extraModel});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,72 +36,74 @@ class BookingDialogPage extends ConsumerWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           // ✅ FIX: Hero is now INSIDE the Dialog, wrapping the specific visible container
-          child: Hero(
-            tag: "booking_fab",
-            createRectTween: (begin, end) {
-              // Optional: Makes the flight path curved and smoother
-              return MaterialRectCenterArcTween(begin: begin, end: end);
-            },
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 900, maxHeight: 950),
-              child: GlassmorphicContainer(
-                width: double.infinity, // Fills the ConstrainedBox
-                height: double.infinity,
-                borderRadius: 20,
-                blur: 10,
-                border: 2,
-                linearGradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Theme.of(context).colorScheme.onSurface.withOpac(0.1),
-                    Theme.of(context).colorScheme.onSurface.withOpac(0.05),
-                  ],
-                  stops: const [0.1, 1],
-                ),
-                borderGradient: LinearGradient(
-                  colors: [
-                    Colors.white.withOpac(0.5),
-                    Colors.white.withOpac(0.5),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(2),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: Column(
-                      children: [
-                        // Header
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // Need Material here because Hero transition removes inherited Material styles temporarily
-                              Material(
-                                color: Colors.transparent,
-                                child: Text(
-                                  booking == null
-                                      ? 'Book Prayer Time'
-                                      : 'Edit Prayer Time',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(fontWeight: FontWeight.bold),
+          child: SafeArea(
+            child: Hero(
+              tag: "booking_fab",
+              createRectTween: (begin, end) {
+                // Optional: Makes the flight path curved and smoother
+                return MaterialRectCenterArcTween(begin: begin, end: end);
+              },
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 900, maxHeight: 950),
+                child: GlassmorphicContainer(
+                  width: double.infinity, // Fills the ConstrainedBox
+                  height: double.infinity,
+                  borderRadius: 20,
+                  blur: 10,
+                  border: 2,
+                  linearGradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).colorScheme.onSurface.withOpac(0.1),
+                      Theme.of(context).colorScheme.onSurface.withOpac(0.05),
+                    ],
+                    stops: const [0.1, 1],
+                  ),
+                  borderGradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpac(0.5),
+                      Colors.white.withOpac(0.5),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Column(
+                        children: [
+                          // Header
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Need Material here because Hero transition removes inherited Material styles temporarily
+                                Material(
+                                  color: Colors.transparent,
+                                  child: Text(
+                                    booking == null
+                                        ? 'Book Prayer Time'
+                                        : 'Edit Prayer Time',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () => context.pop(),
-                              ),
-                            ],
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () => context.pop(),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        // Form
-                        Expanded(
-                          child: BookingFormWidget(bookingModel: booking),
-                        ),
-                      ],
+                          // Form
+                          Expanded(
+                            child: BookingFormWidget(bookingModel: booking),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

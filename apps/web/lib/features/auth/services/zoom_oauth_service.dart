@@ -1,6 +1,9 @@
+import 'dart:async';
+import 'dart:js_interop';
+
 import 'package:api/api.dart';
 import 'package:constants/constants.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:web/web.dart' as web;
 
 import '../../../api/pkce_utils.dart';
 
@@ -17,12 +20,76 @@ class ZoomOAuthService {
   ZoomOAuthService({ApiRepository? apiRepository})
     : _apiRepository = apiRepository ?? ApiRepository();
 
-  static const _callbackScheme = 'https';
-  static const _callbackHost = 'daniel-ong.com';
-  static const _callbackPath = '/zoom-login-successful/';
   static const _callbackOrigin = 'https://daniel-ong.com';
 
   final ApiRepository _apiRepository;
+
+  Future<String> _authenticateWeb(Uri authorizationUrl) {
+    final completer = Completer<String>();
+    StreamSubscription<web.MessageEvent>? messageSubscription;
+    Timer? timeoutTimer;
+    Timer? popupClosedTimer;
+
+    void cleanup() {
+      messageSubscription?.cancel();
+      timeoutTimer?.cancel();
+      popupClosedTimer?.cancel();
+    }
+
+    messageSubscription = web.window.onMessage.listen((web.MessageEvent event) {
+      if (event.origin != _callbackOrigin) return;
+
+      String? callbackUrl;
+      final data = event.data.dartify();
+      if (data is String) {
+        callbackUrl = data;
+      } else if (data is Map) {
+        callbackUrl = data['flutter-web-auth-2'] as String?;
+      }
+
+      if (callbackUrl != null && callbackUrl.contains('code=')) {
+        cleanup();
+        if (!completer.isCompleted) {
+          completer.complete(callbackUrl);
+        }
+      }
+    });
+
+    final popup = web.window.open(
+      authorizationUrl.toString(),
+      'ZoomOAuth',
+      'width=600,height=750,menubar=no,toolbar=no,status=no',
+    );
+
+    if (popup == null) {
+      cleanup();
+      throw const ZoomOAuthException(
+        'Popup was blocked by the browser. Please allow popups for this site.',
+      );
+    }
+
+    popupClosedTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      if (popup.closed) {
+        cleanup();
+        if (!completer.isCompleted) {
+          completer.completeError(
+            const ZoomOAuthException('Zoom sign-in was cancelled.'),
+          );
+        }
+      }
+    });
+
+    timeoutTimer = Timer(const Duration(minutes: 3), () {
+      cleanup();
+      if (!completer.isCompleted) {
+        completer.completeError(
+          const ZoomOAuthException('Zoom sign-in timed out. Please try again.'),
+        );
+      }
+    });
+
+    return completer.future;
+  }
 
   Future<AccessToken> signIn() async {
     final codeVerifier = PKCEUtils.generateCodeVerifier();
@@ -40,15 +107,7 @@ class ZoomOAuthService {
       },
     );
 
-    final callbackUrl = await FlutterWebAuth2.authenticate(
-      url: authorizationUrl.toString(),
-      callbackUrlScheme: _callbackScheme,
-      options: const FlutterWebAuth2Options(
-        debugOrigin: _callbackOrigin,
-        httpsHost: _callbackHost,
-        httpsPath: _callbackPath,
-      ),
-    );
+    final callbackUrl = await _authenticateWeb(authorizationUrl);
 
     final callback = Uri.parse(callbackUrl);
     final oauthError = callback.queryParameters['error'];
@@ -71,8 +130,13 @@ class ZoomOAuthService {
       );
     }
 
-    final response = await _apiRepository.getAccessToken(code, codeVerifier);
+    final response = await _apiRepository.getAccessToken(
+      code,
+      codeVerifier,
+      redirectUri: redirectUrl,
+    );
     final data = response.data;
+
     if (data is! Map<String, dynamic>) {
       throw const ZoomOAuthException(
         'Zoom returned an invalid token response.',
@@ -82,6 +146,7 @@ class ZoomOAuthService {
     final token = data['access_token'];
     final refreshToken = data['refresh_token'];
     final expiresIn = data['expires_in'];
+
     if (token is! String || refreshToken is! String || expiresIn is! num) {
       throw const ZoomOAuthException(
         'Zoom returned incomplete login credentials.',

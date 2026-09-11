@@ -13,6 +13,7 @@ sealed class AccessToken with _$AccessToken {
     required String token,
     required String refreshToken,
     required DateTime duration,
+    String? publicClientId,
   }) = _AccessToken;
 
   factory AccessToken.fromJson(Map<String, dynamic> json) =>

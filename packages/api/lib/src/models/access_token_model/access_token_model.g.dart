@@ -10,6 +10,7 @@ _AccessToken _$AccessTokenFromJson(Map<String, dynamic> json) => _AccessToken(
   token: json['token'] as String,
   refreshToken: json['refreshToken'] as String,
   duration: DateTime.parse(json['duration'] as String),
+  publicClientId: json['publicClientId'] as String?,
 );
 
 Map<String, dynamic> _$AccessTokenToJson(_AccessToken instance) =>
@@ -17,6 +18,7 @@ Map<String, dynamic> _$AccessTokenToJson(_AccessToken instance) =>
       'token': instance.token,
       'refreshToken': instance.refreshToken,
       'duration': instance.duration.toIso8601String(),
+      'publicClientId': instance.publicClientId,
     };
 
 // **************************************************************************

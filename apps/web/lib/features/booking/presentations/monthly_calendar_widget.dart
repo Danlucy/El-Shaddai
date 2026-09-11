@@ -160,7 +160,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                               conditionalValues: [
                                 Condition.between(
                                   start: 450,
-                                  end: 800,
+                                  end: 500,
                                   value: 70,
                                 ),
                                 Condition.largerThan(name: TABLET, value: 80),

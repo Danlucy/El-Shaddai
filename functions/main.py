@@ -9,6 +9,7 @@ from firebase_admin import auth, firestore, initialize_app
 from firebase_functions import https_fn, logger
 
 from src.booking import FUNCTION_REGIONS, submitBooking
+from src.zoom_oauth import zoomOAuthToken
 
 
 initialize_app()

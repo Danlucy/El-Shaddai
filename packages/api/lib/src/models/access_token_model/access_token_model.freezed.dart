@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AccessToken {
 
- String get token; String get refreshToken; DateTime get duration;
+ String get token; String get refreshToken; DateTime get duration; String? get publicClientId;
 /// Create a copy of AccessToken
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AccessTokenCopyWith<AccessToken> get copyWith => _$AccessTokenCopyWithImpl<Acce
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AccessToken&&(identical(other.token, token) || other.token == token)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.duration, duration) || other.duration == duration));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AccessToken&&(identical(other.token, token) || other.token == token)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.publicClientId, publicClientId) || other.publicClientId == publicClientId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,token,refreshToken,duration);
+int get hashCode => Object.hash(runtimeType,token,refreshToken,duration,publicClientId);
 
 @override
 String toString() {
-  return 'AccessToken(token: $token, refreshToken: $refreshToken, duration: $duration)';
+  return 'AccessToken(token: $token, refreshToken: $refreshToken, duration: $duration, publicClientId: $publicClientId)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AccessTokenCopyWith<$Res>  {
   factory $AccessTokenCopyWith(AccessToken value, $Res Function(AccessToken) _then) = _$AccessTokenCopyWithImpl;
 @useResult
 $Res call({
- String token, String refreshToken, DateTime duration
+ String token, String refreshToken, DateTime duration, String? publicClientId
 });
 
 
@@ -65,12 +65,13 @@ class _$AccessTokenCopyWithImpl<$Res>
 
 /// Create a copy of AccessToken
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? token = null,Object? refreshToken = null,Object? duration = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? token = null,Object? refreshToken = null,Object? duration = null,Object? publicClientId = freezed,}) {
   return _then(_self.copyWith(
 token: null == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,publicClientId: freezed == publicClientId ? _self.publicClientId : publicClientId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String token,  String refreshToken,  DateTime duration)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String token,  String refreshToken,  DateTime duration,  String? publicClientId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AccessToken() when $default != null:
-return $default(_that.token,_that.refreshToken,_that.duration);case _:
+return $default(_that.token,_that.refreshToken,_that.duration,_that.publicClientId);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.token,_that.refreshToken,_that.duration);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String token,  String refreshToken,  DateTime duration)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String token,  String refreshToken,  DateTime duration,  String? publicClientId)  $default,) {final _that = this;
 switch (_that) {
 case _AccessToken():
-return $default(_that.token,_that.refreshToken,_that.duration);}
+return $default(_that.token,_that.refreshToken,_that.duration,_that.publicClientId);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -190,10 +191,10 @@ return $default(_that.token,_that.refreshToken,_that.duration);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String token,  String refreshToken,  DateTime duration)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String token,  String refreshToken,  DateTime duration,  String? publicClientId)?  $default,) {final _that = this;
 switch (_that) {
 case _AccessToken() when $default != null:
-return $default(_that.token,_that.refreshToken,_that.duration);case _:
+return $default(_that.token,_that.refreshToken,_that.duration,_that.publicClientId);case _:
   return null;
 
 }
@@ -205,12 +206,13 @@ return $default(_that.token,_that.refreshToken,_that.duration);case _:
 @JsonSerializable()
 
 class _AccessToken implements AccessToken {
-  const _AccessToken({required this.token, required this.refreshToken, required this.duration});
+  const _AccessToken({required this.token, required this.refreshToken, required this.duration, this.publicClientId});
   factory _AccessToken.fromJson(Map<String, dynamic> json) => _$AccessTokenFromJson(json);
 
 @override final  String token;
 @override final  String refreshToken;
 @override final  DateTime duration;
+@override final  String? publicClientId;
 
 /// Create a copy of AccessToken
 /// with the given fields replaced by the non-null parameter values.
@@ -225,16 +227,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AccessToken&&(identical(other.token, token) || other.token == token)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.duration, duration) || other.duration == duration));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AccessToken&&(identical(other.token, token) || other.token == token)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.publicClientId, publicClientId) || other.publicClientId == publicClientId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,token,refreshToken,duration);
+int get hashCode => Object.hash(runtimeType,token,refreshToken,duration,publicClientId);
 
 @override
 String toString() {
-  return 'AccessToken(token: $token, refreshToken: $refreshToken, duration: $duration)';
+  return 'AccessToken(token: $token, refreshToken: $refreshToken, duration: $duration, publicClientId: $publicClientId)';
 }
 
 
@@ -245,7 +247,7 @@ abstract mixin class _$AccessTokenCopyWith<$Res> implements $AccessTokenCopyWith
   factory _$AccessTokenCopyWith(_AccessToken value, $Res Function(_AccessToken) _then) = __$AccessTokenCopyWithImpl;
 @override @useResult
 $Res call({
- String token, String refreshToken, DateTime duration
+ String token, String refreshToken, DateTime duration, String? publicClientId
 });
 
 
@@ -262,12 +264,13 @@ class __$AccessTokenCopyWithImpl<$Res>
 
 /// Create a copy of AccessToken
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? token = null,Object? refreshToken = null,Object? duration = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? token = null,Object? refreshToken = null,Object? duration = null,Object? publicClientId = freezed,}) {
   return _then(_AccessToken(
 token: null == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,publicClientId: freezed == publicClientId ? _self.publicClientId : publicClientId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

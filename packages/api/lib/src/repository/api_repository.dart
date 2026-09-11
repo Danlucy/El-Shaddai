@@ -3,30 +3,41 @@ import 'dart:convert';
 import 'package:api/api.dart';
 import 'package:constants/constants.dart';
 import 'package:dio/dio.dart';
+import 'zoom_token_transport.dart';
 
 class ApiRepository {
+  ApiRepository({Dio? authDio}) : _authDio = authDio ?? Dio();
+
   String getEncodedString() {
     String combinedString = '$clientId:$clientSecret';
     String encodedString = base64.encode(utf8.encode(combinedString));
     return encodedString;
   }
 
-  final _authDio = Dio();
+  final Dio _authDio;
   final _functionDio = Dio()..interceptors.add(CustomInterceptor());
-  Future<Response> getAccessToken(String code, String codeVerifier) async {
+  Future<Response> getAccessToken(
+    String code,
+    String codeVerifier, {
+    String redirectUri = redirectUrl,
+    String? publicClientId,
+  }) async {
     final String encodedString = getEncodedString();
     try {
-      final response = await _authDio.post(
-        'https://zoom.us/oauth/token',
-        data: {
+      final response = await requestZoomToken(
+        _authDio,
+        {
           'grant_type': 'authorization_code',
           'code': code,
-          'redirect_uri': redirectUrl,
+          'redirect_uri': redirectUri,
           'code_verifier': codeVerifier,
+          if (publicClientId != null) 'client_id': publicClientId,
         },
-        options: Options(
+        Options(
           contentType: Headers.formUrlEncodedContentType,
-          headers: {'Authorization': 'Basic $encodedString'},
+          headers: {
+            if (publicClientId == null) 'Authorization': 'Basic $encodedString',
+          },
         ),
       );
       if (response.statusCode == 200) {

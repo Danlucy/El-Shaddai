@@ -1,14 +1,17 @@
 import 'dart:ui';
 
+import 'package:api/api.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:util/util.dart';
 import 'package:website/core/widgets/animated_background.dart';
 import 'package:website/core/widgets/organization_drop_down_button.dart';
 import 'package:website/features/auth/controller/auth_controller.dart';
 import 'package:website/features/auth/presentations/login_dialog.dart';
+import 'package:website/features/auth/services/zoom_oauth_service.dart';
 
 // Example providers
 
@@ -20,6 +23,54 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  bool _isZoomAuthenticating = false;
+
+  Future<void> _signInToZoom() async {
+    if (_isZoomAuthenticating) return;
+
+    setState(() => _isZoomAuthenticating = true);
+    try {
+      final accessToken = await ZoomOAuthService().signIn();
+      await ref
+          .read(accessTokenNotifierProvider.notifier)
+          .saveAccessToken(accessToken);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Signed in to Zoom successfully.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showFailureSnackBar(context, e.toString());
+    } finally {
+      if (mounted) {
+        setState(() => _isZoomAuthenticating = false);
+      }
+    }
+  }
+
+  Future<void> _signOutOfZoom() async {
+    try {
+      await ref
+          .read(accessTokenNotifierProvider.notifier)
+          .clearAccessToken();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Signed out of Zoom successfully.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showFailureSnackBar(context, e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
@@ -28,6 +79,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     // This ensures the widget rebuilds immediately when login state changes.
     final user = ref.watch(userProvider).value; // This gives you User? directly
     final bool isLoggedIn = null != user;
+    final zoomAccessToken = ref.watch(accessTokenNotifierProvider);
+    final isZoomSignedIn = zoomAccessToken.value != null;
+    final isZoomBusy = zoomAccessToken.isLoading || _isZoomAuthenticating;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -77,6 +131,66 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   "Change the current Prayer Alter you are currently on.",
                               icon: Icons.notifications_active_outlined,
                               trailing: OrganizationSelectionDropdown(),
+                            ),
+                            const Gap(16),
+
+                            SettingsTile(
+                              title: "Zoom",
+                              subtitle: isZoomSignedIn
+                                  ? "Automatic Zoom meeting creation is enabled."
+                                  : "Sign in to enable automatic Zoom meeting creation.",
+                              leading: Container(
+                                width: 44,
+                                height: 44,
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: context.colors.primary.withOpac(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Image.asset(
+                                  'assets/zoom.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              trailing: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: isZoomSignedIn
+                                      ? context.colors.errorContainer.withOpac(
+                                          0.3,
+                                        )
+                                      : null,
+                                  side: BorderSide(
+                                    color: isZoomSignedIn
+                                        ? context.colors.error
+                                        : context.colors.primary,
+                                  ),
+                                ),
+                                onPressed: isZoomBusy
+                                    ? null
+                                    : () async {
+                                        if (isZoomSignedIn) {
+                                          await _signOutOfZoom();
+                                        } else {
+                                          await _signInToZoom();
+                                        }
+                                      },
+                                child: isZoomBusy
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        isZoomSignedIn ? 'Log Out' : 'Sign In',
+                                        style: TextStyle(
+                                          color: isZoomSignedIn
+                                              ? context.colors.error
+                                              : context.colors.primary,
+                                        ),
+                                      ),
+                              ),
                             ),
                             const Gap(16),
 
@@ -132,12 +246,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 }
 
 /// A generic settings tile that acts as a Toggle by default,
-/// but accepts a [trailing] widget to override that behavior.
+/// but accepts [leading] and [trailing] widgets to override that behavior.
 
 class SettingsTile extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final IconData icon;
+  final IconData? icon;
+  final Widget? leading;
 
   // Toggle specific
   final bool? value;
@@ -150,11 +265,12 @@ class SettingsTile extends StatelessWidget {
     super.key,
     required this.title,
     this.subtitle,
-    required this.icon,
+    this.icon,
+    this.leading,
     this.value,
     this.onChanged,
     this.trailing,
-  });
+  }) : assert(icon != null || leading != null);
 
   @override
   Widget build(BuildContext context) {
@@ -188,14 +304,21 @@ class SettingsTile extends StatelessWidget {
             // 3. Add vertical padding so multi-line text doesn't touch the edges
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: Theme.of(context).colorScheme.primary),
-              ),
+              leading:
+                  leading ??
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
               title: Text(
                 title,
                 style: const TextStyle(fontWeight: FontWeight.w600),

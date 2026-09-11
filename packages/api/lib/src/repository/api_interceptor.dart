@@ -5,8 +5,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'zoom_token_transport.dart';
 
 class CustomInterceptor extends Interceptor {
+  CustomInterceptor({Dio? tokenDio}) : _tokenDio = tokenDio ?? Dio();
+
+  final Dio _tokenDio;
+
   String getEncodedString() {
     String combinedString = '$clientId:$clientSecret';
     String encodedString = base64.encode(utf8.encode(combinedString));
@@ -63,6 +68,7 @@ class CustomInterceptor extends Interceptor {
         final response = await refreshToken(
           accessTokenData['refreshToken'],
           options,
+          publicClientId: accessTokenData['publicClientId'] as String?,
         );
         token = response.data['access_token'];
       }
@@ -116,23 +122,27 @@ class CustomInterceptor extends Interceptor {
 
   Future<Response> refreshToken(
     String refreshToken,
-    RequestOptions options,
-  ) async {
+    RequestOptions options, {
+    String? publicClientId,
+  }) async {
     try {
       if (kDebugMode) {
         print('Attempting to refresh tokens');
       }
 
-      final Dio dio = Dio();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final String encodedString = getEncodedString();
 
-      final response = await dio.post(
-        'https://zoom.us/oauth/token',
-        data: {'grant_type': 'refresh_token', 'refresh_token': refreshToken},
-        options: Options(
+      final response = await requestZoomToken(
+        _tokenDio,
+        {
+          'grant_type': 'refresh_token',
+          'refresh_token': refreshToken,
+          if (publicClientId != null) 'client_id': publicClientId,
+        },
+        Options(
           headers: {
-            'Authorization': 'Basic $encodedString',
+            if (publicClientId == null) 'Authorization': 'Basic $encodedString',
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         ),
@@ -154,6 +164,7 @@ class CustomInterceptor extends Interceptor {
 
       // Save new tokens to SharedPreferences
       Map<String, dynamic> accessTokenData = {
+        if (publicClientId != null) 'publicClientId': publicClientId,
         "token": response.data['access_token'],
         'refreshToken': response.data['refresh_token'],
         "duration": DateTime.now()
