@@ -286,15 +286,15 @@ class SettingsTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withOpacity(
+              color: Colors.white.withOpac(
                 0.3,
               ), // Approx average of your border gradient
               width: 1,
             ),
             gradient: LinearGradient(
               colors: [
-                Theme.of(context).colorScheme.surface.withOpacity(0.12),
-                Theme.of(context).colorScheme.surface.withOpacity(0.07),
+                Theme.of(context).colorScheme.surface.withOpac(0.12),
+                Theme.of(context).colorScheme.surface.withOpac(0.07),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -311,7 +311,7 @@ class SettingsTile extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(
                         context,
-                      ).colorScheme.primary.withOpacity(0.1),
+                      ).colorScheme.primary.withOpac(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -332,7 +332,7 @@ class SettingsTile extends StatelessWidget {
                         style: TextStyle(
                           color: Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.6),
+                          ).colorScheme.onSurface.withOpac(0.6),
                         ),
                       ),
                     )

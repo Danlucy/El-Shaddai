@@ -40,9 +40,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: '/booking',
                 builder: (context, state) => BookingScreen(),
                 routes: [
-                  // ---------------------------------------------------------
-                  // 1. CREATE & EDIT ROUTES (Must come BEFORE :id)
-                  // ---------------------------------------------------------
+
                   GoRoute(
                     path: 'create', // URL: /booking/create
                     pageBuilder: (context, state) {
@@ -69,7 +67,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                         path:
                             ':actionId', // Rename param to avoid conflict with detail's :id
                         pageBuilder: (context, state) {
-                          final String id = state.pathParameters['actionId']!;
                           final BookingModel? extra =
                               state.extra as BookingModel?;
 

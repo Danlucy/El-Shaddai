@@ -312,7 +312,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
                                           child: Stack(
                                             children: [
                                               if (intensity > 0)
-                                                _MonthCalendarCellShadowDecoration(
+                                                _monthCalendarCellShadowDecoration(
                                                   gradientStart,
                                                   gradientEnd,
                                                   context,
@@ -416,7 +416,7 @@ class _WebCalendarComponentState extends ConsumerState<MonthlyCalendarComponent>
     );
   }
 
-  Container _MonthCalendarCellShadowDecoration(
+  Container _monthCalendarCellShadowDecoration(
     Alignment gradientStart,
     Alignment gradientEnd,
     BuildContext context,

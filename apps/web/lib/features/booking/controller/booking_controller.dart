@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:models/models.dart';
 import 'package:repositories/repositories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:util/util.dart';
 import 'package:website/features/booking/provider/booking_provider.dart';
 import 'package:website/features/booking/state/booking_state.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../auth/controller/auth_controller.dart';
 
@@ -177,18 +177,7 @@ class BookingController extends _$BookingController {
     );
   }
 
-  // void setTimeRange(TimeRange timeOfDay) {
-  //   final start = state.timeRange?.start;
-  //   final end = state.timeRange?.end;
-  //   state = state.copyWith(
-  //     timeRange: CustomDateTimeRange(
-  //       start: DateTime(start?.year ?? 0, start?.month ?? 0, start?.day ?? 0,
-  //           timeOfDay.startTime.hour, timeOfDay.startTime.minute),
-  //       end: DateTime(end?.year ?? 0, end?.month ?? 0, end?.day ?? 0,
-  //           timeOfDay.endTime.hour, timeOfDay.endTime.minute),
-  //     ),
-  //   );
-  // }
+
   void setStartTime(DateTime startTime, BuildContext context) {
     final currentRange = state.timeRange;
     final startDate =
@@ -318,11 +307,6 @@ class BookingController extends _$BookingController {
 
     final currentVenue = ref.read(bookingVenueStateProvider);
     final location = state.location;
-    final user = ref.read(userProvider);
-
-    if (user == null) {
-      throw 'No user found. Ensure internet connection is available.';
-    }
 
     if ([
       state.title,

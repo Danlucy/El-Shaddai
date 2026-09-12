@@ -135,7 +135,6 @@ class _DailyBookingDialogState extends ConsumerState<DailyBookingDialog> {
     final height = MediaQuery.sizeOf(context).height;
 
     final bookingStream = ref.watch(getCurrentOrgBookingsStreamProvider);
-    final user = ref.watch(userProvider);
 
     return AlertDialog(
       insetPadding: EdgeInsets.zero,

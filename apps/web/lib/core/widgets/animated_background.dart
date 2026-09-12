@@ -135,7 +135,7 @@ class BackgroundPatternPainter extends CustomPainter {
 
         if (opacity > 0.0) {
           final Paint fadedPaint = Paint()
-            ..color = color.withOpacity(color.opacity * opacity)
+            ..color = color.withOpac(color.a * opacity)
             ..style = PaintingStyle.fill;
 
           final Path diamond = Path();
