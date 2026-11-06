@@ -129,8 +129,10 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                             ResponsiveRowColumnItem(
                               rowFlex: 2,
                               child: selectedBooking != null
-                                  ? BookingDetailsContent(
-                                      booking: selectedBooking,
+                                  ? SingleChildScrollView(
+                                      child: BookingDetailsContent(
+                                        booking: selectedBooking,
+                                      ),
                                     )
                                   : const Center(
                                       child: Text(

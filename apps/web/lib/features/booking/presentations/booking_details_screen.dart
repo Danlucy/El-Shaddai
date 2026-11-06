@@ -54,7 +54,6 @@ class BookingDetailsScreen extends ConsumerWidget {
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(
                             maxWidth: 1200,
-                            maxHeight: 1000,
                           ),
                           child: BookingDetailsContent(booking: booking),
                         ),

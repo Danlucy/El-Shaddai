@@ -77,7 +77,7 @@ class _BookingDetailsContentState extends ConsumerState<BookingDetailsContent> {
 
         // B. Actual Content
         Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(isDesktop ? 24.0 : 16.0),
           child: ResponsiveRowColumn(
             layout: isDesktop
                 ? ResponsiveRowColumnType.ROW
