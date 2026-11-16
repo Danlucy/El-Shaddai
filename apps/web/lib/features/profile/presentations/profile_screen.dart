@@ -406,7 +406,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const Gap(4),
                     Text(
-                      'Permanently delete your account and all associated data.',
+                      'Permanently delete your account. Once deleted, your data cannot be recovered.',
                       style: TextStyle(
                         fontSize: 12,
                         color: theme.colorScheme.onSurface.withOpac(0.6),
