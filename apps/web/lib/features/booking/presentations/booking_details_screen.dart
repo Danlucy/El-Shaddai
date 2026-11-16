@@ -22,55 +22,84 @@ class BookingDetailsScreen extends ConsumerWidget {
       body: AnimatedBackground(
         surfaceColor: Theme.of(context).colorScheme.surface,
         secondaryColor: Theme.of(context).colorScheme.secondary,
-        child: bookingStream.when(
-
-          data: (booking) {
-            if (booking == null) {
-              return const Center(child: Text('Booking not found.'));
-            }
-            return SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // Main Title - Fixed height
-                    Align(
-                      alignment: AlignmentGeometry.center,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20.0),
-                        child: Text(
-                          'Booking Details',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: context.colors.primary,
+        child: SafeArea(
+          bottom: false,
+          child: CustomScrollView(
+            slivers: bookingStream.when(
+              data: (booking) {
+                if (booking == null) {
+                  return _buildPinnedStatusSlivers(
+                    const Text('Booking not found.'),
+                  );
+                }
+                return [
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        // Main Title - Fixed height
+                        Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20.0),
+                            child: Text(
+                              'Booking Details',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: context.colors.primary,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    // The core content - Takes available space
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxWidth: 1200,
+                        // The core content - Takes available space
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 1200,
+                              ),
+                              child: BookingDetailsContent(booking: booking),
+                            ),
                           ),
-                          child: BookingDetailsContent(booking: booking),
                         ),
-                      ),
+                        const SizedBox(height: 40),
+                      ],
                     ),
-                    const SizedBox(height: 40),
-                    const FooterWidget(moreInfo: true),
-                  ],
-                ),
+                  ),
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Column(
+                      children: [
+                        Spacer(),
+                        FooterWidget(moreInfo: true),
+                      ],
+                    ),
+                  ),
+                ];
+              },
+              loading: () => _buildPinnedStatusSlivers(const Loader()),
+              error: (error, stack) => _buildPinnedStatusSlivers(
+                const Text('Failed to load booking details.'),
               ),
-            );
-          },
-          loading: () => const Center(child: Loader()),
-          error: (error, stack) =>
-              const Center(child: Text('Failed to load booking details.')),
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildPinnedStatusSlivers(Widget statusChild) {
+    return [
+      SliverFillRemaining(
+        hasScrollBody: false,
+        child: Column(
+          children: [
+            Expanded(child: Center(child: statusChild)),
+            const FooterWidget(moreInfo: true),
+          ],
+        ),
+      ),
+    ];
   }
 }
