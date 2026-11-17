@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -162,12 +161,15 @@ class _MainDetailsColumn extends StatelessWidget {
       children: [
         Row(
           children: [
-            AutoSizeText(
-              booking.title,
-              style: Theme.of(context).textTheme.headlineLarge,overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+            Expanded(
+              child: Text(
+                booking.title,
+                style: Theme.of(context).textTheme.headlineLarge,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
             ),
-            Spacer(),
+            const Gap(8),
             IconButton(
               padding: const EdgeInsets.all(0),
               onPressed: () async {
