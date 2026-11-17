@@ -9,6 +9,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:models/models.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart' as parser;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../controller/profile_controller.dart';
 
@@ -135,6 +136,21 @@ class _EditableTextFieldState extends ConsumerState<EditableTextField> {
     }
   }
 
+  Future<void> _openEmail() async {
+    try {
+      if (await launchUrl(Uri(scheme: 'mailto', path: _controller.text.trim()))) {
+        return;
+      }
+    } catch (_) {
+      // Show the same message whether the platform rejects or fails to launch.
+    }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open email app')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -239,6 +255,13 @@ class _EditableTextFieldState extends ConsumerState<EditableTextField> {
                     _currentValue = phone.completeNumber;
                     _onTextChanged(_currentValue);
                   },
+                )
+              else if (widget.fieldName == UserModel.fields.email &&
+                  !widget.isEditing &&
+                  _controller.text.trim().isNotEmpty)
+                TextButton(
+                  onPressed: _openEmail,
+                  child: Text(_controller.text),
                 )
               else
                 TextField(

@@ -1,6 +1,5 @@
 import 'package:constants/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +7,7 @@ import 'package:mobile/features/profile/widget/role_display.dart';
 import 'package:mobile/features/user_management/controller/user_management_controller.dart';
 import 'package:models/models.dart';
 import 'package:util/util.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/widgets/confirm_dialog.dart';
 import '../../auth/controller/auth_controller.dart';
@@ -113,10 +113,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {
-                          Clipboard.setData(
-                            ClipboardData(text: widget.userModel!.email),
-                          );
+                        onPressed: () async {
+                          try {
+                            final opened = await launchUrl(
+                              Uri(scheme: 'mailto', path: widget.userModel!.email),
+                            );
+                            if (!opened && context.mounted) {
+                              showFailureSnackBar(context, 'Could not open email app');
+                            }
+                          } catch (_) {
+                            if (context.mounted) {
+                              showFailureSnackBar(context, 'Could not open email app');
+                            }
+                          }
                         },
                         child: Text(widget.userModel!.email),
                       ),
